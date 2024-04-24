@@ -1,0 +1,181 @@
+{
+	"Generic": {
+		"DeviceOuScope": "OU=TriCare-Computers,DC=tricaread,DC=int",
+		"DefaultDateFormat": "dd/MM/yyyy-hh:mm",
+		"RunRegistryPath" : "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run",
+		"RunOnceRegistryPath" : "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\RunOnce"
+	},
+	"Deployment": {
+		"buildTicketNamePatterns": [
+			"Request for * : Request to Reimage/Rebuild TriCare Asset",
+			"Request for * : New Hardware Request"
+		],
+		"buildTypeCorrelation": [
+			{
+				"buildtype": "Head Office",
+				"OU": ""
+			},
+			{
+				"buildtype": "Facility Management/Operations",
+				"OU": "OU=Operational Device"
+			},
+			{
+				"buildtype": "eCase",
+				"OU": "OU=eCase"
+			},
+			{
+				"buildtype": "iAuditor",
+				"OU": "OU=iAuditor,OU=Operational Device"
+			},
+			{
+				"buildtype": "Litmos/Training",
+				"OU": "OU=Litmos"
+			},
+			{
+				"buildtype": "CCTV",
+				"OU": "OU=CCTV Clients"
+			},
+			{
+				"buildtype": "Meeting Room Kiosk",
+				"OU": "NotImplemented"
+			}
+		],
+		"locationCorrelation": [
+			{
+				"freshID": "11000273215",
+				"location": "OU=Head Office",
+				"dept": ""
+			},
+			{
+				"freshID": "11000343256",
+				"location": "OU=ASHG",
+				"dept": "OU=ACR"
+			},
+			{
+				"freshID": "11000273216",
+				"location": "OU=ANNE",
+				"dept": "OU=ACR"
+			},
+			{
+				"freshID": "11000273220",
+				"location": "OU=BAYV",
+				"dept": "OU=ACR"
+			},
+			{
+				"freshID": "11000342556",
+				"location": "OU=BUND",
+				"dept": "OU=ACR"
+			},
+			{
+				"freshID": "11000342557",
+				"location": "OU=CYPR",
+				"dept": "OU=ACR"
+			},
+			{
+				"freshID": "11000342559",
+				"location": "OU=KAWA",
+				"dept": "OU=ACR"
+			},
+			{
+				"freshID": "11000342558",
+				"location": "OU=JIND",
+				"dept": "OU=ACR"
+			},
+			{
+				"freshID": "11000342560",
+				"location": "OU=LABR",
+				"dept": "OU=ACR"
+			},
+			{
+				"freshID": "11000342561",
+				"location": "OU=MERM",
+				"dept": "OU=ACR"
+			},
+			{
+				"freshID": "11000342562",
+				"location": "OU=MTGR",
+				"dept": "OU=ACR"
+			},
+			{
+				"freshID": "11000342563",
+				"location": "OU=PIMP",
+				"dept": "OU=ACR"
+			},
+			{
+				"freshID": "11000342564",
+				"location": "OU=PTVN",
+				"dept": "OU=ACR"
+			},
+			{
+				"freshID": "11000342565",
+				"location": "OU=STAFF",
+				"dept": "OU=ACR"
+			},
+			{
+				"freshID": "11000342566",
+				"location": "OU=SUBH",
+				"dept": "OU=ACR"
+			},
+			{
+				"freshID": "11000342567",
+				"location": "OU=TOOW",
+				"dept": "OU=ACR"
+			},
+			{
+				"freshID": "11000342568",
+				"location": "OU=UMGR",
+				"dept": "OU=ACR"
+			},
+			{
+				"freshID": "11000343257",
+				"location": "OU=WLAC",
+				"dept": "OU=ACR"
+			},
+			{
+				"freshID": "11000342569",
+				"location": "OU=COMP",
+				"dept": "OU=RC"
+			},
+			{
+				"freshID": "11000342570",
+				"location": "OU=CYPR",
+				"dept": "OU=RC"
+			},
+			{
+				"freshID": "11000342571",
+				"location": "OU=HAST",
+				"dept": "OU=RC"
+			},
+			{
+				"freshID": "11000342571",
+				"location": "OU=HAYV",
+				"dept": "OU=RC"
+			},
+			{
+				"freshID": "11000342572",
+				"location": "OU=JOV",
+				"dept": "OU=RC"
+			},
+			{
+				"freshID": "11000342573",
+				"location": "OU=MTGR",
+				"dept": "OU=RC"
+			},
+			{
+				"freshID": "11000342574",
+				"location": "OU=RUN",
+				"dept": "OU=RC"
+			},
+			{
+				"freshID": "11000342575",
+				"location": "OU=STAF",
+				"dept": "OU=RC"
+			},
+			{
+				"freshID": "11000342576",
+				"location": "OU=WILL",
+				"dept": "OU=RC"
+			}
+		]
+	}
+}
