@@ -1,7 +1,7 @@
 function Get-DeviceDeploymentADAttrs {
 	[CmdletBinding(SupportsShouldProcess = $true)]
 	param (
-		[PSCustomObject]$config = $DeviceManagmentDefaultConfig
+		[PSCustomObject]$config = $DeviceDeploymentDefaultConfig
 	)
 
 	begin {
@@ -11,7 +11,7 @@ function Get-DeviceDeploymentADAttrs {
 		function Search-ConfigADAttrs {
 			[CmdletBinding(SupportsShouldProcess = $true)]
 			param (
-				[PSCustomObject]$config = $DeviceManagmentDefaultConfig
+				[PSCustomObject]$config = $DeviceDeploymentDefaultConfig
 			)
 			begin {
 				$errorList = @()

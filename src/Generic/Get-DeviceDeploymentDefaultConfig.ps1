@@ -1,3 +1,3 @@
 function Get-DeviceDeploymentDefaultConfig {
-	return $DeviceDeploymntDefaultConfig
+	return $DeviceDeploymentDefaultConfig
 }

@@ -14,7 +14,7 @@ Foreach ($import in (Get-ChildItem -Path $PSScriptRoot\src\*.ps1  -Recurse -Erro
 }
 
 <#---------------------- Common Defines ----------------------#>
-$DeviceDeploymentDefaultConfig = Get-Content -Path "$PSScriptRoot\src\defaultConfig.json" | ConvertFrom-Json
+$DeviceDeploymentDefaultConfig = Get-Content -Path "$PSScriptRoot\src\defaultConfig.json" | ConvertFrom-Json -Depth 50
 
 <#---------------------- Setup ----------------------#>
 Connect-TriCareMgGraph

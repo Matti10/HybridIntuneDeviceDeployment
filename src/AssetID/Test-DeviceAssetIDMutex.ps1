@@ -1,0 +1,28 @@
+function Test-DeviceAssetIDMutex {
+	[CmdletBinding(SupportsShouldProcess = $true)]
+	param (
+		[Parameter(Mandatory)]
+		[string]$API_Key
+	)
+
+	begin {
+		$errorList = @()
+	}
+	process {
+		if ($PSCmdlet.ShouldProcess($serialNumber)) {
+			try {
+				Get-FreshCustomObject -API_Key $API_Key -objectName "Build-Process-AssetID-Mutex"
+				
+			}
+			catch {
+				$errorList += $_
+				Write-Error $_
+			}
+		}
+	}
+	end {
+		if ($errorList.count -ne 0) {
+			Write-Error "Error(s) in $($MyInvocation.MyCommand.Name):`n$($errorList | ForEach-Object {"$_`n"})" -ErrorAction Stop
+		}
+	}	
+}

@@ -2,8 +2,47 @@
 	"Generic": {
 		"DeviceOuScope": "OU=TriCare-Computers,DC=tricaread,DC=int",
 		"DefaultDateFormat": "dd/MM/yyyy-hh:mm",
-		"RunRegistryPath" : "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run",
-		"RunOnceRegistryPath" : "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\RunOnce"
+		"RunRegistryPath": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run",
+		"RunOnceRegistryPath": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\RunOnce",
+		"freshAssetIDAttr": "name",
+		"adAssetIDAttr": "name",
+		"AssetIDPrefix": "TCL0",
+		"AssetIDLength": 9
+	},
+	"TicketInteraction": {
+		"BuildStates": {
+			"initalState": {
+				"message": "Initialised",
+				"color": "rgb(102, 204, 255)"
+			},
+			"inProgressState": {
+				"message": "In Progress",
+				"color": "rgb(102, 153, 255)"
+			},
+			"completedState": {
+				"message": "Completed",
+				"color": "rgb(153, 255, 102)"
+			},
+			"failedState": {
+				"message": "Failed - See Error",
+				"color": "rgb(255, 102, 102)"
+			}
+		},
+		"messageTemplate": "%TABLE%<br>%MESSAGE%<br><p style=\"font-size: 10px\">%TRACE%</p>",
+		"freshFormatting": [
+			{
+				"name": "td",
+				"format": "border-width: 1px; padding: 3px; border-style: solid; border-color: black;"
+			},
+			{
+				"name": "table",
+				"format": "border-width: 1px; border-style: solid; border-color: black; border-collapse: collapse;"
+			},
+			{
+				"name": "th",
+				"format": "border-width: 1px; padding: 3px; border-style: solid; border-color: black; background-color: #6495ED;"
+			},
+		]
 	},
 	"Deployment": {
 		"buildTicketNamePatterns": [
@@ -13,31 +52,38 @@
 		"buildTypeCorrelation": [
 			{
 				"buildtype": "Head Office",
-				"OU": ""
+				"OU": "",
+				"hasDepartment": false
 			},
 			{
 				"buildtype": "Facility Management/Operations",
-				"OU": "OU=Operational Device"
+				"OU": "OU=Operational Device",
+				"hasDepartment": true
 			},
 			{
 				"buildtype": "eCase",
-				"OU": "OU=eCase"
+				"OU": "OU=eCase",
+				"hasDepartment": false
 			},
 			{
 				"buildtype": "iAuditor",
-				"OU": "OU=iAuditor,OU=Operational Device"
+				"OU": "OU=iAuditor,OU=Operational Device",
+				"hasDepartment": false
 			},
 			{
 				"buildtype": "Litmos/Training",
-				"OU": "OU=Litmos"
+				"OU": "OU=Litmos",
+				"hasDepartment": false
 			},
 			{
 				"buildtype": "CCTV",
-				"OU": "OU=CCTV Clients"
+				"OU": "OU=CCTV Clients,OU=Unattended Computers",
+				"hasDepartment": true
 			},
 			{
 				"buildtype": "Meeting Room Kiosk",
-				"OU": "NotImplemented"
+				"OU": "OU=Meeting Room Computers,OU=Unattended Computers",
+				"hasDepartment": true
 			}
 		],
 		"locationCorrelation": [
@@ -147,8 +193,8 @@
 				"dept": "OU=RC"
 			},
 			{
-				"freshID": "11000342571",
-				"location": "OU=HAYV",
+				"freshID": "11000273221",
+				"location": "OU=HAVL",
 				"dept": "OU=RC"
 			},
 			{

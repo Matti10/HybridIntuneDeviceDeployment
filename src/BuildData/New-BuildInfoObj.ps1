@@ -20,7 +20,11 @@ function New-BuildInfoObj {
 		[string]$OU = "",
 
 		[Parameter()]
-		[string]$freshLocation = ""
+		[string]$freshLocation = "",
+
+		
+		[Parameter()]
+		[string]$buildState = $DeviceDeploymentDefaultConfig.TicketInteraction.BuildStates.initalState.message
 	)
 
 	begin {
@@ -43,13 +47,14 @@ function New-BuildInfoObj {
 					#TODO - Get-FreshAssetSerialNUmber?
 				}
 
-				return @{
+				return [PSCustomObject]@{
 					AssetID      = $AssetID
 					serialNumber = $serialNumber
 					type         = $type
 					build        = $build
 					OU           = $OU
 					ticketID     = $ticketID
+					buildState   = $buildState
 				}
 			}
 			catch {

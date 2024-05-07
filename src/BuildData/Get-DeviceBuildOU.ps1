@@ -8,13 +8,13 @@ function Get-DeviceBuildOU {
         [string]$facility,
 
         [Parameter()]
-        $baseOU = "OU=TriCare-Computers,DC=tricaread,DC=int",
+        $baseOU = $DeviceDeploymentDefaultConfig.Generic.DeviceOUScope,
 
         [Parameter()]
-        $buildTypes = $DeviceManagmentDefaultConfig.Deployment.buildTypeCorrelation,
+        $buildTypes = $DeviceDeploymentDefaultConfig.Deployment.buildTypeCorrelation,
 
         [Parameter()]
-        $facilities = $DeviceManagmentDefaultConfig.Deployment.locationCorrelation
+        $facilities = $DeviceDeploymentDefaultConfig.Deployment.locationCorrelation
     )
 
     begin {
@@ -24,13 +24,14 @@ function Get-DeviceBuildOU {
         if ($PSCmdlet.ShouldProcess("$build & $facility")) {
             try {
                 #------------------------------ resolve OU from facility and build --------------------------------------
-                #base ou Prefix
-    
+                $hasDepartment = $true
+
                 # add to 'build' level of OU
                 foreach ($buildType in $buildTypes) {
                     if ($build -eq $buildType.buildType) {
                         #start building ou
                         $baseOU = "$($buildType.OU),$baseOU"
+                        $hasDepartment = $buildType.hasDepartment
                         break
                     }
                 }
@@ -39,21 +40,15 @@ function Get-DeviceBuildOU {
                 #add to facility level of OU and read AVM system
                 foreach ($location in $facilities) {
                     if ($facility -eq $location.freshID) {
-                        $facility = $location.location.split("=")[1]
-
-                        #if ops build, append ACR/RC accordingly
-                        if ($build -eq "Facility Management/Operations") {
-                            $baseOU = "$($location.location),$($location.dept),$baseOU"
-                        }
-                        else {
-                            $baseOU = "$($location.location),$baseOU"
-                        }
+                        $baseOU = "$($location.location),$(if($hasDepartment){$location.dept}),$baseOU"
                         break
                     }
                 }
     
                 #fix and ",," left in HO OU's
-                $baseOU = $baseOU -replace ",,", ","
+                while ($baseOU -like "*,,*") {
+                    $baseOU = $baseOU -replace ",,", ","
+                }
 
                 return $baseOU
             }
