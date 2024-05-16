@@ -16,6 +16,9 @@ function Write-DeviceBuildTicket {
 		[Parameter()]
 		$buildStates = $DeviceDeploymentDefaultConfig.TicketInteraction.BuildStates,
 
+		[Parameter()]
+		$formattingConfig = $DeviceDeploymentDefaultConfig.TicketInteraction.freshFormatting,
+
 		[Parameter(Mandatory)]
 		[string]$API_Key
 	)
@@ -29,13 +32,20 @@ function Write-DeviceBuildTicket {
 			$content = $content.replace("%MESSAGE%", $message)
 			$content = $content.replace("%TRACE%","Message sent by $(hostname) at $(Get-Date -Format $dateFormat)")
 			
-			#highlight status
-			foreach ($cell in $content.split("<td>")) {
-				foreach ($buildState in ($buildStates | Get-Member | Where-Object {$_.MemberType -eq "NoteProperty"}).Name) {
-					if ($cell -like "*$($buildStates.$buildState.message)*") {
-						$content = $content.replace("<td>$cell","<td style=`"background-color:$($buildStates.$buildState.color)`">$cell")
-					}
+
+			#find the current build state
+			$buildState = $buildStates.initalState
+			foreach ($state in ($buildStates | Get-Member | Where-Object {$_.MemberType -eq "NoteProperty"}).Name) {
+				if ($content -like "*$($buildStates.$state.message)*")
+				{
+					$buildState = $buildStates.$state
 				}
+			}
+
+			#do some formatting
+			foreach ($element in $formattingConfig) {
+				$content = $content -replace "<$($element.name)>","<$($element.name) style=`"$($element.format)`">"
+				$content = $content -replace "%BGCOLOR%", "$($buildState.color)"
 			}
 			
 			if ($PSCmdlet.ShouldProcess($BuildInfo.ticketID)) {

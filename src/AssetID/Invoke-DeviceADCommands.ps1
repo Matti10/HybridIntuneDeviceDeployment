@@ -1,8 +1,8 @@
-function Get-DeviceLocalData {
+function Invoke-DeviceADCommands {
 	[CmdletBinding(SupportsShouldProcess = $true)]
 	param (
 		[Parameter(Mandatory)]
-		$API_Key
+		$buildData
 	)
 
 	begin {

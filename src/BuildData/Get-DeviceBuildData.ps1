@@ -19,17 +19,20 @@ function Get-DeviceBuildData {
 			try {
 				#get devices tickets
 				if ($serialNumber -ne "") {
-					$buildTickets = Get-FreshAssetsTickets -API_Key $API_Key -serialNum $serialNumber -ErrorAction SilentlyContinue
-					$identity = (Get-FreshAsset -API_Key $API_Key -serialNum $serialNumber -ErrorAction SilentlyContinue).name
+					$freshAsset = Get-FreshAsset -API_Key $API_Key -serialNum $serialNumber -ErrorAction SilentlyContinue
+					$identity = $freshAsset.Name
 				}
 				elseif ($identity -ne "") {
-					$buildTickets = Get-FreshAssetsTickets -API_Key $API_Key -name $identity -ErrorAction SilentlyContinue
+					$freshAsset = Get-FreshAsset -API_Key $API_Key -name $identity -ErrorAction SilentlyContinue
+					$serialNumber = $freshAsset.serialNumber
 				}
 				else {
 					#input validations
 					Write-Error -Message "Identity and Serial Number paramaters are null, please provide a value" -ErrorAction Stop
 				}
-
+				
+				$buildTickets = $freshAsset | Get-FreshAssetsTickets -API_Key $API_Key -ErrorAction SilentlyContinue
+				
 				# filter non build tickets out
 				try {
 					$buildTickets = $buildTickets
@@ -57,7 +60,7 @@ function Get-DeviceBuildData {
 
 				$buildDetails = (Get-FreshTicketsRequestedItems -API_Key $API_Key -ticketID $buildTicketID).custom_fields
 
-				return New-BuildInfoObj -AssetId $identity -serialNumber $serialNumber -type $buildDetails.device_type_requested -build $buildDetails.hardware_use_build_type -freshLocation $buildDetails.facility[0] -ticketID $buildTicketID
+				return New-BuildInfoObj -AssetId $identity -serialNumber $serialNumber -type $buildDetails.device_type_requested -build $buildDetails.hardware_use_build_type -freshLocation $buildDetails.facility[0] -ticketID $buildTicketID -freshAsset $freshAsset
 
 			}
 			catch {

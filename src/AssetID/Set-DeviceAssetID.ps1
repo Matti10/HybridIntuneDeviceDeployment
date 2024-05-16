@@ -1,8 +1,12 @@
-function Unprotect-DeviceAssetIDMutex {
+function Set-DeviceAssetID {
 	[CmdletBinding(SupportsShouldProcess = $true)]
 	param (
+		[Parameter(Mandatory,ValueFromPipeline)]
+		[Object]$buildInfo,
+
 		[Parameter(Mandatory)]
 		[string]$API_Key
+
 	)
 
 	begin {
@@ -11,7 +15,10 @@ function Unprotect-DeviceAssetIDMutex {
 	process {
 		if ($PSCmdlet.ShouldProcess($serialNumber)) {
 			try {
-			
+				Protect-DeviceAssetIDMutex -API_Key $API_Key
+
+				$AssetID = Get-DeviceAssetID
+
 			}
 			catch {
 				$errorList += $_

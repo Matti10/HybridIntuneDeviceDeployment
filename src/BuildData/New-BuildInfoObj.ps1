@@ -16,6 +16,9 @@ function New-BuildInfoObj {
 		[Parameter(Mandatory)]
 		[string]$ticketID,
 
+		[Parameter(Mandatory)]
+		$freshAsset,
+
 		[Parameter()]
 		[string]$OU = "",
 
@@ -55,6 +58,7 @@ function New-BuildInfoObj {
 					OU           = $OU
 					ticketID     = $ticketID
 					buildState   = $buildState
+					freshAsset   = $freshAsset
 				}
 			}
 			catch {

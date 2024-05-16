@@ -3,11 +3,20 @@
 		"DeviceOuScope": "OU=TriCare-Computers,DC=tricaread,DC=int",
 		"DefaultDateFormat": "dd/MM/yyyy-hh:mm",
 		"RunRegistryPath": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run",
-		"RunOnceRegistryPath": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\RunOnce",
+		"RunOnceRegistryPath": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\RunOnce"
+	},
+	"AssetID" :{
 		"freshAssetIDAttr": "name",
 		"adAssetIDAttr": "name",
 		"AssetIDPrefix": "TCL0",
-		"AssetIDLength": 9
+		"AssetIDLength": 9,
+		"MutexFreshObjectID" : "11000002068",
+		"MutexFreshObjectRecordID" : "2",
+		"MutexTimeoutSeconds" : 200,
+		"AccessedValue" : 1,
+		"NotAccessedValue" : 0,
+		"resetValue" : "null"
+
 	},
 	"TicketInteraction": {
 		"BuildStates": {
@@ -36,12 +45,12 @@
 			},
 			{
 				"name": "table",
-				"format": "border-width: 1px; border-style: solid; border-color: black; border-collapse: collapse;"
+				"format": "border-width: 1px; border-style: solid; border-color: black; border-collapse: collapse max-width:100%; white-space:nowrap;"
 			},
 			{
 				"name": "th",
-				"format": "border-width: 1px; padding: 3px; border-style: solid; border-color: black; background-color: #6495ED;"
-			},
+				"format": "border-width: 1px; padding: 3px; border-style: solid; border-color: black; background-color: %BGCOLOR%;text-allign: center;"
+			}
 		]
 	},
 	"Deployment": {

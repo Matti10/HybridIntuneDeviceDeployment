@@ -1,4 +1,4 @@
-function Protect-DeviceAssetIDMutex {
+function Test-DeviceAssetIDMutex {
 	[CmdletBinding(SupportsShouldProcess = $true)]
 	param (
 		[Parameter(Mandatory)]
@@ -9,9 +9,9 @@ function Protect-DeviceAssetIDMutex {
 		$errorList = @()
 	}
 	process {
-		if ($PSCmdlet.ShouldProcess($serialNumber)) {
+		if ($PSCmdlet.ShouldProcess("AssetID Mutex")) {
 			try {
-				
+				return (Get-DeviceAssetIDMutex -API_Key $API_Key).currentlyaccessed
 			}
 			catch {
 				$errorList += $_

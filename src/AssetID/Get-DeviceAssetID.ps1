@@ -8,7 +8,9 @@ function Get-DeviceAssetID {
 		[string]$API_Key,
 
 		[Parameter()]
-		[string]$FreshAssetIDAttr = $DeviceDeploymentDefaultConfig.Generic.freshAssetIDAttr
+		[string]$FreshAssetIDAttr = $DeviceDeploymentDefaultConfig.AssetIDInfo.freshAssetIDAttr
+
+
 	)
 
 	begin {
@@ -17,13 +19,26 @@ function Get-DeviceAssetID {
 	process {
 		if ($PSCmdlet.ShouldProcess($serialNumber)) {
 			try {
+				$freshAsset = $null	
 				try {
-					$AssetID = (Get-FreshAsset -API_Key $API_Key -serialNum $serialNumber -ErrorAction Stop).$FreshAssetIDAttr
+					#see if the serial number has freshAsset
+					$freshAsset = Get-FreshAsset -API_Key $API_Key -serialNum $serialNumber -ErrorAction Stop
+					$AssetID = $freshAsset.$FreshAssetIDAttr
+					
+					if (-not (Test-AssetID -AssetID $AssetID)) {
+						Write-Verbose "Asset id in fresh ($AssetID), is invalid, generating a new one"
+						throw
+					}
+
 				} catch {
 					$AssetID = Get-NextAssetID -API_Key $API_Key -ErrorAction SilentlyContinue
+					
 				}
 				
-				return $AssetID
+				return [PSCustomObject]@{
+					AssetID = $AssetID
+					freshAsset = $freshAsset
+				}
 			}
 			catch {
 				$errorList += $_

@@ -5,19 +5,19 @@ function Get-NextAssetID {
 		[string]$API_Key,
 
 		[Parameter()]
-		[string]$FreshAssetIDAttr = $DeviceDeploymentDefaultConfig.Generic.freshAssetIDAttr,
+		[string]$FreshAssetIDAttr = $DeviceDeploymentDefaultConfig.AssetID.freshAssetIDAttr,
 
 		[Parameter()]
-		[string]$adAssetIDAttr = $DeviceDeploymentDefaultConfig.Generic.adAssetIDAttr,
+		[string]$adAssetIDAttr = $DeviceDeploymentDefaultConfig.AssetID.adAssetIDAttr,
 
 		[Parameter()]
 		[string]$DeviceADScope = $DeviceDeploymentDefaultConfig.Generic.DeviceOUScope,
 
 		[Parameter()]
-		[string]$AssetIDPrefix = $DeviceDeploymentDefaultConfig.Generic.AssetIDPrefix,
+		[string]$AssetIDPrefix = $DeviceDeploymentDefaultConfig.AssetID.AssetIDPrefix,
 
 		[Parameter()]
-		[string]$AssetIDLength = $DeviceDeploymentDefaultConfig.Generic.AssetIDLength
+		[string]$AssetIDLength = $DeviceDeploymentDefaultConfig.AssetID.AssetIDLength
 	)
 
 	begin {
@@ -27,6 +27,7 @@ function Get-NextAssetID {
 		try {
 			if ($PSCmdlet.ShouldProcess("Getting Next Asset ID")) {
 				# Get All Asset IDs
+				Protect-DeviceAssetIDMutex #ensure nothing else is accessing this data
 				$All = (Get-FreshAsset -API_Key $API_Key -all).$FreshAssetIDAttr
 				$All += (Get-ADComputer -SearchBase $DeviceADScope -Filter *).$adAssetIDAttr
 	

@@ -43,7 +43,7 @@ function Write-DeviceBuildError {
 				$content += ", More details can be found below<br><b>Error Location: $($stack[1].Command)</b> <br><b>Error Message:</b> $($errorObject.exception.ErrorRecord)"
 			}
 			else {
-				$content += " when running the $($stack[1].Command) function. More details can be found in the log file, located @ $log path<br>(remember, to access file explorer in OOBE, press shift+F10, then type 'explorer' into the cmd window)"
+				$content += " when running the $($stack[1].Command) function. More details can be found in the log file, located @ $logPath path<br>(remember, to access file explorer in OOBE, press shift+F10, then type 'explorer' into the cmd window)"
 			}
 
 			if ($null -ne $additionalInfo) {
