@@ -26,9 +26,9 @@ function Get-NextAssetID {
 	process {
 		try {
 			if ($PSCmdlet.ShouldProcess("Getting Next Asset ID")) {
+				
 				# Get All Asset IDs
-				Protect-DeviceAssetIDMutex #ensure nothing else is accessing this data
-				$All = (Get-FreshAsset -API_Key $API_Key -all).$FreshAssetIDAttr
+				$All = (Get-FreshAsset -API_Key $API_Key -all -pageLimit 3).$FreshAssetIDAttr #page limit of 3 so only 90 most recently updated devices are returned (its way quicker)
 				$All += (Get-ADComputer -SearchBase $DeviceADScope -Filter *).$adAssetIDAttr
 	
 				$max = 0

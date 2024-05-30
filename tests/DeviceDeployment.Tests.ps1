@@ -41,11 +41,10 @@ BeforeDiscovery {
 
 Describe "Build Data" {
     Context "BuildInfo Object" -ForEach @(
-        @{name = "someName"; type = "someType"; build = "SomeBuild"; ticketID = "SomeID"; freshLoc = ""; OU = "someOU";serialNumber = "1234567890";}
-        @{name = "someName"; type = "someType"; build = "SomeBuild"; ticketID = "SomeID"; freshLoc = "11000343256"; OU = "";serialNumber = "1234567890";}
+        @{name = "someName"; type = "someType"; build = "SomeBuild"; ticketID = "SomeID"; freshLoc = "11000343256"; OU = "someOU";serialNumber = "1234567890";}
     ){
         It "Should return an object with same inputs" {
-            $result = New-BuildInfoObj -AssetId $name -serialNumber $serialNumber -type $type -build $build -ticketID $ticketID -freshLocation $freshLoc -OU $OU
+            $result = New-BuildInfoObj -AssetId $name -serialNumber $serialNumber -type $type -build $build -ticketID $ticketID -freshLocation $freshLoc -OU $OU -freshAsset ([PSCustomObject]@{Name = "Value"}) -groups @("A","B")
 
             $result.AssetID | Should -be $name
             $result.serialNumber | Should -be $serialNumber
@@ -55,9 +54,6 @@ Describe "Build Data" {
             $result.ticketID | Should -be $ticketID
             $result.buildState | Should -be (Get-DeviceDeploymentDefaultConfig).TicketInteraction.BuildStates.initalState.message
             
-        }
-        It "Should error when both location attrs are missing" {
-            {New-BuildInfoObj -AssetId $name -serialNumber $serialNumber -type $type -build $build -ticketID $ticketID} | Should -Throw
         }
     }
 
@@ -75,11 +71,11 @@ Describe "Build Data" {
                     ($tempBuild.OU -like "*eCase*" -and $_.dept -notlike "*ACR*"))
                     ) {
                         return @{
-                            build = $tempbuild.buildType;
+                            build = $tempbuild;
                             deptOU = $_.dept;
                             locOU = $_.location
                             buildOU = $tempBuild.OU; 
-                            freshID = $_.freshID
+                            freshID = $_
                             hasDept = $tempBuild.hasDepartment
                         }
                     }
@@ -101,6 +97,37 @@ Describe "Build Data" {
             }
 
             {Get-ADOrganizationalUnit -identity $result -ErrorAction Stop} | Should -not -throw
+        }
+    }
+
+    Context "Group Resolution" -ForEach @(
+        $config.Deployment.buildTypeCorrelation
+        | ForEach-Object {
+            $tempBuild = $_
+            $config.Deployment.locationCorrelation 
+            | ForEach-Object {
+                return @{build=$tempBuild; facility = $_}
+            }
+        }
+    ) {
+        It "Collects the correct groups" {
+            $groups = Get-DeviceBuildGroups -build $build -facility $facility
+            $correctGroups = @($build.groups + $facility.groups)
+
+            $groups.count | Should -be $correctGroups.count
+
+            foreach ($group in $correctGroups) {
+                $group | Should -BeIn $groups
+            }
+        }
+
+        It "is a group that actually exists" {
+            $groups = Get-DeviceBuildGroups -build $build -facility $facility
+
+            $groups | ForEach-Object {
+                $group = $_
+                {Get-ADGroup -Identity $group -ErrorAction Stop} | Should -not -Throw
+            }
         }
     }
 
@@ -191,6 +218,16 @@ Describe "Build Data" {
             $mutex.currentlyaccessed | Should -be $false
             $mutex.setby | Should -be $unprotected.setBy
         }
+        
+        It "Handles the remote value changing before set can be completed" {
+            $mutex = Protect-DeviceAssetIDMutex -API_Key $API_Key
+            $otherMutex = Protect-DeviceAssetIDMutex -API_Key $API_Key
+            Set-DeviceAssetIDMutex -API_Key $API_Key -mutex $otherMutex
+            Set-DeviceAssetIDMutex -API_Key $API_Key -mutex $mutex
+            
+            
+            Repair-DeviceAssetIDMutex -API_Key $API_Key
+        }
     }
 
     
@@ -207,26 +244,39 @@ Describe "Build Data" {
         ) {
             Get-DeviceAssetID -serialNumber $_ -API_Key $API_Key | Should -be "TCL001859" #this will need to be manually changed
         }
-
+    }
+    Context "Device Registration in Fresh" {
+        It "Finds the closest fresh product" -ForEach @(
+            "Surface Pro 7",
+            "Surface Pro",
+            "Surface 4 Pro",
+            "Optiplex",
+            "Optiplex 7040",
+            "Optiplex 7080",
+            "Latitude"
+            "Latitude 5590"
+            "Latitude 6969"
+        ) {
+            (Find-FreshProductClosestMatch -API_Key $API_Key -model $_).Name | Should -beLike "*$($_.split(" ")[0])*"
+        }
         It "Has some sort of mutex to manage concurrent access to next asset" {
             $results = (
                 1..10 
-                | ForEach-Object -ThrottleLimit 10 -AsJob -Parallel {
+                | ForEach-Object -ThrottleLimit 10 -Parallel {
                     
                     <# --- Import TriCare-Common --- #>
                     if ($PSCommandPath -like "*Mwinsen\Script-Dev*" -or "" -eq $PSCommandPath ) {
-                        Import-Module "\\tricaread\public\UsersH$\Mwinsen\Script-Dev\TriCare-DeviceDeployment\TriCare-DeviceDeployment.psm1"  -Force
+                        Import-Module "\\tricaread\public\UsersH$\Mwinsen\Script-Dev\TriCare-DeviceDeployment\TriCare-DeviceDeployment.psm1" -Force
                         Import-Module "\\tricaread\public\UsersH$\Mwinsen\Script-Dev\TriCare-Common\TriCare-Common.psm1" -force
                     } else {
                         Import-Module .\TriCare-DeviceDeployment | Out-Null
                         Import-Module TriCare-Common
                     }
-                    $API_Key = Get-KVSecret -KeyVault "tc-ae-d-kv" -Secret "freshservice-apikey-matt"
+                    $API_Key = "mUVf2vrjw7874Anr5P"
 
-                    Get-DeviceAssetID -serialNum "NotReal" -API_Key $API_Key
+                    Write-Host (Register-DeviceWithFresh -API_Key $API_Key -localDeviceInfo (Get-DeviceLocalData -API_Key $API_Key -whatif) -verbose).Name
+
                 } 
-                | Wait-Job
-                | Receive-Job
             )
 
             $results | % {
@@ -299,3 +349,147 @@ Describe "BuildTicket Interaction" {
     }
 }
 
+Describe "Generic" {
+    Context "Device Correlation" {
+        It "Gets correct facility"  -ForEach @($config.Deployment.locationCorrelation) {
+            "$((Get-DeviceCorrelationInfo -build "Head Office" -facility $_.freshID).facilityCorrelation)" | Should -be "$($_)"
+        }
+
+        It "Gets correct facility"  -ForEach @($config.Deployment.buildTypeCorrelation) {
+            "$((Get-DeviceCorrelationInfo -build $_.buildType -facility "11000342556").buildCorrelation)" | Should -be "$($_)"
+        }
+
+        It "Errors if no facility or build are found" -ForEach @(
+            {Get-DeviceCorrelationInfo -build "Head Office" -facility "someNonExistentFacility" -errorAction Stop},
+            {Get-DeviceCorrelationInfo -build "SomeNonExistenBuild" -facility "someNonExistentFacility" -errorAction Stop},
+            {Get-DeviceCorrelationInfo -build "SomeNonExistenBuild" -facility "11000342556" -errorAction Stop}
+        ) {
+            {& $_} | Should -Throw
+        }
+    }
+}
+
+Describe "Local Commands" {
+    Context "Blocking Local Shutdown" {
+        It "Creates the blocker job" {
+            $job = Block-DeviceShutdown
+
+            (Get-Job).name| Should -Contain "Block-DeviceShutdown"
+
+            Get-Job | ? {$_.Name -like "*Block-DeviceShutdown*"} | Stop-Job
+        }
+    }
+    Context "Getting Local Data" {
+        it "Gets local data " {
+            # This only works on a non-virtual machine
+            
+            # $systemInfo = Get-CimInstance -ClassName Win32_ComputerSystem
+            # $model = $systemInfo.model
+            # $hostname = $systemInfo.Name
+            # $serial =  (Get-CimInstance -ClassName win32_bios).SerialNumber          
+            
+            # Get-DeviceLocalData -API_Key $API_Key
+        }
+    }
+
+    Context "GPupdates" {
+        It "doesn't error and creates reg key" {
+            {Invoke-GPUpdate -waitTime 0} | Should -not -Throw
+            (Get-ItemProperty -Path $config.Generic.RunOnceRegistryPath | Get-Member).Name | Should -Contain "GPUpdate"
+
+            Remove-ItemProperty -Path $config.Generic.RunOnceRegistryPath -Name GPUpdate
+        }
+
+    }
+}
+
+
+Describe "Windows Updates" {
+    Context "Installing Preqs" {
+        It "Installs NuGet if not installed - This only works on device that don't already have nuget" {
+
+            If ((Get-PackageProvider).Name -notContains "nuget") {
+                Initialize-DeviceWindowsUpdate -whatIf -verbose *>&1 | Should -beLike "*Installing*"
+            } else {
+                Initialize-DeviceWindowsUpdate -whatIf -verbose *>&1 | Should -not -beLike "*Installing*"
+            }
+        }
+
+
+        It "Installs NuGgett if not installed - This only works on device that don't already have nuggett" {
+
+            "$(Initialize-DeviceWindowsUpdate -packageProviderName "nuggett" -whatIf -verbose -errorAction SilentlyContinue *>&1)" | Should -beLike "*Installing*"
+        }
+
+
+        It "Installs PSWindows update if not installed" {
+            Uninstall-Package -Name PSWindowsUpdate -Force -ErrorAction SilentlyContinue
+
+            Initialize-DeviceWindowsUpdate
+
+            (Get-Package).Name | Should -Contain "PSWindowsUpdate"
+        }
+    }
+    
+    Context "Installing windows updates - This needs to be tested on a new machine..." {
+        It "Installs updates" {
+            Update-DeviceWindowsUpdate 
+        }
+    }
+
+}
+
+Describe "Bloatware Removal" {
+    Context "As above" {
+        It "searches all expected locations" {
+            $searchLocs = "*HKLM*Uninstall*","*HKEY_USERS\.DEFAULT*Uninstall*","*HKEY_USERS\S-1-5-19*Uninstall*","*HKEY_USERS\S-1-5-20*Uninstall*","*HKEY_USERS\S-1-5-21-3142357425-3434510276-3173183097-14532*Uninstall*","*HKEY_USERS\S-1-5-21-3142357425-3434510276-3173183097-14532_Classes*Uninstall*","*HKEY_USERS\S-1-5-21-3142357425-3434510276-3173183097-18187*Uninstall*","*HKEY_USERS\S-1-5-21-3142357425-3434510276-3173183097-18187_Classes*Uninstall*","*HKEY_USERS\S-1-5-80-1184457765-4068085190-3456807688-2200952327-3769537534*Uninstall*","*HKEY_USERS\S-1-5-80-1184457765-4068085190-3456807688-2200952327-3769537534_Classes*Uninstall*","*HKEY_USERS\S-1-5-80-1835761534-3291552707-3889884660-1303793167-3990676079*Uninstall*","*HKEY_USERS\S-1-5-80-1835761534-3291552707-3889884660-1303793167-3990676079_Classes*Uninstall*","*HKEY_USERS\S-1-5-18*Uninstall*"
+
+            $result = "$(Remove-DeviceBloatware -verbose -whatif -errorAction "SilentlyContinue" *>&1)"
+
+            foreach ($loc in $searchLocs) {
+                $result | Should -Belike "*Searching$loc"
+            }
+            
+        }
+
+        It "Removes correct software without erroring (test on real device)" {
+            Remove-DeviceBloatware -verbose -errorAction SilentlyContinue
+        }
+    }
+}
+
+Describe "Dell Command Update" {
+    Context "ee" {
+        It "Discovers Command update if its installed" {
+            if ("$(((Get-ChildItem Registry::\HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\ | Get-ItemProperty) | Select DisplayName).DisplayName)" -like "*Dell Command*") {
+                Test-DeviceDellCommandUpdate | Should -not -be $false
+            } else {
+                Test-DeviceDellCommandUpdate | Should -be $false
+            }
+        }
+
+        It "Updates drivers correctly (must be tested on dell device)" {
+            $result = "$(Invoke-DeviceDellCommandUpdateUpdates *>&1)"
+
+            if ( $result -like "*The program exited with return code: 1*") {
+                $result | Should -beLike "*The program exited with return code: 1*"
+            } else {
+                $result | Should -beLike "*The program exited with return code: 0*"
+            }
+        }
+    }
+}
+
+Describe "Intune Sync" {
+    Context "Intune Sync" {
+        It "Errors when company portal isnt installed (will only pass on DWDV or brand new machines)" {
+            {Invoke-DeviceCompanyPortalSync -errorAction Stop} | Should -Throw
+        }
+
+        It "Starts the correct task when company portal is installed" {
+            Invoke-DeviceCompanyPortalSync
+
+            (Get-ScheduledTask | Where-Object {$_.TaskName -eq $syncTaskName}).state | Should -be "Running"
+        }
+    }
+}

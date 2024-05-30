@@ -1,25 +1,27 @@
 function Invoke-GPUpdate {
 	[CmdletBinding(SupportsShouldProcess = $true)]
 	param (
-		[string]$runRegistryPath = $DeviceDeploymentDefaultConfig.Generic.RunOnceRegistryPath
+		[string]$runRegistryPath = $DeviceDeploymentDefaultConfig.Generic.RunOnceRegistryPath,
+
+		[int]$waitTime = 60
 	)
 
 	begin {
 		$errorList = @()
 	}
 	process {
-		if ($PSCmdlet.ShouldProcess($identity)) {
-			try {
+		try {
+			if ($PSCmdlet.ShouldProcess("$(hostname)")) {
 				#run gpupdate and wait up to a minute before moving on
-				gpupdate /force /wait 60
-				
-				#schedule GPupdates to run again on first login (just to be sure)
-				New-ItemProperty -Name "GPUpdate" -Path $runRegistryPath -Value "gpupdate /force /wait 0" -Force
+				gpupdate /force /wait:$waitTime
 			}
-			catch {
-				$errorList += $_
-				Write-Error $_
-			}
+			
+			#schedule GPupdates to run again on first login (just to be sure)
+			New-ItemProperty -Name "GPUpdate" -Path $runRegistryPath -Value "gpupdate /force /wait:0" -Force -WhatIf:$WhatIfPreference
+		}
+		catch {
+			$errorList += $_
+			Write-Error $_
 		}
 	}
 	end {

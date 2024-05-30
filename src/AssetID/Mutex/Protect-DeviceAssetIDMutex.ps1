@@ -11,7 +11,7 @@ function Protect-DeviceAssetIDMutex {
 		$timeoutValue = $DeviceDeploymentDefaultConfig.AssetID.MutexTimeoutSeconds,
 
 		[Parameter()]
-		$UID = "$(hostname)-$((Get-Date).ToFileTime())",
+		$UID = "$(hostname)-$((Get-Date -format "yyyy-MM-dd-hh-ss-fffffff"))",
 
 		[Parameter()]
 		$resetValue = $DeviceDeploymentDefaultConfig.AssetID.resetValue
@@ -27,7 +27,7 @@ function Protect-DeviceAssetIDMutex {
 					Write-Error "Protecting Mutex has timed out.`n$mutex" -ErrorAction Stop
 				}
 
-				$mutex = Wait-DeviceAssetIDMutex -API_Key $API_Key
+				$mutex = Wait-DeviceAssetIDMutex -API_Key $API_Key -Verbose:$VerbosePreference
 				if (-not $mutex.CurrentlyAccessed) {
 					$mutex.currentlyaccessed = $true
 					$mutex.setby = $UID
@@ -39,7 +39,7 @@ function Protect-DeviceAssetIDMutex {
 						return $mutex
 					} else {
 						Start-Sleep -Seconds 1
-						return Protect-DeviceAssetIDMutex -API_Key $API_Key -recursionCounter ($recursionCounter + 1)
+						return Protect-DeviceAssetIDMutex -API_Key $API_Key -recursionCounter ($recursionCounter + 1)  -Verbose:$VerbosePreference
 					}
 				}
 			}
