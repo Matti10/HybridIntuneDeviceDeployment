@@ -19,13 +19,15 @@ function New-BuildInfoObj {
 		[Parameter(Mandatory)]
 		$freshAsset,
 
-		[Parameter()]
+		[Parameter(Mandatory)]
 		[string]$OU = "",
+
+		[Parameter(Mandatory)]
+		[string[]]$groups,
 
 		[Parameter()]
 		[string]$freshLocation = "",
 
-		
 		[Parameter()]
 		[string]$buildState = $DeviceDeploymentDefaultConfig.TicketInteraction.BuildStates.initalState.message
 	)
@@ -36,26 +38,13 @@ function New-BuildInfoObj {
 	process {
 		if ($PSCmdlet.ShouldProcess($AssetID)) {
 			try {
-
-				if ($OU -eq "") {
-					if ($freshLocation -ne "") {
-						$OU = Get-DeviceBuildOU -build $build -facility $freshLocation
-					}
-					else {
-						Write-Error "OU & freshLocation are both empty, please provide data for one of these paramaters" -ErrorAction stop
-					}
-				}
-
-				if ($serialNumber -eq "") {
-					#TODO - Get-FreshAssetSerialNUmber?
-				}
-
 				return [PSCustomObject]@{
 					AssetID      = $AssetID
 					serialNumber = $serialNumber
 					type         = $type
 					build        = $build
 					OU           = $OU
+					groups       = $groups
 					ticketID     = $ticketID
 					buildState   = $buildState
 					freshAsset   = $freshAsset

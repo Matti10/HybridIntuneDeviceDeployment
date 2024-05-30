@@ -1,17 +1,15 @@
 function Block-DeviceShutdown {
 	[CmdletBinding(SupportsShouldProcess = $true)]
 	param (
-		[Parameter(Mandatory)]
-		$API_Key
 	)
 
 	begin {
 		$errorList = @()
 	}
 	process {
-		if ($PSCmdlet.ShouldProcess($identity)) {
-			# ---------------------------------------------- Start Job to Cancel pending shutdowns ----------------------------------------------
-			return Start-Job -ScriptBlock {
+		if ($PSCmdlet.ShouldProcess("$(hostname)")) {
+			# Start Job to Cancel pending shutdowns 
+			return Start-Job -Name "Block-DeviceShutdown" -ScriptBlock {
 				Start-Transcript -Path "C:\Intune_Setup\Logs\$fileName-$timestamp-ShutdownListener.txt"
 				while ($true)
 				{

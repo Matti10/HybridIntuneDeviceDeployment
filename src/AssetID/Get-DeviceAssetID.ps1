@@ -8,7 +8,7 @@ function Get-DeviceAssetID {
 		[string]$API_Key,
 
 		[Parameter()]
-		[string]$FreshAssetIDAttr = $DeviceDeploymentDefaultConfig.AssetIDInfo.freshAssetIDAttr
+		[string]$FreshAssetIDAttr = $DeviceDeploymentDefaultConfig.AssetID.freshAssetIDAttr
 
 
 	)
@@ -31,7 +31,7 @@ function Get-DeviceAssetID {
 					}
 
 				} catch {
-					$AssetID = Get-NextAssetID -API_Key $API_Key -ErrorAction SilentlyContinue
+					$AssetID = Get-NextAssetID -API_Key $API_Key -ErrorAction SilentlyContinue -whatif:$WhatIfPreference
 					
 				}
 				

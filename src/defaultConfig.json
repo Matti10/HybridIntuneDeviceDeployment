@@ -5,18 +5,17 @@
 		"RunRegistryPath": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run",
 		"RunOnceRegistryPath": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\RunOnce"
 	},
-	"AssetID" :{
+	"AssetID": {
 		"freshAssetIDAttr": "name",
 		"adAssetIDAttr": "name",
 		"AssetIDPrefix": "TCL0",
 		"AssetIDLength": 9,
-		"MutexFreshObjectID" : "11000002068",
-		"MutexFreshObjectRecordID" : "2",
-		"MutexTimeoutSeconds" : 200,
-		"AccessedValue" : 1,
-		"NotAccessedValue" : 0,
-		"resetValue" : "null"
-
+		"MutexFreshObjectID": "11000002068",
+		"MutexFreshObjectRecordID": "2",
+		"MutexTimeoutSeconds": 200,
+		"AccessedValue": 1,
+		"NotAccessedValue": 0,
+		"resetValue": "null"
 	},
 	"TicketInteraction": {
 		"BuildStates": {
@@ -62,175 +61,331 @@
 			{
 				"buildtype": "Head Office",
 				"OU": "",
-				"hasDepartment": false
+				"hasDepartment": false,
+				"Groups": [
+					"UR HO Device Group",
+					"Intune_Operational_Devices"
+				]
 			},
 			{
 				"buildtype": "Facility Management/Operations",
 				"OU": "OU=Operational Device",
-				"hasDepartment": true
+				"hasDepartment": true,
+				"Groups": [
+					"UR Sites Device Group",
+					"Intune_Operational_Devices"
+				]
 			},
 			{
 				"buildtype": "eCase",
 				"OU": "OU=eCase",
-				"hasDepartment": false
+				"hasDepartment": false,
+				"Groups": [
+					"Intune_eCase_Devices",
+					"UR Ecase Device Group"
+				]
 			},
 			{
 				"buildtype": "iAuditor",
 				"OU": "OU=iAuditor,OU=Operational Device",
-				"hasDepartment": false
+				"hasDepartment": false,
+				"Groups": [
+					"iAuditorDevices",
+					"UR Sites Device Group"
+				]
 			},
 			{
 				"buildtype": "Litmos/Training",
 				"OU": "OU=Litmos",
-				"hasDepartment": false
+				"hasDepartment": false,
+				"Groups": [
+					"UR Ecase Device Group"
+				]
 			},
 			{
 				"buildtype": "CCTV",
 				"OU": "OU=CCTV Clients,OU=Unattended Computers",
-				"hasDepartment": true
+				"hasDepartment": true,
+				"Groups": [
+					"UR Sites Device Group"
+				]
 			},
 			{
 				"buildtype": "Meeting Room Kiosk",
 				"OU": "OU=Meeting Room Computers,OU=Unattended Computers",
-				"hasDepartment": true
+				"hasDepartment": true,
+				"Groups": [
+					"UR Sites Device Group"
+				]
 			}
 		],
 		"locationCorrelation": [
 			{
 				"freshID": "11000273215",
 				"location": "OU=Head Office",
-				"dept": ""
+				"dept": "",
+				"Groups": [
+					"Intune TimeZone UTC10"
+				]
 			},
 			{
 				"freshID": "11000343256",
 				"location": "OU=ASHG",
-				"dept": "OU=ACR"
+				"dept": "OU=ACR",
+				"Groups": [
+					"Intune TimeZone UTC10"
+				]
 			},
 			{
 				"freshID": "11000273216",
 				"location": "OU=ANNE",
-				"dept": "OU=ACR"
+				"dept": "OU=ACR",
+				"Groups": [
+					"Intune TimeZone UTC10"
+				]
 			},
 			{
 				"freshID": "11000273220",
 				"location": "OU=BAYV",
-				"dept": "OU=ACR"
+				"dept": "OU=ACR",
+				"Groups": [
+					"Intune TimeZone UTC10"
+				]
 			},
 			{
 				"freshID": "11000342556",
 				"location": "OU=BUND",
-				"dept": "OU=ACR"
+				"dept": "OU=ACR",
+				"Groups": [
+					"Intune TimeZone UTC10"
+				]
 			},
 			{
 				"freshID": "11000342557",
 				"location": "OU=CYPR",
-				"dept": "OU=ACR"
+				"dept": "OU=ACR",
+				"Groups": [
+					"Intune TimeZone UTC10"
+				]
 			},
 			{
 				"freshID": "11000342559",
 				"location": "OU=KAWA",
-				"dept": "OU=ACR"
+				"dept": "OU=ACR",
+				"Groups": [
+					"Intune TimeZone UTC10"
+				]
 			},
 			{
 				"freshID": "11000342558",
 				"location": "OU=JIND",
-				"dept": "OU=ACR"
+				"dept": "OU=ACR",
+				"Groups": [
+					"Intune TimeZone UTC10"
+				]
 			},
 			{
 				"freshID": "11000342560",
 				"location": "OU=LABR",
-				"dept": "OU=ACR"
+				"dept": "OU=ACR",
+				"Groups": [
+					"Intune TimeZone UTC10"
+				]
 			},
 			{
 				"freshID": "11000342561",
 				"location": "OU=MERM",
-				"dept": "OU=ACR"
+				"dept": "OU=ACR",
+				"Groups": [
+					"Intune TimeZone UTC10"
+				]
 			},
 			{
 				"freshID": "11000342562",
 				"location": "OU=MTGR",
-				"dept": "OU=ACR"
+				"dept": "OU=ACR",
+				"Groups": [
+					"Intune TimeZone UTC10"
+				]
 			},
 			{
 				"freshID": "11000342563",
 				"location": "OU=PIMP",
-				"dept": "OU=ACR"
+				"dept": "OU=ACR",
+				"Groups": [
+					"Intune TimeZone UTC10"
+				]
 			},
 			{
 				"freshID": "11000342564",
 				"location": "OU=PTVN",
-				"dept": "OU=ACR"
+				"dept": "OU=ACR",
+				"Groups": [
+					"Intune TimeZone UTC10"
+				]
 			},
 			{
 				"freshID": "11000342565",
 				"location": "OU=STAFF",
-				"dept": "OU=ACR"
+				"dept": "OU=ACR",
+				"Groups": [
+					"Intune TimeZone UTC10"
+				]
 			},
 			{
 				"freshID": "11000342566",
 				"location": "OU=SUBH",
-				"dept": "OU=ACR"
+				"dept": "OU=ACR",
+				"Groups": [
+					"Intune TimeZone UTC10"
+				]
 			},
 			{
 				"freshID": "11000342567",
 				"location": "OU=TOOW",
-				"dept": "OU=ACR"
+				"dept": "OU=ACR",
+				"Groups": [
+					"Intune TimeZone UTC10"
+				]
 			},
 			{
 				"freshID": "11000342568",
 				"location": "OU=UMGR",
-				"dept": "OU=ACR"
+				"dept": "OU=ACR",
+				"Groups": [
+					"Intune TimeZone UTC10"
+				]
 			},
 			{
 				"freshID": "11000343257",
 				"location": "OU=WLAC",
-				"dept": "OU=ACR"
+				"dept": "OU=ACR",
+				"Groups": [
+					"Intune TimeZone UTC10 DST"
+				]
 			},
 			{
 				"freshID": "11000342569",
 				"location": "OU=COMP",
-				"dept": "OU=RC"
+				"dept": "OU=RC",
+				"Groups": [
+					"Intune TimeZone UTC10"
+				]
 			},
 			{
 				"freshID": "11000342570",
 				"location": "OU=CYPR",
-				"dept": "OU=RC"
+				"dept": "OU=RC",
+				"Groups": [
+					"Intune TimeZone UTC10"
+				]
 			},
 			{
 				"freshID": "11000342571",
 				"location": "OU=HAST",
-				"dept": "OU=RC"
+				"dept": "OU=RC",
+				"Groups": [
+					"Intune TimeZone UTC10 DST"
+				]
 			},
 			{
 				"freshID": "11000273221",
 				"location": "OU=HAVL",
-				"dept": "OU=RC"
+				"dept": "OU=RC",
+				"Groups": [
+					"Intune TimeZone UTC10 DST"
+				]
 			},
 			{
 				"freshID": "11000342572",
 				"location": "OU=JOV",
-				"dept": "OU=RC"
+				"dept": "OU=RC",
+				"Groups": [
+					"Intune TimeZone UTC10"
+				]
 			},
 			{
 				"freshID": "11000342573",
 				"location": "OU=MTGR",
-				"dept": "OU=RC"
+				"dept": "OU=RC",
+				"Groups": [
+					"Intune TimeZone UTC10"
+				]
 			},
 			{
 				"freshID": "11000342574",
 				"location": "OU=RUN",
-				"dept": "OU=RC"
+				"dept": "OU=RC",
+				"Groups": [
+					"Intune TimeZone UTC10"
+				]
 			},
 			{
 				"freshID": "11000342575",
 				"location": "OU=STAF",
-				"dept": "OU=RC"
+				"dept": "OU=RC",
+				"Groups": [
+					"Intune TimeZone UTC10"
+				]
 			},
 			{
 				"freshID": "11000342576",
 				"location": "OU=WILL",
-				"dept": "OU=RC"
+				"dept": "OU=RC",
+				"Groups": [
+					"Intune TimeZone UTC10 DST"
+				]
 			}
 		]
+	},
+	"WindowsUpdate" : {
+		"packageProviderName" : "NuGet",
+		"packageProviderMinVersion" : 3,
+		"packageName" : "PSWindowsUpdate",
+		"packageMinVersion" : 2
+	},
+	"DellCommandUpdate" : {
+		"installLocations" : [
+			"C:\\Program Files\\Dell\\CommandUpdate\\dcu-cli.exe",
+			"C:\\Program Files(x86)\\Dell\\CommandUpdate\\dcu-cli.exe"
+		]
+	},
+	"Bloatware" : {
+		"quietUninstallAttr" : "QuietUninstallString",
+		"loudUninstallAttr" : "UninstallString",
+		"registryLocations" : [
+			"\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall",
+			"\\SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall"
+		],
+		"softwareToRemove" : [
+			{
+				"searchAttr" : "DisplayName",
+				"searchString" : "*Teams*",
+				"AddtnUninstallArgs" : null
+			},
+			{
+				"searchAttr" : "DisplayName",
+				"searchString" : "*OneNote*",
+				"AddtnUninstallArgs" : null
+			},
+			{
+				"searchAttr" : "DisplayName",
+				"searchString" : "*Microsoft 365*th",
+				"AddtnUninstallArgs" : null
+			},
+			{
+				"searchAttr" : "DisplayName",
+				"searchString" : "*Microsoft 365*zh",
+				"AddtnUninstallArgs" : null
+			},
+			{
+				"searchAttr" : "DisplayName",
+				"searchString" : "*Microsoft 365*ko",
+				"AddtnUninstallArgs" : null
+			}
+		]
+	},
+	"CompanyPortalSync" : {
+		"syncTaskName" : "PushLaunch"
 	}
 }

@@ -1,24 +1,16 @@
-function Set-DeviceAssetID {
+function Update-DeviceWindowsUpdate {
 	[CmdletBinding(SupportsShouldProcess = $true)]
 	param (
-		[Parameter(Mandatory,ValueFromPipeline)]
-		[Object]$buildInfo,
-
-		[Parameter(Mandatory)]
-		[string]$API_Key
-
+	
 	)
 
 	begin {
 		$errorList = @()
 	}
 	process {
-		if ($PSCmdlet.ShouldProcess($serialNumber)) {
+		if ($PSCmdlet.ShouldProcess("$(hostname)")) {
 			try {
-				Protect-DeviceAssetIDMutex -API_Key $API_Key
-
-				$AssetID = Get-DeviceAssetID
-
+				Install-WindowsUpdate -Install -IgnoreReboot -AcceptAll -recurseCycle 2 -verbose:$VerbosePreference
 			}
 			catch {
 				$errorList += $_

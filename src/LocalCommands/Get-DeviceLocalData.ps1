@@ -9,32 +9,35 @@ function Get-DeviceLocalData {
 		$errorList = @()
 	}
 	process {
-		if ($PSCmdlet.ShouldProcess($identity)) {
-			try {
+		try {
+			if ($PSCmdlet.ShouldProcess("The current device")) {
 				$systemInfo = Get-CimInstance -ClassName Win32_ComputerSystem
-				
-				$freshProduct = Find-FreshProductClosestMatch -model $systemInfo.model -API_Key $API_Key
-
-				$type = Get-FreshAssetTypes -API_Key $API_Key
-				| Where-Object {$_.ID -eq $freshProduct.asset_type_id}
-
-				
-				return @{
-					hostname = $systemInfo.Name
-					serialNumber = (Get-WmiObject win32_bios).SerialNumber
-					model = $systemInfo.Model
-					type = $type
-				}
+				$model = $systemInfo.model
+				$hostname = $systemInfo.Name
+				$serial =  (Get-CimInstance -ClassName win32_bios).SerialNumber
+			} else {
+				$model = "Surface"
+				$hostname = "SomeTestHostName"
+				$serial =  "SomeTestSerial"
 			}
-			catch {
-				$errorList += $_
-				Write-Error $_
-			}
-		} else {
+
+			$freshProduct = Find-FreshProductClosestMatch -model $model -API_Key $API_Key
+
+			$type = Get-FreshAssetTypes -API_Key $API_Key
+			| Where-Object {$_.ID -eq $freshProduct.asset_type_id}
+
 			return @{
-				hostname = "SomeTestHostName"
-				serialNumber = "SomeTestSerial"
+				hostname = $hostname
+				serialNumber = $serial
+				model = $freshProduct.Name
+				type = $type.Name
 			}
+
+		
+		}
+		catch {
+			$errorList += $_
+			Write-Error $_
 		}
 	}
 	end {

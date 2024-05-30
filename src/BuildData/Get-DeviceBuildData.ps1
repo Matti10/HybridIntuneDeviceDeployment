@@ -60,7 +60,13 @@ function Get-DeviceBuildData {
 
 				$buildDetails = (Get-FreshTicketsRequestedItems -API_Key $API_Key -ticketID $buildTicketID).custom_fields
 
-				return New-BuildInfoObj -AssetId $identity -serialNumber $serialNumber -type $buildDetails.device_type_requested -build $buildDetails.hardware_use_build_type -freshLocation $buildDetails.facility[0] -ticketID $buildTicketID -freshAsset $freshAsset
+				# Get OU and Groups from Correlation
+				$corrInfo = Find-DeviceCorrelationInfo -build $buildDetails.hardware_use_build_type -facility $buildDetails.facility[0]
+
+				$groups = Get-DeviceBuildGroups -build $corrInfo.buildCorrelation -facility $corrInfo.facilityCorrelation
+				$OU = Get-DeviceBuildOU -build $corrInfo.buildCorrelation -facility $corrInfo.facilityCorrelation
+
+				return New-BuildInfoObj -AssetId $identity -serialNumber $serialNumber -type $buildDetails.device_type_requested -build $buildDetails.hardware_use_build_type -freshLocation $buildDetails.facility[0] -ticketID $buildTicketID -freshAsset $freshAsset -OU $OU -groups $groups
 
 			}
 			catch {

@@ -20,6 +20,7 @@ function Wait-DeviceAssetIDMutex {
 						Write-Error -Message "Testing Mutex has timed out `n $mutex" -ErrorAction Stop
 					}
 
+					Write-Verbose "Waiting on Mutex"
 					Start-Sleep -Seconds 1
 					$count += 1
 				} 
