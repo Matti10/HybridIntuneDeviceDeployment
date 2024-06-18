@@ -1,7 +1,3 @@
-try {
-	if ($PSCmdlet.ShouldProcess("$(hostname)")) {
 
-	}
-} catch {
 
-}
+Write-Debug "BuildProcess Execution Started"
