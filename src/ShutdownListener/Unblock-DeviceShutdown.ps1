@@ -1,16 +1,17 @@
-function Invoke-DeviceADCommands {
+function Unblock-DeviceShutdown {
 	[CmdletBinding(SupportsShouldProcess = $true)]
 	param (
-		[Parameter(Mandatory)]
-		$buildData
+		[Parameter()]
+		[string]$jobName = $DeviceDeploymentDefaultConfig.shutdownListener.jobName
 	)
 
 	begin {
 		$errorList = @()
 	}
 	process {
-		if ($PSCmdlet.ShouldProcess($identity)) {
-			throw "Not implemented ##TODO"
+		if ($PSCmdlet.ShouldProcess("$(hostname)")) {
+			# stop the shutdown blocker job
+			Get-Job -Name $jobName | Stop-Job
 		}
 	}
 	end {

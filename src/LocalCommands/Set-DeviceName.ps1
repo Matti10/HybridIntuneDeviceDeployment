@@ -14,7 +14,7 @@ function Set-DeviceName {
 	process {
 		if ($PSCmdlet.ShouldProcess($AssetID)) {
 			try {
-				Rename-Computer -NewName $AssetID -Confirm:$false -WhatIf:$WhatIfPreference -Verbose:$VerbosePreference
+				Rename-Computer -NewName $AssetID -Confirm:$false -WhatIf:$WhatIfPreference -Verbose:$VerbosePreference -Force
 			}
 			catch {
 				$errorList += $_

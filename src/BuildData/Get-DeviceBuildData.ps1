@@ -2,10 +2,7 @@ function Get-DeviceBuildData {
 	[CmdletBinding(SupportsShouldProcess = $true)]
 	param (
 		[Parameter(ValueFromPipeline)]
-		[string]$identity = "",
-
-		[Parameter()]
-		[string]$serialNumber = "",
+		$freshAsset,
 
 		[Parameter(Mandatory)]
 		[string]$API_Key
@@ -15,22 +12,8 @@ function Get-DeviceBuildData {
 		$errorList = @()
 	}
 	process {
-		if ($PSCmdlet.ShouldProcess($identity)) {
+		if ($PSCmdlet.ShouldProcess($freshAsset.Name)) {
 			try {
-				#get devices tickets
-				if ($serialNumber -ne "") {
-					$freshAsset = Get-FreshAsset -API_Key $API_Key -serialNum $serialNumber -ErrorAction SilentlyContinue
-					$identity = $freshAsset.Name
-				}
-				elseif ($identity -ne "") {
-					$freshAsset = Get-FreshAsset -API_Key $API_Key -name $identity -ErrorAction SilentlyContinue
-					$serialNumber = $freshAsset.serialNumber
-				}
-				else {
-					#input validations
-					Write-Error -Message "Identity and Serial Number paramaters are null, please provide a value" -ErrorAction Stop
-				}
-				
 				$buildTickets = $freshAsset | Get-FreshAssetsTickets -API_Key $API_Key -ErrorAction SilentlyContinue
 				
 				# filter non build tickets out
@@ -50,7 +33,7 @@ function Get-DeviceBuildData {
 				}
 
 				if ($null -eq $buildTickets) {
-					Write-Error "$identity has no built tickets associated with it"
+					Write-Error "$($FreshAsset.Name) has no built tickets associated with it"
 					return $null
 				}
 
@@ -66,7 +49,7 @@ function Get-DeviceBuildData {
 				$groups = Get-DeviceBuildGroups -build $corrInfo.buildCorrelation -facility $corrInfo.facilityCorrelation
 				$OU = Get-DeviceBuildOU -build $corrInfo.buildCorrelation -facility $corrInfo.facilityCorrelation
 
-				return New-BuildInfoObj -AssetId $identity -serialNumber $serialNumber -type $buildDetails.device_type_requested -build $buildDetails.hardware_use_build_type -freshLocation $buildDetails.facility[0] -ticketID $buildTicketID -freshAsset $freshAsset -OU $OU -groups $groups
+				return New-BuildInfoObj -AssetId $FreshAsset.Name -serialNumber $freshAsset.type_fields.(Get-FreshAssetTypeFieldName -field "serial" -freshAsset $freshAsset) -type $buildDetails.device_type_requested -build $buildDetails.hardware_use_build_type -freshLocation $buildDetails.facility[0] -ticketID $buildTicketID -freshAsset $freshAsset -OU $OU -groups $groups
 
 			}
 			catch {

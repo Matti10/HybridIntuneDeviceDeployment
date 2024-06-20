@@ -1,4 +1,8 @@
-
+BeforeDiscovery {
+    if ($PSVersionTable.PSVersion.Major -ne "5") {
+        throw "System MUST run on powershell 5, please switch"
+    }
+}
 BeforeAll {
     Set-StrictMode -Version 2.0
 
@@ -52,17 +56,15 @@ Describe "Build Data" {
             $result.build | Should -be $build
             $result.OU | Should -beLike "*OU*"
             $result.ticketID | Should -be $ticketID
-            $result.buildState | Should -be (Get-DeviceDeploymentDefaultConfig).TicketInteraction.BuildStates.initalState.message
+            $result.buildState | Should -be (Get-DeviceDeploymentDefaultConfig).TicketInteraction.BuildStates.initialState.message
             
         }
     }
 
     Context "OU Resolution" -ForEach @(
-        $config.Deployment.buildTypeCorrelation
-        | ForEach-Object {
+        $config.Deployment.buildTypeCorrelation | ForEach-Object {
             $tempBuild = $_
-            $config.Deployment.locationCorrelation
-            | ForEach-Object {
+            $config.Deployment.locationCorrelation | ForEach-Object {
                 if (
                     !(($tempBuild.OU -like "*iAuditor*" -and $_.dept -notlike "*ACR*") -or
                     ($tempBuild.OU -like "*Litmos*" -and $_.dept -notlike "*ACR*") -or
@@ -101,11 +103,9 @@ Describe "Build Data" {
     }
 
     Context "Group Resolution" -ForEach @(
-        $config.Deployment.buildTypeCorrelation
-        | ForEach-Object {
+        $config.Deployment.buildTypeCorrelation | ForEach-Object {
             $tempBuild = $_
-            $config.Deployment.locationCorrelation 
-            | ForEach-Object {
+            $config.Deployment.locationCorrelation | ForEach-Object {
                 return @{build=$tempBuild; facility = $_}
             }
         }
@@ -131,29 +131,25 @@ Describe "Build Data" {
         }
     }
 
+    
     Context "Getting Build Data from Fresh" {
-        It "It errors when devices don't exist in fresh" {
-            {Get-DeviceBuildData -identity "garbage" -API_Key $API_Key -ErrorAction stop} | Should -throw
-            {Get-DeviceBuildData -serialNumber "garbage" -API_Key $API_Key -ErrorAction stop} | Should -throw
-            {Get-DeviceBuildData -API_Key $API_Key -ErrorAction stop} | Should -throw
-        }
-
+    
         It "Returns null or errors (depending on erroraction) when a device has no build tickets" -ForEach @(
-            "TCM150",
-            "TCM142",
-            "TCM143",
-            "TCM147",
-            "TCM148"
+            (Get-FreshAsset -name "TCM0150" -API_Key $API_Key),
+            (Get-FreshAsset -name "TCM0142" -API_Key $API_Key),
+            (Get-FreshAsset -name "TCM0143" -API_Key $API_Key),
+            (Get-FreshAsset -name "TCM0147" -API_Key $API_Key),
+            (Get-FreshAsset -name "TCM0148" -API_Key $API_Key)
         ) {
-            Get-DeviceBuildData -identity $_ -API_Key $API_Key -ErrorAction SilentlyContinue | Should -BeNullOrEmpty
+            Get-DeviceBuildData -FreshAsset $_ -API_Key $API_Key -ErrorAction SilentlyContinue | Should -BeNullOrEmpty
 
-            {Get-DeviceBuildData -identity $_ -API_Key $API_Key -ErrorAction Stop} | Should -Throw
+            {Get-DeviceBuildData -FreshAsset $_ -API_Key $API_Key -ErrorAction Stop} | Should -Throw
         }
 
         It "Gets the newest of many build tickets, and only build tickets" -ForEach @(
-            @{Identity = "TCL000845"; correctTicket = "100900"}
+            @{Identity = Get-FreshAsset -name "TCL000845" -API_Key $API_Key; correctTicket = "100900"}
         ) {
-            (Get-DeviceBuildData -identity $identity -API_Key $API_Key).ticketID | Should -be $correctTicket
+            (Get-DeviceBuildData -FreshAsset $identity -API_Key $API_Key).ticketID | Should -be $correctTicket
         }
 
         It "Gets Correct Info for Devices" -ForEach @(
@@ -166,14 +162,14 @@ Describe "Build Data" {
             (Get-FreshAsset -API_Key $API_Key -name TCL001242),
             (Get-FreshAsset -API_Key $API_Key -name TCL001650)
         ) {
-            $result = Get-DeviceBuildData -identity $_.name -API_Key $API_Key
+            $result = Get-DeviceBuildData -FreshAsset $_ -API_Key $API_Key
 
             $result.AssetID | Should -be $_.Name
             $result.type | Should -not -BeNullOrEmpty
             "$($config.Deployment.buildTypeCorrelation.buildType)" | Should -beLike "*$($result.build)*"
             $result.OU | Should -beLike "*OU=*OU=*"
             Get-FreshTicketsRequestedItems -ErrorAction stop -ticketID $result.ticketID -API_Key $API_Key | Should -not -BeNullOrEmpty
-            $result.buildState | Should -be $config.TicketInteraction.BuildStates.initalState.message
+            $result.buildState | Should -be $config.TicketInteraction.BuildStates.initialState.message
         }
         
     }
@@ -261,8 +257,7 @@ Describe "Build Data" {
         }
         It "Has some sort of mutex to manage concurrent access to next asset" {
             $results = (
-                1..10 
-                | ForEach-Object -ThrottleLimit 10 -Parallel {
+                1..10 | ForEach-Object -ThrottleLimit 10 -Parallel {
                     
                     <# --- Import TriCare-Common --- #>
                     if ($PSCommandPath -like "*Mwinsen\Script-Dev*" -or "" -eq $PSCommandPath ) {
@@ -287,27 +282,24 @@ Describe "Build Data" {
     }
 }
 Describe "BuildTicket Interaction" {
+    
     Context "Creating Progress Notes" {
         It "Outputs correct HTML" -ForEach @(
-            "TCL000845"
+            (Get-FreshAsset -name "TCL000845" -API_Key $API_Key)
         ) {
             New-Item -Name "BuildNoteHTML.html" -Path "\\tricaread\public\UsersH$\Mwinsen\Script-Dev\TriCare-DeviceDeployment\tests" -Force -Value (
-                $_
-                | Get-DeviceBuildData -API_Key $API_Key
-                | Write-DeviceBuildTicket -whatif -API_Key $API_Key -Message "This is some test message"
+                $_ | Get-DeviceBuildData -API_Key $API_Key | Write-DeviceBuildTicket -whatif -API_Key $API_Key -Message "This is some test message"
             )
         }
 
         It "Creates a note" -ForEach @(
-            "TCL000845"
+            (Get-FreshAsset -name "TCL000845" -API_Key $API_Key)
         ) {
-            $_
-            | Get-DeviceBuildData -API_Key $API_Key
-            | Write-DeviceBuildTicket -API_Key $API_Key -message "Test Test eTHGSDKJFHDSGJFSGDKHJFHF"
+            $_ | Get-DeviceBuildData -API_Key $API_Key | Write-DeviceBuildTicket -API_Key $API_Key -message "Test Test eTHGSDKJFHDSGJFSGDKHJFHF"
         }
 
         It "Outputs correct HTML when erroring" -ForEach @(
-            "TCL000845"
+            (Get-FreshAsset -name "TCL000845" -API_Key $API_Key)
         ) {
             $buildData = $_ | Get-DeviceBuildData -API_Key $API_Key
 
@@ -321,7 +313,7 @@ Describe "BuildTicket Interaction" {
         }
 
         It "Outputs correct HTML when erroring WO errorObj" -ForEach @(
-            "TCL000845"
+            (Get-FreshAsset -name "TCL000845" -API_Key $API_Key)
         ) {
             $buildData = $_ | Get-DeviceBuildData -API_Key $API_Key
 
@@ -335,7 +327,7 @@ Describe "BuildTicket Interaction" {
         }
 
         It "creates a legit note when erroring" -ForEach @(
-            "TCL000845"
+            (Get-FreshAsset -name "TCL000845" -API_Key $API_Key)
         ) {
             $buildData = $_ | Get-DeviceBuildData -API_Key $API_Key
 
@@ -345,6 +337,48 @@ Describe "BuildTicket Interaction" {
         
             $buildData | Write-DeviceBuildError -API_Key $API_Key -logPath "\\tricaread\public\UsersH$\Mwinsen\Script-Dev\TriCare-DeviceDeployment\tests\DeviceDeployment.Tests.ps1" -additionalInfo "This Is a Test"
             
+        }
+    }
+    Context "Testing if AD Command are completed" {
+        It "Returns false if no relevant notes exist" -ForEach @(
+            (Get-DeviceBuildData -API_Key $API_Key -FreshAsset (Get-FreshAsset -name "TCL001629" -API_Key $API_Key)),
+            (Get-DeviceBuildData -API_Key $API_Key -FreshAsset (Get-FreshAsset -name "TCL000845" -API_Key $API_Key))
+        )  {
+            Test-DeviceADCommandCompletion -API_Key $API_Key -BuildInfo $_ | Should -be $false
+        }
+
+        It "Returns false if ad commands aren't completed" -ForEach @(
+            (Get-DeviceBuildData -API_Key $API_Key -FreshAsset (Get-FreshAsset -name "TCL000845" -API_Key $API_Key))
+        )  {
+            $_.GUID = "TestRun-$((Get-Date).ToFileTimeUtc())"
+            
+            $_ | Write-DeviceBuildTicket -API_Key $API_Key
+            Test-DeviceADCommandCompletion -API_Key $API_Key -BuildInfo $_ | Should -be $false
+        }
+
+        It "Returns true if AD commands are completed" -ForEach @(
+            (Get-DeviceBuildData -API_Key $API_Key -FreshAsset (Get-FreshAsset -name "TCL000845" -API_Key $API_Key))
+        )  {
+            $_.GUID = "TestRun-$((Get-Date).ToFileTimeUtc())"
+            $_.buildState = $config.TicketInteraction.BuildStates.adCompletedState.message
+            
+            $_ | Write-DeviceBuildTicket -API_Key $API_Key
+            Test-DeviceADCommandCompletion -API_Key $API_Key -BuildInfo $_ | Should -be $true
+        }
+
+        
+        It "Returns false if ONLY PREVIOUS ad commands are completed" -ForEach @(
+            (Get-DeviceBuildData -API_Key $API_Key -FreshAsset (Get-FreshAsset -name "TCL000845" -API_Key $API_Key))
+        )  {
+            $_.GUID = "TestRun-$((Get-Date).ToFileTimeUtc())"
+            $_.buildState = $config.TicketInteraction.BuildStates.adCompletedState.message
+            $_ | Write-DeviceBuildTicket -API_Key $API_Key
+            
+            Start-Sleep -Seconds 1
+            $_.GUID = "TestRun-$((Get-Date).ToFileTimeUtc())"
+
+            
+            Test-DeviceADCommandCompletion -API_Key $API_Key -BuildInfo $_ | Should -be $false
         }
     }
 }
@@ -377,6 +411,17 @@ Describe "Local Commands" {
             (Get-Job).name| Should -Contain "Block-DeviceShutdown"
 
             Get-Job | ? {$_.Name -like "*Block-DeviceShutdown*"} | Stop-Job
+        }
+
+        It "Stops the blocker job" {
+            $job = Block-DeviceShutdown
+
+            (Get-Job).name| Should -Contain "Block-DeviceShutdown"
+
+            Unblock-DeviceShutdown
+
+            (Get-Job | ? {$_.Name -eq "Block-DeviceShutdown"}).state| Should -be "Stopped"
+
         }
     }
     Context "Getting Local Data" {
@@ -490,6 +535,25 @@ Describe "Intune Sync" {
             Invoke-DeviceCompanyPortalSync
 
             (Get-ScheduledTask | Where-Object {$_.TaskName -eq $syncTaskName}).state | Should -be "Running"
+        }
+    }
+}
+
+Describe "Cleanup" {
+    Context "Cleanup" {
+        It "Doesn't remove log files" {
+            New-Item -Path "$($config.Generic.buildPCRootPath)\Modules\SomeTestModule\someGarbage.ps1"  -force -Value "someTestValue"
+            New-Item -Path "$($config.Logging.buildPCLogPath)\someLog.txt" -Value "someTestValue" -force 
+            New-Item -Path "$($config.Generic.buildPCRootPath)\someRandom.txt" -Value "someTestValue" -force 
+
+            Remove-DeviceDeploymentTempData -verbose
+
+            $items = Get-ChildItem -Path $config.Generic.buildPCRootPath -Recurse -Depth 100
+
+            $items | Should -not -BeNullOrEmpty
+            $items | % {
+                $_.FullName | Should -beLike "*$($config.Logging.buildPCLogPath)*"
+            }
         }
     }
 }

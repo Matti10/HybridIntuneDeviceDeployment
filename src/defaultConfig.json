@@ -3,8 +3,17 @@
 		"DeviceOuScope": "OU=TriCare-Computers,DC=tricaread,DC=int",
 		"DefaultDateFormat": "dd/MM/yyyy-hh:mm",
 		"RunRegistryPath": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run",
-		"RunOnceRegistryPath": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\RunOnce"
+		"RunOnceRegistryPath": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\RunOnce",
+		"BuildPCRootPath" : "C:\\Intune_Setup\\buildProcess"
 	},
+	"Logging" : {
+		"buildPCLogPath" : "C:\\Intune_Setup\\buildProcess\\logs",
+		"serverLogPath" : ".\\Logs"
+	},
+	"Dependencies" : [
+		"TriCare-Common",
+		"TriCare-DeviceManagment"
+	],
 	"AssetID": {
 		"freshAssetIDAttr": "name",
 		"adAssetIDAttr": "name",
@@ -19,16 +28,24 @@
 	},
 	"TicketInteraction": {
 		"BuildStates": {
-			"initalState": {
+			"initialState": {
 				"message": "Initialised",
 				"color": "rgb(102, 204, 255)"
 			},
-			"inProgressState": {
-				"message": "In Progress",
+			"checkInState": {
+				"message": "In Progress - Device Checked In",
+				"color": "rgb(102, 153, 255)"
+			},
+			"adCompletedState": {
+				"message": "In Progress - AD Commands Completed",
+				"color": "rgb(102, 153, 255)"
+			},
+			"localCompleteState": {
+				"message": "In Progress - Local Commands Completed",
 				"color": "rgb(102, 153, 255)"
 			},
 			"completedState": {
-				"message": "Completed",
+				"message": "Build Completed",
 				"color": "rgb(153, 255, 102)"
 			},
 			"failedState": {
@@ -387,5 +404,13 @@
 	},
 	"CompanyPortalSync" : {
 		"syncTaskName" : "PushLaunch"
+	},
+	"Security" : {
+        "KeyVaultName": "tc-ae-p-kv",
+        "FreshAPIKey_KeyVaultKey": "freshservice-apikey-matt"
+    },
+	"ShutdownListener" : {
+		"jobName" : "Block-DeviceShutdown",
+		"waitSeconds" : 30
 	}
 }
