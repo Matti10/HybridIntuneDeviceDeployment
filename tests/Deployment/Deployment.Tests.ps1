@@ -112,8 +112,7 @@ Describe "Resolve Device OU" {
 			
 			if ($null -ne $buildTickets) {
 				# filter non build tickets out
-				$buildTickets = $buildTickets
-				| Where-Object {
+				$buildTickets = $buildTickets | Where-Object {
 					foreach ($pattern in $defaultConfig.Deployment.buildTicketNamePatterns) {
 						if ($_.request_details -like $pattern) {
 							return $true

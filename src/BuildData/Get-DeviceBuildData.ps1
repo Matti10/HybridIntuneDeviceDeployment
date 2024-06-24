@@ -18,8 +18,7 @@ function Get-DeviceBuildData {
 				
 				# filter non build tickets out
 				try {
-					$buildTickets = $buildTickets
-					| Where-Object {
+					$buildTickets = $buildTickets | Where-Object {
 						foreach ($pattern in $DeviceDeploymentDefaultConfig.Deployment.buildTicketNamePatterns) {
 							if ($_.request_details -like $pattern) {
 								return $true

@@ -11,8 +11,7 @@
 		"serverLogPath" : ".\\Logs"
 	},
 	"Dependencies" : [
-		"TriCare-Common",
-		"TriCare-DeviceManagment"
+		"TriCare-Common"
 	],
 	"AssetID": {
 		"freshAssetIDAttr": "name",

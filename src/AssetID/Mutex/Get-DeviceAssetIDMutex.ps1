@@ -23,8 +23,7 @@ function Get-DeviceAssetIDMutex {
 	process {
 		if ($PSCmdlet.ShouldProcess($recordID)) {
 			try {
-				$value = (Get-FreshCustomObject -API_Key $API_Key -objectID $objectID)
-				| Where-Object {$_.bo_display_id -eq $recordID} #there is only one record, get position one just to be sure
+				$value = (Get-FreshCustomObject -API_Key $API_Key -objectID $objectID) | Where-Object {$_.bo_display_id -eq $recordID} #there is only one record, get position one just to be sure
 
 				if ($value.CurrentlyAccessed -eq $notAccessedValue) {
 					$currentlyAccessed = $false
