@@ -3,8 +3,14 @@
 #Get public and private function definition files.
 Set-StrictMode -Version 2.0
 
-#Dot source the files
-Foreach ($import in (Get-ChildItem -Path $PSScriptRoot\src\*.ps1  -Recurse -ErrorAction SilentlyContinue)) {
+
+<#---------------------- Common Defines ----------------------#>
+$DeviceDeploymentDefaultConfig = Get-Content -Path "$PSScriptRoot\src\defaultConfig.json" | ConvertFrom-Json
+
+Connect-TriCareMgGraph
+
+<#---------------------- Include Functions ----------------------#>
+Foreach ($import in (Get-ChildItem -Path $PSScriptRoot\src\*.ps1  -Recurse -ErrorAction SilentlyContinue | Where-Object {$_.FullName -notlike"*Driver Scripts*"})) {
     Try {
         . $import.fullname
         Write-Debug "Imported $($import.fullname)"
@@ -12,12 +18,6 @@ Foreach ($import in (Get-ChildItem -Path $PSScriptRoot\src\*.ps1  -Recurse -Erro
         Write-Error -Message "Failed to import function $($import.fullname): $_"
     }
 }
-
-<#---------------------- Common Defines ----------------------#>
-$DeviceDeploymentDefaultConfig = Get-Content -Path "$PSScriptRoot\src\defaultConfig.json" | ConvertFrom-Json -Depth 50
-
-<#---------------------- Setup ----------------------#>
-Connect-TriCareMgGraph
 
 <#------------------------------------------------------------#>
 
@@ -27,5 +27,3 @@ Connect-TriCareMgGraph
 # https://stackoverflow.com/questions/28682642/powershell-why-is-using-invoke-webrequest-much-slower-than-a-browser-download
 $ProgressPreference = 'SilentlyContinue'
 
-# We want fairly strict error checking.
-Set-StrictMode -Version 2.0

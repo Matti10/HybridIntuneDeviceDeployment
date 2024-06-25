@@ -23,8 +23,7 @@ function Get-DeviceLocalData {
 
 			$freshProduct = Find-FreshProductClosestMatch -model $model -API_Key $API_Key
 
-			$type = Get-FreshAssetTypes -API_Key $API_Key
-			| Where-Object {$_.ID -eq $freshProduct.asset_type_id}
+			$type = Get-FreshAssetTypes -API_Key $API_Key | Where-Object {$_.ID -eq $freshProduct.asset_type_id}
 
 			return @{
 				hostname = $hostname

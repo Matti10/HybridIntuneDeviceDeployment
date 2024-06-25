@@ -26,9 +26,7 @@ function Get-DeviceDeploymentADAttrs {
 						$attrs += Search-ConfigADAttrs -config $config."$($property.name)"
 					}
 
-					$properties
-					| Where-Object { $_.Name -like "*adAttr" } 
-					| ForEach-Object { $attrs += $config."$($_.Name)" }
+					$properties | Where-Object { $_.Name -like "*adAttr" } | ForEach-Object { $attrs += $config."$($_.Name)" }
 
 					return $attrs
 				}

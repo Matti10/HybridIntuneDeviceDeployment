@@ -1,6 +1,11 @@
 function Block-DeviceShutdown {
 	[CmdletBinding(SupportsShouldProcess = $true)]
 	param (
+		[Parameter()]
+		[string]$jobName = $DeviceDeploymentDefaultConfig.shutdownListener.jobName,
+
+		[Parameter()]
+		[int]$waitSeconds = $DeviceDeploymentDefaultConfig.shutdownListener.waitSeconds
 	)
 
 	begin {
@@ -9,8 +14,8 @@ function Block-DeviceShutdown {
 	process {
 		if ($PSCmdlet.ShouldProcess("$(hostname)")) {
 			# Start Job to Cancel pending shutdowns 
-			return Start-Job -Name "Block-DeviceShutdown" -ScriptBlock {
-				Start-Transcript -Path "C:\Intune_Setup\Logs\$fileName-$timestamp-ShutdownListener.txt"
+			return Start-Job -Name $jobName -ScriptBlock {
+				Start-Transcript -Path "C:\Intune_Setup\Logs\$fileName-$timestamp-$jobName.txt"
 				while ($true)
 				{
 					try {
@@ -19,7 +24,7 @@ function Block-DeviceShutdown {
 					catch {
 						$_
 					}
-					Start-Sleep -Seconds 30
+					Start-Sleep -Seconds $waitSeconds
 				}    
 			}
 		}

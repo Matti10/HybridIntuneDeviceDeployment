@@ -1,4 +1,4 @@
-function Get-DeviceCorrelationInfo {
+function Find-DeviceCorrelationInfo {
     [CmdletBinding(SupportsShouldProcess = $true)]
     param (
         [Parameter(Mandatory)]

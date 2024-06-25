@@ -30,6 +30,8 @@ function Test-OOBE {
 
 				return $false
 			}
+		} else {
+			return $true
 		}
 	}
 	end {

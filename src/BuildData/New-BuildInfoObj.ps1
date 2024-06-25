@@ -29,7 +29,7 @@ function New-BuildInfoObj {
 		[string]$freshLocation = "",
 
 		[Parameter()]
-		[string]$buildState = $DeviceDeploymentDefaultConfig.TicketInteraction.BuildStates.initalState.message
+		[string]$buildState = $DeviceDeploymentDefaultConfig.TicketInteraction.BuildStates.initialState.message
 	)
 
 	begin {
@@ -47,6 +47,7 @@ function New-BuildInfoObj {
 					groups       = $groups
 					ticketID     = $ticketID
 					buildState   = $buildState
+					GUID = "$($serialNumber)-$((Get-Date).ToFileTimeUtc())"
 					freshAsset   = $freshAsset
 				}
 			}

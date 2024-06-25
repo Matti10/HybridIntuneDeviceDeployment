@@ -17,7 +17,7 @@ function Wait-DeviceAssetIDMutex {
 				$count = 0
 				while ((Test-DeviceAssetIDMutex -API_Key $API_Key)) {
 					if ($count -gt $timeoutValue) {
-						Write-Error -Message "Testing Mutex has timed out `n $mutex" -ErrorAction Stop
+						Write-Error -Message "Testing Mutex has timed out `n" -ErrorAction Stop
 					}
 
 					Write-Verbose "Waiting on Mutex"

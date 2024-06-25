@@ -34,11 +34,9 @@ function Get-NextAssetID {
 				$max = 0
 	
 				#find the largest AssetID
-				$All
-				| Where-Object {$_ -like "$AssetIDPrefix*"}
-				| ForEach-Object {
+				$All | Where-Object {$_ -like "$AssetIDPrefix*"} | ForEach-Object {
 					try {
-						$current = [int]($_.split($AssetIDPrefix)[1])
+						$current = [int](($_ -split $AssetIDPrefix)[1])
 					} catch {
 						Write-Error $_
 					}
@@ -46,16 +44,20 @@ function Get-NextAssetID {
 						$max = $current
 					}
 				}
-				#TODO THIS NEEDS SOME KINDA OF MUTEX
-				#Add prefix
-				$nextAssetID = "$AssetIDPrefix$($max + 1)"
-	
-				# pad asset ID with '0' until correct length reached
-				while ($nextAssetID.Length -lt $AssetIDLength) {
-					$AssetIDPrefix = $AssetIDPrefix + "0"
-	
-					$nextAssetID = "$AssetIDPrefix$($max + 1)"
-				}
+
+				do {
+					#update max
+					$max = $max +1
+					#Add prefix
+					$nextAssetID = "$AssetIDPrefix$($max)"
+		
+					# pad asset ID with '0' until correct length reached
+					while ($nextAssetID.Length -lt $AssetIDLength) {
+						$AssetIDPrefix = $AssetIDPrefix + "0"
+		
+						$nextAssetID = "$AssetIDPrefix$($max + 1)"
+					}
+				} while ($null -ne (Get-FreshAsset -API_Key $API_Key -name $nextAssetID -ErrorAction SilentlyContinue))
 	
 				return $nextAssetID
 	

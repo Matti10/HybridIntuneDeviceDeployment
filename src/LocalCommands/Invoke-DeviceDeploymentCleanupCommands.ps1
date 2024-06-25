@@ -1,16 +1,19 @@
-function Invoke-DeviceADCommands {
+function Invoke-DeviceDeploymentCleanupCommands {
 	[CmdletBinding(SupportsShouldProcess = $true)]
 	param (
-		[Parameter(Mandatory)]
-		$buildData
 	)
 
 	begin {
 		$errorList = @()
 	}
 	process {
-		if ($PSCmdlet.ShouldProcess($identity)) {
-			throw "Not implemented ##TODO"
+		try {
+			Unblock-DeviceShutdown
+			Remove-DeviceDeploymentTempData
+		}
+		catch {
+			$errorList += $_
+			Write-Error $_
 		}
 	}
 	end {
