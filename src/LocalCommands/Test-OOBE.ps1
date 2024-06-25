@@ -8,7 +8,7 @@ function Test-OOBE {
 		$errorList = @()
 	}
 	process {
-		if ($PSCmdlet.ShouldProcess($identity)) {
+		if ($PSCmdlet.ShouldProcess((hostname))) {
 			try {
 				#check if the device in is OOBE
 				$oobe = $false

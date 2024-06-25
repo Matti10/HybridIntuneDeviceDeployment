@@ -405,7 +405,7 @@
 		"syncTaskName" : "PushLaunch"
 	},
 	"Security" : {
-        "KeyVaultName": "tc-ae-p-kv",
+        "KeyVaultName": "tc-ae-d-kv",
         "FreshAPIKey_KeyVaultKey": "freshservice-apikey-matt"
     },
 	"ShutdownListener" : {
