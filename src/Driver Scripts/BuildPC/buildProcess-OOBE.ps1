@@ -10,7 +10,7 @@ try {
 	
 	# Check the device is in OOBE
 	if (Test-OOBE -whatif) {
-		$API_Key = Get-KVSecret -KeyVault $config.Security.KeyVaultName -Secret $config.Security.FreshAPIKey_KeyVaultKey -Verbose:$VerbosePreference
+		# $API_Key = Get-KVSecret -KeyVault $config.Security.KeyVaultName -Secret $config.Security.FreshAPIKey_KeyVaultKey -Verbose:$VerbosePreference #removed temporarily for debugging
 
 		#--------------------------- Block Shutdowns until build process is completed ---------------------------# 
 		Block-DeviceShutdown -Verbose:$VerbosePreference
