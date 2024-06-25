@@ -1,6 +1,3 @@
-Import-Module '\\tricaread\public\UsersH$\Mwinsen\Script-Dev\TriCare-DeviceDeployment\TriCare-DeviceDeployment.psm1' -force
-Import-Module "\\tricaread\public\UsersH$\Mwinsen\Script-Dev\TriCare-Common\TriCare-Common.psm1" -force
-
 
 $DebugPreference = "SilentlyContinue"
 $VerbosePreference = "Continue"
