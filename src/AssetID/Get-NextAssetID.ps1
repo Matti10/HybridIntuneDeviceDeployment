@@ -58,7 +58,7 @@ function Get-NextAssetID {
 						$nextAssetID = "$AssetIDPrefix$($max + 1)"
 					}
 				} while ($null -ne (Get-FreshAsset -API_Key $API_Key -name $nextAssetID -ErrorAction SilentlyContinue))
-	
+
 				return $nextAssetID
 	
 			}
