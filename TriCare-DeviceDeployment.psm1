@@ -5,7 +5,7 @@ Set-StrictMode -Version 2.0
 
 
 <#---------------------- Common Defines ----------------------#>
-$DeviceDeploymentDefaultConfig = Get-Content -Path "$PSScriptRoot\src\defaultConfig.json" | ConvertFrom-Json
+$DeviceDeploymentDefaultConfig = Get-Content -Path "$PSScriptRoot\src\defaultConfig.json" | ConvertFrom-Json_PSVersionSafe
 
 Connect-TriCareMgGraph
 

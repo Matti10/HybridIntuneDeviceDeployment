@@ -29,8 +29,9 @@ function Get-NextAssetID {
 				
 				# Get All Asset IDs
 				$All = (Get-FreshAsset -API_Key $API_Key -all -pageLimit 3).$FreshAssetIDAttr #page limit of 3 so only 90 most recently updated devices are returned (its way quicker)
-				$All += (Get-ADComputer -SearchBase $DeviceADScope -Filter *).$adAssetIDAttr
-	
+				# $All += (Get-ADComputer -SearchBase $DeviceADScope -Filter *).$adAssetIDAttr
+				# Currently not being used as it requires RSAT installed on Build device. Techincally, all AD comps should be in fresh anyways, so shouldnt be nessecary....
+				
 				$max = 0
 	
 				#find the largest AssetID
