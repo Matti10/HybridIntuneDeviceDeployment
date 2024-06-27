@@ -1,6 +1,6 @@
 
 $DebugPreference = "SilentlyContinue"
-$VerbosePreference = $true
+$VerbosePreference = "Continue"
 
 Write-Verbose "BuildProcess Execution Started"
 
@@ -19,7 +19,7 @@ try {
 		$buildData = Get-DeviceBuildData -freshAsset $freshAsset -Verbose:$VerbosePreference
 
 		#------------------------------------------- Rename Device --------------------------------------------# 
-		#------- (needs to happen before device is moved to other OU) --------#
+		#----------------------- (needs to happen before device is moved to other OU) -------------------------#
 		Set-DeviceName -AssetId $buildData.AssetID -Verbose:$VerbosePreference
 
 		#------------------------------------------ Check into Ticket -----------------------------------------# 
