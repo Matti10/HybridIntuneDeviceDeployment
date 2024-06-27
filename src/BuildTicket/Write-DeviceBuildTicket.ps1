@@ -17,10 +17,7 @@ function Write-DeviceBuildTicket {
 		$buildStates = $DeviceDeploymentDefaultConfig.TicketInteraction.BuildStates,
 
 		[Parameter()]
-		$formattingConfig = $DeviceDeploymentDefaultConfig.TicketInteraction.freshFormatting,
-
-		[Parameter(Mandatory)]
-		[string]$API_Key
+		$formattingConfig = $DeviceDeploymentDefaultConfig.TicketInteraction.freshFormatting
 	)
 
 	begin {
@@ -50,7 +47,7 @@ function Write-DeviceBuildTicket {
 			}
 			
 			if ($PSCmdlet.ShouldProcess($BuildInfo.ticketID)) {
-				New-FreshTicketNote -API_Key $API_Key -ticketID $BuildInfo.ticketID -content $content
+				New-FreshTicketNote -ticketID $BuildInfo.ticketID -content $content
 			}
 			else {
 				return $content

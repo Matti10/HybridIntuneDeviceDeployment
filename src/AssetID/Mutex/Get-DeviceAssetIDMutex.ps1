@@ -1,8 +1,7 @@
 function Get-DeviceAssetIDMutex {
 	[CmdletBinding(SupportsShouldProcess = $true)]
 	param (
-		[Parameter(Mandatory)]
-		[string]$API_Key,
+
 
 		[Parameter()]
 		[string]$objectID = $DeviceDeploymentDefaultConfig.AssetID.MutexFreshObjectID,
@@ -23,14 +22,14 @@ function Get-DeviceAssetIDMutex {
 	process {
 		if ($PSCmdlet.ShouldProcess($recordID)) {
 			try {
-				$value = (Get-FreshCustomObject -API_Key $API_Key -objectID $objectID) | Where-Object {$_.bo_display_id -eq $recordID} #there is only one record, get position one just to be sure
+				$value = (Get-FreshCustomObject -objectID $objectID) | Where-Object {$_.bo_display_id -eq $recordID} #there is only one record, get position one just to be sure
 
 				if ($value.CurrentlyAccessed -eq $notAccessedValue) {
 					$currentlyAccessed = $false
 				} elseif ($value.CurrentlyAccessed -eq $accessedValue) {
 					$currentlyAccessed = $true
 				} else {
-					return Repair-DeviceAssetIDMutex -API_Key $API_Key
+					return Repair-DeviceAssetIDMutex
 				}
 
 				return [PSCustomObject]@{

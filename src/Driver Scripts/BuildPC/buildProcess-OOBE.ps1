@@ -15,8 +15,8 @@ try {
 
 
 		#------------------------ Get Build Data and Create Fresh Asset (if required)  ------------------------# 
-		$freshAsset = Register-DeviceWithFresh -API_Key $API_Key -Verbose:$VerbosePreference
-		$buildData = Get-DeviceBuildData -freshAsset $freshAsset -API_Key $API_Key -Verbose:$VerbosePreference
+		$freshAsset = Register-DeviceWithFresh -Verbose:$VerbosePreference
+		$buildData = Get-DeviceBuildData -freshAsset $freshAsset -Verbose:$VerbosePreference
 
 		#------------------------------------------- Rename Device --------------------------------------------# 
 		#------- (needs to happen before device is moved to other OU) --------#

@@ -1,8 +1,7 @@
 function Repair-DeviceAssetIDMutex {
 	[CmdletBinding(SupportsShouldProcess = $true)]
 	param (
-		[Parameter(Mandatory)]
-		[string]$API_Key,
+
 
 		[Parameter()]
 		[string]$notAccessedValue = $DeviceDeploymentDefaultConfig.AssetID.NotAccessedValue,
@@ -25,7 +24,7 @@ function Repair-DeviceAssetIDMutex {
 					setby = $resetValue
 				}
 
-				return Set-DeviceAssetIDMutex -API_Key $API_Key -mutex $mutex
+				return Set-DeviceAssetIDMutex -mutex $mutex
 
 				Write-Error "Mutex value was outside of expected range, it has been reset to '$mutex'"
 

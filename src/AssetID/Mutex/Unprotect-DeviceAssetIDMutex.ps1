@@ -1,8 +1,7 @@
 function Unprotect-DeviceAssetIDMutex {
 	[CmdletBinding(SupportsShouldProcess = $true)]
 	param (
-		[Parameter(Mandatory)]
-		[string]$API_Key,
+
 
 		[Parameter(Mandatory)]
 		$mutex
@@ -14,11 +13,11 @@ function Unprotect-DeviceAssetIDMutex {
 	process {
 		if ($PSCmdlet.ShouldProcess("Device Asset ID Mutex")) {
 			try {
-				$remoteMutex = Get-DeviceAssetIDMutex -API_Key $API_Key
+				$remoteMutex = Get-DeviceAssetIDMutex
 
 				if ($remoteMutex.setBy -eq $mutex.setBy) {
 					$mutex.currentlyaccessed = $false
-					return Set-DeviceAssetIDMutex -API_Key $API_Key -mutex $mutex
+					return Set-DeviceAssetIDMutex -mutex $mutex
 				} else {
 					Write-Error "Unable to unproctect mutex as it was set by a different actor `n $mutex"
 				}

@@ -1,9 +1,6 @@
 function Wait-DeviceAssetIDMutex {
 	[CmdletBinding(SupportsShouldProcess = $true)]
 	param (
-		[Parameter(Mandatory)]
-		[string]$API_Key,
-
 		[Parameter()]
 		$timeoutValue = $DeviceDeploymentDefaultConfig.AssetID.MutexTimeoutSeconds
 	)
@@ -15,7 +12,7 @@ function Wait-DeviceAssetIDMutex {
 		if ($PSCmdlet.ShouldProcess("AssetID Mutex")) {
 			try {
 				$count = 0
-				while ((Test-DeviceAssetIDMutex -API_Key $API_Key)) {
+				while ((Test-DeviceAssetIDMutex)) {
 					if ($count -gt $timeoutValue) {
 						Write-Error -Message "Testing Mutex has timed out `n" -ErrorAction Stop
 					}
@@ -25,7 +22,7 @@ function Wait-DeviceAssetIDMutex {
 					$count += 1
 				} 
 			
-				return Get-DeviceAssetIDMutex -API_Key $API_Key
+				return Get-DeviceAssetIDMutex
 			}
 			catch {
 				$errorList += $_

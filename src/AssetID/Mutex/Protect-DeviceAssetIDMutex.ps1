@@ -1,8 +1,7 @@
 function Protect-DeviceAssetIDMutex {
 	[CmdletBinding(SupportsShouldProcess = $true)]
 	param (
-		[Parameter(Mandatory)]
-		[string]$API_Key,
+
 
 		[Parameter()]
 		$recursionCounter = 0,
@@ -27,19 +26,19 @@ function Protect-DeviceAssetIDMutex {
 					Write-Error "Protecting Mutex has timed out.`n$mutex" -ErrorAction Stop
 				}
 
-				$mutex = Wait-DeviceAssetIDMutex -API_Key $API_Key -Verbose:$VerbosePreference
+				$mutex = Wait-DeviceAssetIDMutex -Verbose:$VerbosePreference
 				if (-not $mutex.CurrentlyAccessed) {
 					$mutex.currentlyaccessed = $true
 					$mutex.setby = $UID
 
-					Set-DeviceAssetIDMutex -API_Key $API_Key -mutex $mutex | Write-Verbose
+					Set-DeviceAssetIDMutex -mutex $mutex | Write-Verbose
 
-					$setby = (Get-DeviceAssetIDMutex -API_Key $API_Key).setby
+					$setby = (Get-DeviceAssetIDMutex).setby
 					if ($setby -eq $UID -or $setby -eq $resetValue) {
 						return $mutex
 					} else {
 						Start-Sleep -Seconds 1
-						return Protect-DeviceAssetIDMutex -API_Key $API_Key -recursionCounter ($recursionCounter + 1)  -Verbose:$VerbosePreference
+						return Protect-DeviceAssetIDMutex -recursionCounter ($recursionCounter + 1)  -Verbose:$VerbosePreference
 					}
 				}
 			}

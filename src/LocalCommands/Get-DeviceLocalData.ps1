@@ -1,8 +1,7 @@
 function Get-DeviceLocalData {
 	[CmdletBinding(SupportsShouldProcess = $true)]
 	param (
-		[Parameter(Mandatory)]
-		$API_Key
+
 	)
 
 	begin {
@@ -21,9 +20,9 @@ function Get-DeviceLocalData {
 				$serial =  "SomeTestSerial"
 			}
 
-			$freshProduct = Find-FreshProductClosestMatch -model $model -API_Key $API_Key
+			$freshProduct = Find-FreshProductClosestMatch -model $model
 
-			$type = Get-FreshAssetTypes -API_Key $API_Key | Where-Object {$_.ID -eq $freshProduct.asset_type_id}
+			$type = Get-FreshAssetTypes | Where-Object {$_.ID -eq $freshProduct.asset_type_id}
 
 			return @{
 				hostname = $hostname

@@ -1,11 +1,8 @@
 function Get-DeviceBuildData {
 	[CmdletBinding(SupportsShouldProcess = $true)]
 	param (
-		[Parameter(ValueFromPipeline)]
-		$freshAsset,
-
-		[Parameter(Mandatory)]
-		[string]$API_Key
+		[Parameter(ValueFromPipeline,Mandatory)]
+		$freshAsset
 	)
 
 	begin {
@@ -14,7 +11,7 @@ function Get-DeviceBuildData {
 	process {
 		if ($PSCmdlet.ShouldProcess($freshAsset.Name)) {
 			try {
-				$buildTickets = $freshAsset | Get-FreshAssetsTickets -API_Key $API_Key -ErrorAction SilentlyContinue
+				$buildTickets = $freshAsset | Get-FreshAssetsTickets -ErrorAction SilentlyContinue
 				
 				# filter non build tickets out
 				try {
@@ -40,7 +37,7 @@ function Get-DeviceBuildData {
 				#get the newest ticket
 				$buildTicketID = ($buildTickets | Sort-Object -Property updated_at -Descending)[0]."request_id".split("-")[1] # request id has a prefix "SR-"/"INC-" 
 
-				$buildDetails = (Get-FreshTicketsRequestedItems -API_Key $API_Key -ticketID $buildTicketID).custom_fields
+				$buildDetails = (Get-FreshTicketsRequestedItems -ticketID $buildTicketID).custom_fields
 
 				# Get OU and Groups from Correlation
 				$corrInfo = Find-DeviceCorrelationInfo -build $buildDetails.hardware_use_build_type -facility $buildDetails.facility[0]

@@ -4,9 +4,6 @@ function Get-DeviceAssetID {
 		[Parameter(Mandatory,ValueFromPipeline)]
 		[string]$serialNumber,
 
-		[Parameter(Mandatory)]
-		[string]$API_Key,
-
 		[Parameter()]
 		[string]$FreshAssetIDAttr = $DeviceDeploymentDefaultConfig.AssetID.freshAssetIDAttr
 
@@ -22,7 +19,7 @@ function Get-DeviceAssetID {
 				$freshAsset = $null	
 				try {
 					#see if the serial number has freshAsset
-					$freshAsset = Get-FreshAsset -API_Key $API_Key -serialNum $serialNumber -ErrorAction Stop
+					$freshAsset = Get-FreshAsset -serialNum $serialNumber -ErrorAction Stop
 					$AssetID = $freshAsset.$FreshAssetIDAttr
 					
 					if (-not (Test-AssetID -AssetID $AssetID)) {
@@ -31,7 +28,7 @@ function Get-DeviceAssetID {
 					}
 
 				} catch {
-					$AssetID = Get-NextAssetID -API_Key $API_Key -ErrorAction SilentlyContinue -whatif:$WhatIfPreference
+					$AssetID = Get-NextAssetID -ErrorAction SilentlyContinue -whatif:$WhatIfPreference
 					
 				}
 				

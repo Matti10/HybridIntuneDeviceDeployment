@@ -1,8 +1,7 @@
 function Get-NextAssetID {
 	[CmdletBinding(SupportsShouldProcess = $true)]
 	param (
-		[Parameter(Mandatory)]
-		[string]$API_Key,
+
 
 		[Parameter()]
 		[string]$FreshAssetIDAttr = $DeviceDeploymentDefaultConfig.AssetID.freshAssetIDAttr,
@@ -28,7 +27,7 @@ function Get-NextAssetID {
 			if ($PSCmdlet.ShouldProcess("Getting Next Asset ID")) {
 				
 				# Get All Asset IDs
-				$All = (Get-FreshAsset -API_Key $API_Key -all -pageLimit 3).$FreshAssetIDAttr #page limit of 3 so only 90 most recently updated devices are returned (its way quicker)
+				$All = (Get-FreshAsset -all -pageLimit 3).$FreshAssetIDAttr #page limit of 3 so only 90 most recently updated devices are returned (its way quicker)
 				# $All += (Get-ADComputer -SearchBase $DeviceADScope -Filter *).$adAssetIDAttr
 				# Currently not being used as it requires RSAT installed on Build device. Techincally, all AD comps should be in fresh anyways, so shouldnt be nessecary....
 				
@@ -58,7 +57,7 @@ function Get-NextAssetID {
 		
 						$nextAssetID = "$AssetIDPrefix$($max + 1)"
 					}
-				} while ($null -ne (Get-FreshAsset -API_Key $API_Key -name $nextAssetID -ErrorAction SilentlyContinue))
+				} while ($null -ne (Get-FreshAsset -name $nextAssetID -ErrorAction SilentlyContinue))
 
 				return $nextAssetID
 	

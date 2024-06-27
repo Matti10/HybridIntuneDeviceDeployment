@@ -1,8 +1,6 @@
 function Test-DeviceAssetIDMutex {
 	[CmdletBinding(SupportsShouldProcess = $true)]
 	param (
-		[Parameter(Mandatory)]
-		[string]$API_Key
 	)
 
 	begin {
@@ -11,7 +9,7 @@ function Test-DeviceAssetIDMutex {
 	process {
 		if ($PSCmdlet.ShouldProcess("AssetID Mutex")) {
 			try {
-				return (Get-DeviceAssetIDMutex -API_Key $API_Key).currentlyaccessed
+				return (Get-DeviceAssetIDMutex).currentlyaccessed
 			}
 			catch {
 				$errorList += $_

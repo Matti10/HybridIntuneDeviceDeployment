@@ -4,8 +4,7 @@ function Test-DeviceADCommandCompletion {
 		[Parameter(Mandatory, ValueFromPipeline)]
 		[System.Object]$BuildInfo,
 		
-		[Parameter(Mandatory)]
-		[string]$API_Key,
+
 
 		[Parameter()]
 		[string]$ADCommandCompletionString = $DeviceDeploymentDefaultConfig.TicketInteraction.BuildStates.adCompletedState.message
@@ -18,7 +17,7 @@ function Test-DeviceADCommandCompletion {
 		try {
 			
 			#--------------------------- Get All notes for the ticket  ---------------------------# 
-			$conversations = Get-FreshTicketConversations -API_Key $API_Key -ticketID $BuildInfo.ticketID
+			$conversations = Get-FreshTicketConversations -ticketID $BuildInfo.ticketID
 
 			foreach ($conversation in $conversations) {
 				if ("$($conversation)" -like "*$ADCommandCompletionString*$($BuildInfo.GUID)*") {

@@ -40,6 +40,8 @@ function Initialize-DeviceWindowsUpdate {
 			} catch {
 				Install-Package -Name $packageName -Force -Confirm:$false -WhatIf:$WhatIfPreference -Verbose:$VerbosePreference
 			}
+
+			Import-Module -Name $packageName -Force -Verbose:$VerbosePreference
 		}
 		catch {
 			$errorList += $_

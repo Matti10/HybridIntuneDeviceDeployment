@@ -1,8 +1,7 @@
 function Set-DeviceAssetIDMutex {
 	[CmdletBinding(SupportsShouldProcess = $true)]
 	param (
-		[Parameter(Mandatory)]
-		[string]$API_Key,
+
 
 		[Parameter(Mandatory)]
 		[Object]$mutex,
@@ -31,10 +30,10 @@ function Set-DeviceAssetIDMutex {
 				} elseif ($mutex.CurrentlyAccessed -eq $false) {
 					$mutex.CurrentlyAccessed = $notAccessedValue
 				} else {
-					return Repair-DeviceAssetIDMutex -API_Key $API_Key
+					return Repair-DeviceAssetIDMutex
 				}
 
-				return (Set-FreshCustomObject -API_Key $API_Key -objectID $objectID -recordID $recordID -record $mutex).custom_object.data
+				return (Set-FreshCustomObject -objectID $objectID -recordID $recordID -record $mutex).custom_object.data
 			}
 			catch {
 				$errorList += $_

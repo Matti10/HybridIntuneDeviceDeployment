@@ -17,7 +17,7 @@ function Remove-DeviceDeploymentTempData {
 			Get-ChildItem -Path $rootDirectory -Recurse -Depth 100 | Where-Object {$_.FullName -notLike "*$($logDirectory)*"} | Remove-Item -Force -Recurse -Confirm:$false -Verbose:$VerbosePreference -WhatIf:$WhatIfPreference
 
 			#remove downloaded external modules
-			Get-InstalledModules | Uninstall-Module
+			Get-InstalledModule | Uninstall-Module
 		}
 		catch {
 			$errorList += $_

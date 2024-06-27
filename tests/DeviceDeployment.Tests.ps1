@@ -1,7 +1,5 @@
 BeforeDiscovery {
-    if ($PSVersionTable.PSVersion.Major -ne "5") {
-        throw "System MUST run on powershell 5, please switch"
-    }
+
 
     $DebugPreference = 'SilentlyContinue'
 }
@@ -9,17 +7,17 @@ BeforeAll {
     Set-StrictMode -Version 2.0
     $DebugPreference = 'SilentlyContinue'
 
-    <# --- Import TriCare-Common --- #>
+    # <# --- Import TriCare-Common --- #>
     # if ($PSCommandPath -like "*Mwinsen\Script-Dev*" -or "" -eq $PSCommandPath ) {
-    #     Import-Module "\\tricaread\public\UsersH$\Mwinsen\Script-Dev\TriCare-DeviceDeployment\TriCare-DeviceDeployment.psm1"  #-Force
-    #     Import-Module "\\tricaread\public\UsersH$\Mwinsen\Script-Dev\TriCare-Common\TriCare-Common.psm1" #-force
+        Import-Module "\\tricaread\public\UsersH$\Mwinsen\Script-Dev\TriCare-Common\TriCare-Common.psm1" -force
+        Import-Module "\\tricaread\public\UsersH$\Mwinsen\Script-Dev\TriCare-DeviceDeployment\TriCare-DeviceDeployment.psm1"  -Force
     # } else {
-    #     Import-Module .\TriCare-DeviceDeployment | Out-Null
     #     Import-Module TriCare-Common
+    #     Import-Module .\TriCare-DeviceDeployment | Out-Null
     # }
 
-    $API_Key = Get-KVSecret -KeyVault "tc-ae-d-kv" -Secret "freshservice-apikey-matt"
     $config = Get-DeviceDeploymentDefaultConfig
+
 
 }
 Describe "General Setup" {
@@ -35,14 +33,13 @@ BeforeDiscovery {
 
     <# --- Import TriCare-Common --- #>
     if ($PSCommandPath -like "*Mwinsen\Script-Dev*" -or "" -eq $PSCommandPath ) {
-        Import-Module "\\tricaread\public\UsersH$\Mwinsen\Script-Dev\TriCare-DeviceDeployment\TriCare-DeviceDeployment.psm1"  #-Force
         Import-Module "\\tricaread\public\UsersH$\Mwinsen\Script-Dev\TriCare-Common\TriCare-Common.psm1" #-force
+        Import-Module "\\tricaread\public\UsersH$\Mwinsen\Script-Dev\TriCare-DeviceDeployment\TriCare-DeviceDeployment.psm1"  #-Force
     } else {
-        Import-Module .\TriCare-DeviceDeployment | Out-Null
         Import-Module TriCare-Common
+        Import-Module .\TriCare-DeviceDeployment | Out-Null
     }
     $config = Get-DeviceDeploymentDefaultConfig
-    $API_Key = Get-KVSecret -KeyVault "tc-ae-d-kv" -Secret "freshservice-apikey-matt"
 
 }
 
@@ -138,40 +135,40 @@ Describe "Build Data" {
     Context "Getting Build Data from Fresh" {
     
         It "Returns null or errors (depending on erroraction) when a device has no build tickets" -ForEach @(
-            (Get-FreshAsset -name "TCM0150" -API_Key $API_Key),
-            (Get-FreshAsset -name "TCM0142" -API_Key $API_Key),
-            (Get-FreshAsset -name "TCM0143" -API_Key $API_Key),
-            (Get-FreshAsset -name "TCM0147" -API_Key $API_Key),
-            (Get-FreshAsset -name "TCM0148" -API_Key $API_Key)
+            (Get-FreshAsset -name "TCM0150"),
+            (Get-FreshAsset -name "TCM0142"),
+            (Get-FreshAsset -name "TCM0143"),
+            (Get-FreshAsset -name "TCM0147"),
+            (Get-FreshAsset -name "TCM0148")
         ) {
-            Get-DeviceBuildData -FreshAsset $_ -API_Key $API_Key -ErrorAction SilentlyContinue | Should -BeNullOrEmpty
+            Get-DeviceBuildData -FreshAsset $_ -ErrorAction SilentlyContinue | Should -BeNullOrEmpty
 
-            {Get-DeviceBuildData -FreshAsset $_ -API_Key $API_Key -ErrorAction Stop} | Should -Throw
+            {Get-DeviceBuildData -FreshAsset $_ -ErrorAction Stop} | Should -Throw
         }
 
         It "Gets the newest of many build tickets, and only build tickets" -ForEach @(
-            @{Identity = Get-FreshAsset -name "TCL000845" -API_Key $API_Key; correctTicket = "100900"}
+            @{Identity = Get-FreshAsset -name "TCL000845"; correctTicket = "100900"}
         ) {
-            (Get-DeviceBuildData -FreshAsset $identity -API_Key $API_Key).ticketID | Should -be $correctTicket
+            (Get-DeviceBuildData -FreshAsset $identity).ticketID | Should -be $correctTicket
         }
 
         It "Gets Correct Info for Devices" -ForEach @(
-            # Get-FreshAsset -all -API_Key $API_Key
+            # Get-FreshAsset -all
             # | ? {
-            #     $null -ne ($_.Name | Get-DeviceBuildData -ErrorAction SilentlyContinue -API_Key $API_Key)
+            #     $null -ne ($_.Name | Get-DeviceBuildData -ErrorAction SilentlyContinue)
             # }
-            (Get-FreshAsset -API_Key $API_Key -name TCL000845),
-            (Get-FreshAsset -API_Key $API_Key -name TCL001629),
-            (Get-FreshAsset -API_Key $API_Key -name TCL001242),
-            (Get-FreshAsset -API_Key $API_Key -name TCL001650)
+            (Get-FreshAsset -name TCL000845),
+            (Get-FreshAsset -name TCL001629),
+            (Get-FreshAsset -name TCL001242),
+            (Get-FreshAsset -name TCL001650)
         ) {
-            $result = Get-DeviceBuildData -FreshAsset $_ -API_Key $API_Key
+            $result = Get-DeviceBuildData -FreshAsset $_
 
             $result.AssetID | Should -be $_.Name
             $result.type | Should -not -BeNullOrEmpty
             "$($config.Deployment.buildTypeCorrelation.buildType)" | Should -beLike "*$($result.build)*"
             $result.OU | Should -beLike "*OU=*OU=*"
-            Get-FreshTicketsRequestedItems -ErrorAction stop -ticketID $result.ticketID -API_Key $API_Key | Should -not -BeNullOrEmpty
+            Get-FreshTicketsRequestedItems -ErrorAction stop -ticketID $result.ticketID | Should -not -BeNullOrEmpty
             $result.buildState | Should -be $config.TicketInteraction.BuildStates.initialState.message
         }
         
@@ -179,53 +176,53 @@ Describe "Build Data" {
 
     Context "Asset ID Mutex" {
         It "Gets the fresh custom object" {
-            (Get-FreshCustomObject -API_Key $API_Key -objectID "11000002068").bo_display_id | Should -be "2"
+            (Get-FreshCustomObject -objectID "11000002068").bo_display_id | Should -be "2"
         }
 
         It "Sets the fresh custom object" {
 
             $setValue = "Test34"
-            $ogRecord = Get-DeviceAssetIDMutex -API_Key $API_Key
+            $ogRecord = Get-DeviceAssetIDMutex
 
             $ogRecord.SetBy = $setValue
 
-            Set-DeviceAssetIDMutex -API_Key $API_Key -mutex $ogRecord
+            Set-DeviceAssetIDMutex -mutex $ogRecord
 
-            (Get-FreshCustomObject -API_Key $API_Key -objectID "11000002068").SetBy | Should -be "$setValue"
+            (Get-FreshCustomObject -objectID "11000002068").SetBy | Should -be "$setValue"
         }
 
         It "Protects the Mutex and has a valid setby" {
-            Repair-DeviceAssetIDMutex -API_Key $API_Key
+            Repair-DeviceAssetIDMutex
 
-            $protected = Protect-DeviceAssetIDMutex -API_Key $API_Key
+            $protected = Protect-DeviceAssetIDMutex
 
-            $mutex = Get-DeviceAssetIDMutex -API_Key $API_Key
+            $mutex = Get-DeviceAssetIDMutex
 
             $mutex.currentlyaccessed | Should -be $true
             $mutex.setby | Should -be $protected.setBy
         }
 
         It "Unprotects the Mutex and has a valid setby" {
-            Repair-DeviceAssetIDMutex -API_Key $API_Key
+            Repair-DeviceAssetIDMutex
 
-            $protected = Protect-DeviceAssetIDMutex -API_Key $API_Key
+            $protected = Protect-DeviceAssetIDMutex
 
-            $unprotected = Unprotect-DeviceAssetIDMutex -API_Key $API_Key -mutex $protected
+            $unprotected = Unprotect-DeviceAssetIDMutex -mutex $protected
 
-            $mutex = Get-DeviceAssetIDMutex -API_Key $API_Key
+            $mutex = Get-DeviceAssetIDMutex
 
             $mutex.currentlyaccessed | Should -be $false
             $mutex.setby | Should -be $unprotected.setBy
         }
         
         It "Handles the remote value changing before set can be completed" {
-            $mutex = Protect-DeviceAssetIDMutex -API_Key $API_Key
-            $otherMutex = Protect-DeviceAssetIDMutex -API_Key $API_Key
-            Set-DeviceAssetIDMutex -API_Key $API_Key -mutex $otherMutex
-            Set-DeviceAssetIDMutex -API_Key $API_Key -mutex $mutex
+            $mutex = Protect-DeviceAssetIDMutex
+            $otherMutex = Protect-DeviceAssetIDMutex
+            Set-DeviceAssetIDMutex -mutex $otherMutex
+            Set-DeviceAssetIDMutex -mutex $mutex
             
             
-            Repair-DeviceAssetIDMutex -API_Key $API_Key
+            Repair-DeviceAssetIDMutex
         }
     }
 
@@ -234,7 +231,7 @@ Describe "Build Data" {
     Context "Getting Asset ID" {
         It "Returns a device's curent asset ID if it already exists" -ForEach (@(
             @{serial="0F00GP5220801J";AssetID="TCL001680"},@{serial="036990191853";AssetID="TCL000878"},@{serial="5b3ljl3";AssetID="TCl001393"},@{serial="011416181353";AssetID="TCL000670"},@{serial="d04GYX3";AssetID="TCL001425"},@{serial="474GYX3";AssetID="TCL001533"},@{serial="3456KL3";AssetID="TCL001624"},@{serial="005299304953";AssetID="TCL001230"},@{serial="3BYTZL2";AssetID="TCL000511"},@{serial="032464211253";AssetID="TCL001149"},@{serial="J34GYX3";AssetID="TCL001444"},@{serial="021969114353";AssetID="TCL001352"},@{serial="046938583953";AssetID="TCL000708"},@{serial="015578204953";AssetID="TCL001144"},@{serial="364GYX3";AssetID="TCL001485"},@{serial="8LXG6Z3";AssetID="TCL001588"},@{serial="HMY3R33";AssetID="TCL001029"},@{serial="9WTGYD3";AssetID="TCL001156"},@{serial="974GYX3";AssetID="TCL001528"},@{serial="BVPJ504";AssetID="TCL001633"},@{serial="3JVZVV2";AssetID="TCL000840"},@{serial="007453272353";AssetID="TCL000895"},@{serial="022637181353";AssetID="TCL001639"},@{serial="CJXG6Z3";AssetID="TCL001594"},@{serial="HDB7WT2";AssetID="TCL000820"},@{serial="008728383053";AssetID="TCL000717"},@{serial="12T90J2";AssetID="TCL000413"},@{serial="075374201353";AssetID="TCL001042"},@{serial="036208204853";AssetID="TCL001177"},@{serial="054624703453";AssetID="TCL001093"},@{serial="023739414753";AssetID="TCL001369"},@{serial="3KXG6Z3";AssetID="TCL001577"},@{serial="005009792053";AssetID="TCL000964"},@{serial="714GYX3";AssetID="TCL001494"},@{serial="CP3LGX3";AssetID="TCL001315"},@{serial="031329304853";AssetID="TCL001164"},@{serial="gq35sn3";AssetID="TCl001399"},@{serial="012427504753";AssetID="TCL001407"},@{serial="002868480153";AssetID="TCL000546"},@{serial="002342301953";AssetID="TCL001112"},@{serial="011338581753";AssetID="TCL000909"},@{serial="6KXG6Z3";AssetID="TCL001583"},@{serial="J4KX033";AssetID="TCL000994"},@{serial="G74GYX3";AssetID="TCL001516"},@{serial="464GYX3";AssetID="TCL001479"},@{serial="005242114853";AssetID="TCL001340"},@{serial="J24GYX3";AssetID="TCL001431"},@{serial="053954281653";AssetID="TCL000637"},@{serial="006281411053";AssetID="TCL001224"},@{serial="008841703553";AssetID="TCL001110"},@{serial="J44GYX3";AssetID="TCL001441"},@{serial="27CC9V2";AssetID="TCL000858"},@{serial="BJXG6Z3";AssetID="TCL001591"},@{serial="3LXG6Z3";AssetID="TCL001578"},@{serial="046935183953";AssetID="TCL000707"},@{serial="012855715053";AssetID="TCL001354"},@{serial="031549603853";AssetID="TCL001099"},@{serial="H54GYX3";AssetID="TCL001471"},@{serial="G5KT114";AssetID="TCL001856"},@{serial="020082292053";AssetID="TCL000939"},@{serial="374GYX3";AssetID="TCL001515"},@{serial="HWZFBW2";AssetID="TCL000873"},@{serial="005280601453";AssetID="TCL001299"},@{serial="4KXG6Z3";AssetID="TCL001579"},@{serial="D64GYx3";AssetID="TCL001484"},@{serial="062268401453";AssetID="TCL001030"},@{serial="G64GYX3";AssetID="TCL001478"},@{serial="004407690853";AssetID="TCL000866"},@{serial="284GYx3";AssetID="TCL001534"},@{serial="3JZ1WV2";AssetID="TCL000833"},@{serial="JN6C3F3";AssetID="TCL001228"},@{serial="035987304853";AssetID="TCL001172"},@{serial="2FKVKC2";AssetID="TCL000007"},@{serial="65VVK63";AssetID="TCL001087"},@{serial="3JV3WV2";AssetID="TCL000836"},@{serial="334GYX3";AssetID="TCL001498"},@{serial="cq35sN3";AssetID="TCL001398"},@{serial="015284104953";AssetID="TCL001142"},@{serial="934GYX3";AssetID="TCL001450"},@{serial="031254604853";AssetID="TCL001166"},@{serial="048327491353";AssetID="TCL000883"},@{serial="GLXG6Z3";AssetID="TCL001604"},@{serial="454GYX3";AssetID="TCL001505"},@{serial="1cwxTn3";AssetID="TcL001616"},@{serial="020593205053";AssetID="TCL001151"},@{serial="017348921253";AssetID="TCL001654"},@{serial="3JYYVV2";AssetID="TCL001661"},@{serial="010311162253";AssetID="TCL000852"},@{serial="354GYX3";AssetID="TCL001495"},@{serial="003745215153";AssetID="TCL001271"},@{serial="007794114353";AssetID="TCL001241"},@{serial="3JT3WV2";AssetID="TCL000839"},@{serial="038542603253";AssetID="TCL001062"},@{serial="018102215053";AssetID="TCL001381"},@{serial="019346514353";AssetID="TCL001375"},@{serial="324GYX3";AssetID="TCL001427"},@{serial="056683794753";AssetID="TCL001086"},@{serial="254GYX3";AssetID="TCL001465"},@{serial="144GYX3";AssetID="TCL001446"},@{serial="033612674753";AssetID="TCL000530"},@{serial="27BD9V2";AssetID="TCL000848"},@{serial="7KXG6Z3";AssetID="TCL001585"},@{serial="031699703853";AssetID="TCL001102"},@{serial="BY68WT2";AssetID="TCL000798"},@{serial="H04GYX3";AssetID="TCL001455"},@{serial="050798670953";AssetID="TCL000945"},@{serial="854gyx3";AssetID="TCL001540"},@{serial="066552491253";AssetID="TCL000863"},@{serial="644GYX3";AssetID="TCL001438"},@{serial="F34GYX3";AssetID="TCL001439"},@{serial="031778203853";AssetID="TCL001101"},@{serial="033034174753";AssetID="TCL000532"},@{serial="J54GYX3";AssetID="TCL001502"},@{serial="27BH9V2";AssetID="TCL000845"},@{serial="764Q253";AssetID="TCL001051"},@{serial="554GYX3";AssetID="TCL001542"},@{serial="004028715153";AssetID="TCL001267"},@{serial="053182294753";AssetID="TCL001019"},@{serial="007439591553";AssetID="TCL000882"},@{serial="030021190253";AssetID="TCL000789"},@{serial="001903115153";AssetID="TCL001568"},@{serial="003800315153";AssetID="TCL001248"},@{serial="277C9V2";AssetID="TCL001276"},@{serial="13380J2";AssetID="TCL000418"},@{serial="021086414353";AssetID="TCL001387"},@{serial="014736781353";AssetID="TCL000658"},@{serial="0F00GSJ220801J";AssetID="TCL001675"},@{serial="044785704853";AssetID="TCL001212"},@{serial="F54GYX3";AssetID="TCL001487"},@{serial="012808215053";AssetID="TCL001346"},@{serial="054080481653";AssetID="TCL000621"},@{serial="053603494753";AssetID="TCL001033"},@{serial="F44GYX3";AssetID="TCL001440"},@{serial="J64GYX3";AssetID="TCL001503"},@{serial="019271114353";AssetID="TCL001342"},@{serial="H5KT114";AssetID="TCL001853"},@{serial="744GYX3";AssetID="TCL001447"},@{serial="006690711053";AssetID="TCL001222"},@{serial="019051921253";AssetID="TCL001655"},@{serial="048511201653";AssetID="TCL001071"},@{serial="012897115053";AssetID="TCL001380"},@{serial="046199605253";AssetID="TCL001113"},@{serial="046982683953";AssetID="TCL000700"},@{serial="2WGSFX3";AssetID="TCL001314"},@{serial="072397793753";AssetID="TCL001006"},@{serial="FLXG6Z3";AssetID="TCL001601"},@{serial="114GYX3";AssetID="TCL001509"},@{serial="BKXG6Z3";AssetID="TCL001592"},@{serial="834GYX3";AssetID="TCL001421"},@{serial="022423103253";AssetID="TCL001081"},@{serial="74J6NG3";AssetID="TCL001259"},@{serial="3CWXTN3";AssetID="TCL001613"},@{serial="B24gYx3";AssetID="TCL001538"},@{serial="F14GYX3";AssetID="TCL001430"},@{serial="6b3ljl3";AssetID="TCL001392"},@{serial="044017504853";AssetID="TCL001192"},@{serial="043085104853";AssetID="TCL001202"},@{serial="013701201153";AssetID="TCL001121"},@{serial="G24GYX3";AssetID="TCL001519"},@{serial="012925201153";AssetID="TCL001405"},@{serial="534GYX3";AssetID="TCL001456"},@{serial="003920715153";AssetID="TCL001260"},@{serial="C04GYX3";AssetID="TCL001524"},@{serial="021863114353";AssetID="TCL001388"},@{serial="019995292053";AssetID="TCL000916"},@{serial="027358304153";AssetID="TCL001125"},@{serial="031749403853";AssetID="TCL001088"},@{serial="059985681353";AssetID="TCL000623"},@{serial="5KXG6Z3";AssetID="TCL001581"},@{serial="003640174053";AssetID="TCL001147"},@{serial="035426164253";AssetID="TCL000897"},@{serial="CLXG6Z3";AssetID="TCL001596"},@{serial="FPTY733";AssetID="TCL001022"},@{serial="015233704553";AssetID="TCL001096"},@{serial="012953115053";AssetID="TCL001377"},@{serial="012736215053";AssetID="TCL001356"},@{serial="045616604853";AssetID="TCL001198"}) | Get-Random -Count 50) {
-            (Get-DeviceAssetID -serialNumber $serial -API_Key $API_Key).AssetID | Should -be $AssetID
+            (Get-DeviceAssetID -serialNumber $serial).AssetID | Should -be $AssetID
             Start-Sleep -Milliseconds 200
         
         }
@@ -242,7 +239,7 @@ Describe "Build Data" {
         It "Returns the next asset id if serial is unknown" -ForEach @(
             "someSerialThatDoesntExist10"
         ) {
-            (Get-DeviceAssetID -serialNumber $_ -API_Key $API_Key).AssetID | Should -be "TCL001860" #this will need to be manually changed
+            (Get-DeviceAssetID -serialNumber $_).AssetID | Should -be "TCL001860" #this will need to be manually changed
         }
     }
     Context "Device Registration in Fresh" {
@@ -257,7 +254,7 @@ Describe "Build Data" {
             "Latitude 5590"
             "Latitude 6969"
         ) {
-            (Find-FreshProductClosestMatch -API_Key $API_Key -model $_).Name | Should -beLike "*$($_.split(" ")[0])*"
+            (Find-FreshProductClosestMatch -model $_).Name | Should -beLike "*$($_.split(" ")[0])*"
         }
         It "Has some sort of mutex to manage concurrent access to next asset" {
             $results = (
@@ -265,15 +262,14 @@ Describe "Build Data" {
                     
                     <# --- Import TriCare-Common --- #>
                     if ($PSCommandPath -like "*Mwinsen\Script-Dev*" -or "" -eq $PSCommandPath ) {
-                        Import-Module "\\tricaread\public\UsersH$\Mwinsen\Script-Dev\TriCare-DeviceDeployment\TriCare-DeviceDeployment.psm1" -Force
                         Import-Module "\\tricaread\public\UsersH$\Mwinsen\Script-Dev\TriCare-Common\TriCare-Common.psm1" -force
+                        Import-Module "\\tricaread\public\UsersH$\Mwinsen\Script-Dev\TriCare-DeviceDeployment\TriCare-DeviceDeployment.psm1" -Force
                     } else {
                         Import-Module .\TriCare-DeviceDeployment | Out-Null
                         Import-Module TriCare-Common
                     }
-                    $API_Key = "mUVf2vrjw7874Anr5P"
 
-                    Write-Host (Register-DeviceWithFresh -API_Key $API_Key -localDeviceInfo (Get-DeviceLocalData -API_Key $API_Key -whatif) -verbose).Name
+                    Write-Host (Register-DeviceWithFresh -localDeviceInfo (Get-DeviceLocalData -whatif) -verbose).Name
 
                 } 
             )
@@ -289,100 +285,100 @@ Describe "BuildTicket Interaction" {
     
     Context "Creating Progress Notes" {
         It "Outputs correct HTML" -ForEach @(
-            (Get-FreshAsset -name "TCL000845" -API_Key $API_Key)
+            (Get-FreshAsset -name "TCL000845")
         ) {
             New-Item -Name "BuildNoteHTML.html" -Path "\\tricaread\public\UsersH$\Mwinsen\Script-Dev\TriCare-DeviceDeployment\tests" -Force -Value (
-                $_ | Get-DeviceBuildData -API_Key $API_Key | Write-DeviceBuildTicket -whatif -API_Key $API_Key -Message "This is some test message"
+                $_ | Get-DeviceBuildData | Write-DeviceBuildTicket -whatif -Message "This is some test message"
             )
         }
 
         It "Creates a note" -ForEach @(
-            (Get-FreshAsset -name "TCL000845" -API_Key $API_Key)
+            (Get-FreshAsset -name "TCL000845")
         ) {
-            $_ | Get-DeviceBuildData -API_Key $API_Key | Write-DeviceBuildTicket -API_Key $API_Key -message "Test Test eTHGSDKJFHDSGJFSGDKHJFHF"
+            $_ | Get-DeviceBuildData | Write-DeviceBuildTicket -message "Test Test eTHGSDKJFHDSGJFSGDKHJFHF"
         }
 
         It "Outputs correct HTML when erroring" -ForEach @(
-            (Get-FreshAsset -name "TCL000845" -API_Key $API_Key)
+            (Get-FreshAsset -name "TCL000845")
         ) {
-            $buildData = $_ | Get-DeviceBuildData -API_Key $API_Key
+            $buildData = $_ | Get-DeviceBuildData
 
             $anError = $null
 
             try {Get-Content -path thisPathDoesntExist -ErrorAction stop} catch {$anError = $_}
         
             New-Item -Name "BuildErrorNoteHTML.html" -Path  "\\tricaread\public\UsersH$\Mwinsen\Script-Dev\TriCare-DeviceDeployment\tests" -Force -Value (
-                $buildData| Write-DeviceBuildError -whatif -errorObject $anError -API_Key $API_Key -logPath "\\tricaread\public\UsersH$\Mwinsen\Script-Dev\TriCare-DeviceDeployment\tests\DeviceDeployment.Tests.ps1" -additionalInfo "This Is a Test"
+                $buildData| Write-DeviceBuildError -whatif -errorObject $anError -logPath "\\tricaread\public\UsersH$\Mwinsen\Script-Dev\TriCare-DeviceDeployment\tests\DeviceDeployment.Tests.ps1" -additionalInfo "This Is a Test"
             )
         }
 
         It "Outputs correct HTML when erroring WO errorObj" -ForEach @(
-            (Get-FreshAsset -name "TCL000845" -API_Key $API_Key)
+            (Get-FreshAsset -name "TCL000845")
         ) {
-            $buildData = $_ | Get-DeviceBuildData -API_Key $API_Key
+            $buildData = $_ | Get-DeviceBuildData
 
             $anError = $null
 
             try {Get-Content -path thisPathDoesntExist -ErrorAction stop} catch {$anError = $_}
         
             New-Item -Name "BuildErrorNoteHTML-NoErrorObj.html" -Path  "\\tricaread\public\UsersH$\Mwinsen\Script-Dev\TriCare-DeviceDeployment\tests" -Force -Value (
-                $buildData| Write-DeviceBuildError -whatif -API_Key $API_Key -logPath "\\tricaread\public\UsersH$\Mwinsen\Script-Dev\TriCare-DeviceDeployment\tests\DeviceDeployment.Tests.ps1" -additionalInfo "This Is a Test"
+                $buildData| Write-DeviceBuildError -whatif -logPath "\\tricaread\public\UsersH$\Mwinsen\Script-Dev\TriCare-DeviceDeployment\tests\DeviceDeployment.Tests.ps1" -additionalInfo "This Is a Test"
             )
         }
 
         It "creates a legit note when erroring" -ForEach @(
-            (Get-FreshAsset -name "TCL000845" -API_Key $API_Key)
+            (Get-FreshAsset -name "TCL000845")
         ) {
-            $buildData = $_ | Get-DeviceBuildData -API_Key $API_Key
+            $buildData = $_ | Get-DeviceBuildData
 
             $anError = $null
 
             try {Get-Content -path thisPathDoesntExist -ErrorAction stop} catch {$anError = $_}
         
-            $buildData | Write-DeviceBuildError -API_Key $API_Key -logPath "\\tricaread\public\UsersH$\Mwinsen\Script-Dev\TriCare-DeviceDeployment\tests\DeviceDeployment.Tests.ps1" -additionalInfo "This Is a Test"
+            $buildData | Write-DeviceBuildError -logPath "\\tricaread\public\UsersH$\Mwinsen\Script-Dev\TriCare-DeviceDeployment\tests\DeviceDeployment.Tests.ps1" -additionalInfo "This Is a Test"
             
         }
     }
     Context "Testing if AD Command are completed" {
         It "Returns false if no relevant notes exist" -ForEach @(
-            (Get-DeviceBuildData -API_Key $API_Key -FreshAsset (Get-FreshAsset -name "TCL001629" -API_Key $API_Key)),
-            (Get-DeviceBuildData -API_Key $API_Key -FreshAsset (Get-FreshAsset -name "TCL000845" -API_Key $API_Key))
+            (Get-DeviceBuildData -FreshAsset (Get-FreshAsset -name "TCL001629")),
+            (Get-DeviceBuildData -FreshAsset (Get-FreshAsset -name "TCL000845"))
         )  {
-            Test-DeviceADCommandCompletion -API_Key $API_Key -BuildInfo $_ | Should -be $false
+            Test-DeviceADCommandCompletion -BuildInfo $_ | Should -be $false
         }
 
         It "Returns false if ad commands aren't completed" -ForEach @(
-            (Get-DeviceBuildData -API_Key $API_Key -FreshAsset (Get-FreshAsset -name "TCL000845" -API_Key $API_Key))
+            (Get-DeviceBuildData -FreshAsset (Get-FreshAsset -name "TCL000845"))
         )  {
             $_.GUID = "TestRun-$((Get-Date).ToFileTimeUtc())"
             
-            $_ | Write-DeviceBuildTicket -API_Key $API_Key
-            Test-DeviceADCommandCompletion -API_Key $API_Key -BuildInfo $_ | Should -be $false
+            $_ | Write-DeviceBuildTicket
+            Test-DeviceADCommandCompletion -BuildInfo $_ | Should -be $false
         }
 
         It "Returns true if AD commands are completed" -ForEach @(
-            (Get-DeviceBuildData -API_Key $API_Key -FreshAsset (Get-FreshAsset -name "TCL000845" -API_Key $API_Key))
+            (Get-DeviceBuildData -FreshAsset (Get-FreshAsset -name "TCL000845"))
         )  {
             $_.GUID = "TestRun-$((Get-Date).ToFileTimeUtc())"
             $_.buildState = $config.TicketInteraction.BuildStates.adCompletedState.message
             
-            $_ | Write-DeviceBuildTicket -API_Key $API_Key
-            Test-DeviceADCommandCompletion -API_Key $API_Key -BuildInfo $_ | Should -be $true
+            $_ | Write-DeviceBuildTicket
+            Test-DeviceADCommandCompletion -BuildInfo $_ | Should -be $true
         }
 
         
         It "Returns false if ONLY PREVIOUS ad commands are completed" -ForEach @(
-            (Get-DeviceBuildData -API_Key $API_Key -FreshAsset (Get-FreshAsset -name "TCL000845" -API_Key $API_Key))
+            (Get-DeviceBuildData -FreshAsset (Get-FreshAsset -name "TCL000845"))
         )  {
             $_.GUID = "TestRun-$((Get-Date).ToFileTimeUtc())"
             $_.buildState = $config.TicketInteraction.BuildStates.adCompletedState.message
-            $_ | Write-DeviceBuildTicket -API_Key $API_Key
+            $_ | Write-DeviceBuildTicket
             
             Start-Sleep -Seconds 1
             $_.GUID = "TestRun-$((Get-Date).ToFileTimeUtc())"
 
             
-            Test-DeviceADCommandCompletion -API_Key $API_Key -BuildInfo $_ | Should -be $false
+            Test-DeviceADCommandCompletion -BuildInfo $_ | Should -be $false
         }
     }
 }
@@ -437,7 +433,7 @@ Describe "Local Commands" {
             # $hostname = $systemInfo.Name
             # $serial =  (Get-CimInstance -ClassName win32_bios).SerialNumber          
             
-            # Get-DeviceLocalData -API_Key $API_Key
+            # Get-DeviceLocalData
         }
     }
 
@@ -485,7 +481,6 @@ Describe "Windows Updates" {
             Update-DeviceWindowsUpdate 
         }
     }
-
 }
 
 Describe "Bloatware Removal" {

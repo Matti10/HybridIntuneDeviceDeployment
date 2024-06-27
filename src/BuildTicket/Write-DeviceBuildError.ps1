@@ -23,10 +23,7 @@ function Write-DeviceBuildError {
 		$errorState = $DeviceDeploymentDefaultConfig.TicketInteraction.BuildStates.failedState,
 
 		[Parameter()]
-		[string]$dateFormat = $DeviceDeploymentDefaultConfig.Generic.DefaultDateFormat,
-
-		[Parameter(Mandatory)]
-		[string]$API_Key
+		[string]$dateFormat = $DeviceDeploymentDefaultConfig.Generic.DefaultDateFormat
 	)
 
 	begin {
@@ -53,7 +50,7 @@ function Write-DeviceBuildError {
 			#format the content
 			$content = "<table><tr><th style=`"background-color:$($errorState.color)`">Error Information</th></tr><tr><td>$content</td></tr></table>"
 
-			Write-DeviceBuildTicket -API_Key $API_Key -Message $content -whatif:$WhatIfPreference -buildInfo $BuildInfo
+			Write-DeviceBuildTicket -Message $content -whatif:$WhatIfPreference -buildInfo $BuildInfo
 		}
 		catch {
 			$errorList += $_

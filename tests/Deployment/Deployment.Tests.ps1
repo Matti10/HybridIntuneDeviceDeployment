@@ -13,8 +13,6 @@ BeforeAll {
 
     $defaultConfig = Get-DeviceManagementDefaultConfig
 
-	$API_key = Get-KVSecret -KeyVault "tc-ae-d-kv" -Secret "freshservice-apikey-matt"
-
 }
 
 Describe "Get-DeviceBuildData" {
@@ -43,7 +41,7 @@ Describe "Get-DeviceBuildData" {
 			"2WPJ504",
 			"BVPJ504"
 		) {
-			(Get-DeviceBuildData -API_Key $API_key -serialNum $_).ticketID | Should -not -BeNullOrEmpty
+			(Get-DeviceBuildData -serialNum $_).ticketID | Should -not -BeNullOrEmpty
 		}
 		It "Returns info for devices when searching by name" -ForEach @(
 			"TCL000845",
@@ -53,7 +51,7 @@ Describe "Get-DeviceBuildData" {
 			"TCL001635",
 			"TCL001634"
 		) {
-			Get-DeviceBuildData -API_Key $API_key -identity $_ | Should -not -BeNullOrEmpty
+			Get-DeviceBuildData -identity $_ | Should -not -BeNullOrEmpty
 		}
 		It "Returns null for devices with no associated tickets" -ForEach @(
 			"TCL000437",
@@ -61,14 +59,14 @@ Describe "Get-DeviceBuildData" {
 			"TCL000326",
 			"TCL000328"
 		) {
-			Get-DeviceBuildData -API_Key $API_key -identity $_ -ErrorAction SilentlyContinue | Should -BeNullOrEmpty
+			Get-DeviceBuildData -identity $_ -ErrorAction SilentlyContinue | Should -BeNullOrEmpty
 		}
 		It "Returns the newest of many build tickets" {
-			(Get-DeviceBuildData -API_Key $API_key -identity TCL000845).ticketID | Should -Be "100900"
+			(Get-DeviceBuildData -identity TCL000845).ticketID | Should -Be "100900"
 		}
 
 		It "only returns build tickets" {
-			(Get-DeviceBuildData -API_Key $API_key -identity TCL000845).ticketID | Should -Be "100900"
+			(Get-DeviceBuildData -identity TCL000845).ticketID | Should -Be "100900"
 		}
 
 		It "returns the correct Data" {
@@ -80,7 +78,7 @@ Describe "Get-DeviceBuildData" {
 				AssetID= "TCL000845"
 				type= "Desktop PC"
 			}
-			$data = Get-DeviceBuildData -API_Key $API_key -identity TCL000845
+			$data = Get-DeviceBuildData -identity TCL000845
 			
 			foreach ($key in $correct.Keys)
 			{
@@ -108,7 +106,7 @@ Describe "Resolve Device OU" {
 	){
 		it "Returns expected OU "{
 
-			$buildTickets = Get-FreshAssetsTickets -API_Key $API_Key -name $name
+			$buildTickets = Get-FreshAssetsTickets -name $name
 			
 			if ($null -ne $buildTickets) {
 				# filter non build tickets out
@@ -126,7 +124,7 @@ Describe "Resolve Device OU" {
 
 				Write-Host "$name - $buildTicketID"
 
-				$buildDetails = (Get-FreshTicketsRequestedItems -API_Key $API_Key -ticketID $buildTicketID).custom_fields
+				$buildDetails = (Get-FreshTicketsRequestedItems -ticketID $buildTicketID).custom_fields
 
 				$foundOU = Get-DeviceBuildOU -build $buildDetails.hardware_use_build_type -facility $buildDetails.facility[0]
 
