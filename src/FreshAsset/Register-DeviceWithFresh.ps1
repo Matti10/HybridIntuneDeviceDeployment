@@ -17,7 +17,7 @@ function Register-DeviceWithFresh {
 				#Use mutex to protect names from concurrent access 
 				$mutex = Protect-DeviceAssetIDMutex -Verbose:$VerbosePreference
 				
-				$AssetIDInfo = (Get-DeviceAssetID -serialNumber $localDeviceInfo.serialNumber)
+				$AssetIDInfo = (Get-DeviceAssetID -serialNumber $localDeviceInfo.serialNumber -disaplyUserOutput)
 				
 				$freshAsset = $AssetIDInfo.freshAsset
 				$AssetID = $AssetIDInfo.AssetID

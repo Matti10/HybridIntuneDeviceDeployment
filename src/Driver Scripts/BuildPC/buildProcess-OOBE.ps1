@@ -7,11 +7,12 @@ Write-Verbose "BuildProcess Execution Started"
 try {
 	#--------------------------- Setup ---------------------------# 
 	$config = Get-DeviceDeploymentDefaultConfig
-	
+	Update-AZConfig -EnableLoginByWam $false # this forces login with browser, should not be req
+
 	# Check the device is in OOBE
 	if (Test-OOBE -whatif) {
 		#-------------------------- Block Shutdowns until build process is completed --------------------------# 
-		Block-DeviceShutdown -Verbose:$VerbosePreference
+		Block-DeviceShutdown -Verbose:$VerbosePreference | Out-Null
 
 
 		#------------------------ Get Build Data and Create Fresh Asset (if required)  ------------------------# 

@@ -2,7 +2,10 @@ function Get-DeviceBuildData {
 	[CmdletBinding(SupportsShouldProcess = $true)]
 	param (
 		[Parameter(ValueFromPipeline,Mandatory)]
-		$freshAsset
+		$freshAsset,
+
+		[Parameter(ValueFromPipeline,Mandatory)]
+		$messageTemplates = $DeviceDeploymentDefaultConfig.DeviceUserInteraction.Messages
 	)
 
 	begin {
@@ -11,28 +14,34 @@ function Get-DeviceBuildData {
 	process {
 		if ($PSCmdlet.ShouldProcess($freshAsset.Name)) {
 			try {
-				$buildTickets = $freshAsset | Get-FreshAssetsTickets -ErrorAction SilentlyContinue
-				
-				# filter non build tickets out
-				try {
-					$buildTickets = $buildTickets | Where-Object {
-						foreach ($pattern in $DeviceDeploymentDefaultConfig.Deployment.buildTicketNamePatterns) {
-							if ($_.request_details -like $pattern) {
-								return $true
-							}
-						}
-						return $false
+				$attemptCount = 0
+				do {
+					#manage user messaging
+					if ($attemptCount -eq 1) {
+						Show-DeviceUserMessage -message $messageTemplates.buildTicketAssignmentFirstAttempt.message -title $messageTemplates.buildTicketAssignmentFirstAttempt.title -wait -messageBoxConfigCode $messageTemplates.buildTicketAssignmentFirstAttempt.messageBoxConfiguration -placeholderValue $freshAsset.Name
+					} elseif ($attemptCount -gt 1) {
+						Show-DeviceUserMessage -message $messageTemplates.buildTicketAssignmentOtherAttempts.message -title $messageTemplates.buildTicketAssignmentOtherAttempts.title -wait -messageBoxConfigCode $messageTemplates.buildTicketAssignmentOtherAttempts.messageBoxConfiguration -placeholderValue $freshAsset.Name
 					}
-				}
-				catch [System.Management.Automation.PropertyNotFoundException] {
-					Write-Verbose "Device has no build tickets"
-				}
 
-				if ($null -eq $buildTickets) {
-					Write-Error "$($FreshAsset.Name) has no built tickets associated with it"
-					return $null
-				}
-
+					$buildTickets = $freshAsset | Get-FreshAssetsTickets -ErrorAction SilentlyContinue
+				
+					# filter non build tickets out
+					try {
+						$buildTickets = $buildTickets | Where-Object {
+							foreach ($pattern in $DeviceDeploymentDefaultConfig.Deployment.buildTicketNamePatterns) {
+								if ($_.request_details -like $pattern) {
+									return $true
+								}
+							}
+							return $false
+						}
+					}
+					catch [System.Management.Automation.PropertyNotFoundException] {
+						Write-Verbose "Device has no build tickets"
+					}
+					
+					$attemptCount++ #increment attemptCount
+				} while ($null -eq $buildTickets)
 
 				#get the newest ticket
 				$buildTicketID = ($buildTickets | Sort-Object -Property updated_at -Descending)[0]."request_id".split("-")[1] # request id has a prefix "SR-"/"INC-" 

@@ -556,3 +556,15 @@ Describe "Cleanup" {
         }
     }
 }
+
+Describe "Device User Communication" {
+    Context "Creating Popups" {
+        It "creates a popup" -ForEach @(
+            $config.DeviceUserInteraction.messageBoxConfigurations.Exclamation,
+            $config.DeviceUserInteraction.messageBoxConfigurations.Retry,
+            $config.DeviceUserInteraction.messageBoxConfigurations.Information
+        ) {
+            {Show-DeviceUserMessage -Message "Test" -Title "test" -messageBoxConfigCode $_} | Should -not -Throw
+        }
+    }
+}

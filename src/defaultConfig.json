@@ -411,5 +411,30 @@
 	"ShutdownListener" : {
 		"jobName" : "Block-DeviceShutdown",
 		"waitSeconds" : 30
+	},
+	"DeviceUserInteraction" : {
+		"placeholderValue" : "%PLACEHOLDER%",
+		"messageBoxConfigurations" : {
+			"Exclamation" : 4144,
+			"Retry" : 4149,
+			"Information" : 4160 
+		},
+		"messages" : {
+			"assetIdAssignment" : {
+				"title" : "Device Asset ID Assignment",
+				"message" : "Device has been assigned AssetID `%PLACEHOLDER%`. If required, please attach an asset tag to the device",
+				"messageBoxConfiguration" : 4160
+			},
+			"buildTicketAssignmentFirstAttempt" : {
+				"title" : "Device Missing Build Ticket",
+				"message" : "Device doesn't have any build tickets associated with it. If this is a new build, you will need to create a ticket for the AssetID `%PLACEHOLDER%`",
+				"messageBoxConfiguration" : 4149
+			},
+			"buildTicketAssignmentOtherAttempts" : {
+				"title" : "Device Missing Build Ticket",
+				"message" : "Device (%PLACEHOLDER%) doesn't have any build tickets associated with it. Please check that there is a valid build service request and that '%PLACEHOLDER%' is assigned to said ticket under the assets tab",
+				"messageBoxConfiguration" : 4149
+			}
+		}
 	}
 }

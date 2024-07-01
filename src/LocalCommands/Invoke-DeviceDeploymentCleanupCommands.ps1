@@ -10,6 +10,8 @@ function Invoke-DeviceDeploymentCleanupCommands {
 		try {
 			Unblock-DeviceShutdown
 			Remove-DeviceDeploymentTempData
+
+			Disconnect-AzAccount
 		}
 		catch {
 			$errorList += $_

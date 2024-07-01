@@ -5,8 +5,13 @@ function Get-DeviceAssetID {
 		[string]$serialNumber,
 
 		[Parameter()]
-		[string]$FreshAssetIDAttr = $DeviceDeploymentDefaultConfig.AssetID.freshAssetIDAttr
+		[string]$FreshAssetIDAttr = $DeviceDeploymentDefaultConfig.AssetID.freshAssetIDAttr,
 
+		[Parameter()]
+		[switch]$disaplyUserOutput,
+
+		[Parameter(ValueFromPipeline,Mandatory)]
+		$messageTemplates = $DeviceDeploymentDefaultConfig.DeviceUserInteraction.messages
 
 	)
 
@@ -32,6 +37,10 @@ function Get-DeviceAssetID {
 					
 				}
 				
+				if ($disaplyUserOutput) {
+					Show-DeviceUserMessage -message $messageTemplates.assetIdAssignment.message -title $messageTemplates.assetIdAssignment.title -wait -messageBoxConfigCode $messageTemplates.assetIdAssignment.messageBoxConfiguration -placeholderValue $AssetID
+				}
+
 				return [PSCustomObject]@{
 					AssetID = $AssetID
 					freshAsset = $freshAsset
