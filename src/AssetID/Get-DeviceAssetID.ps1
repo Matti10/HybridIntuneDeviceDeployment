@@ -10,7 +10,7 @@ function Get-DeviceAssetID {
 		[Parameter()]
 		[switch]$disaplyUserOutput,
 
-		[Parameter(ValueFromPipeline,Mandatory)]
+		[Parameter()]
 		$messageTemplates = $DeviceDeploymentDefaultConfig.DeviceUserInteraction.messages
 
 	)
