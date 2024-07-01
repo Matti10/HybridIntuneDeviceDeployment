@@ -4,7 +4,7 @@ function Get-DeviceBuildData {
 		[Parameter(ValueFromPipeline,Mandatory)]
 		$freshAsset,
 
-		[Parameter(ValueFromPipeline,Mandatory)]
+		[Parameter()]
 		$messageTemplates = $DeviceDeploymentDefaultConfig.DeviceUserInteraction.Messages
 	)
 
