@@ -1,4 +1,4 @@
-function Initialize-DeviceWindowsUpdate {
+function Initialize-DeviceWindowsUpdateEnviroment {
 	[CmdletBinding(SupportsShouldProcess = $true)]
 	param (
 		[Parameter()]

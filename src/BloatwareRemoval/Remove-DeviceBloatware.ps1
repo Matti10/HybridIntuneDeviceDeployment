@@ -25,7 +25,7 @@ function Remove-DeviceBloatware {
 			foreach ($registryRoot in $registryRoots) {
 				foreach ($registryLocation in $registryLocations) {
 					Write-Verbose "Searching $registryRoot$registryLocation"
-					Get-ChildItem -Path "$registryRoot$registryLocation" | ForEach-Object {
+					Get-ChildItem -Path "$registryRoot$registryLocation" -ErrorAction "SilentlyContinue" | ForEach-Object {
 						$properties = $_ | Get-ItemProperty
 						if ($null -ne $properties) {
 							foreach ($softwareItem in $softwareToRemove) {
