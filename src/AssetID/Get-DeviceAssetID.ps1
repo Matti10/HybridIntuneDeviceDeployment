@@ -38,7 +38,7 @@ function Get-DeviceAssetID {
 				}
 				
 				if ($disaplyUserOutput) {
-					Show-DeviceUserMessage -message $messageTemplates.assetIdAssignment.message -title $messageTemplates.assetIdAssignment.title -wait -messageBoxConfigCode $messageTemplates.assetIdAssignment.messageBoxConfiguration -placeholderValue $AssetID
+					Show-DeviceUserMessage -message $messageTemplates.assetIdAssignment.message -title $messageTemplates.assetIdAssignment.title -messageBoxConfigCode $messageTemplates.assetIdAssignment.messageBoxConfiguration -placeholderValue $AssetID
 				}
 
 				return [PSCustomObject]@{
