@@ -8,7 +8,7 @@ function Invoke-CompnayPortalSync {
 		$errorList = @()
 	}
 	process {
-		if ($PSCmdlet.ShouldProcess($identity)) {
+		if ($PSCmdlet.ShouldProcess("$(hostname)")) {
 			try {
 				$Shell = New-Object -ComObject Shell.Application
 				$Shell.open("intunemanagementextension://syncapp")

@@ -9,7 +9,7 @@ function Invoke-DeviceADCommands {
 		$errorList = @()
 	}
 	process {
-		if ($PSCmdlet.ShouldProcess($identity)) {
+		if ($PSCmdlet.ShouldProcess("")) {
 			throw "Not implemented ##TODO"
 		}
 	}

@@ -8,7 +8,7 @@ function Set-DeviceLocalSettings {
 		$errorList = @()
 	}
 	process {
-		if ($PSCmdlet.ShouldProcess($identity)) {
+		if ($PSCmdlet.ShouldProcess("$(hostname)")) {
 			try {
 				#check if the required langagues are installed
 				if ((Get-WinUserLanguageList).LanguageTag -notcontains "en-AU")
