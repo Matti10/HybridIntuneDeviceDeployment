@@ -14,7 +14,7 @@ function Remove-DeviceDeploymentTempData {
 	process {
 		try {
 			#remove downloaded tricare modules
-			Get-ChildItem -Path $rootDirectory -Recurse -Depth 100 | Where-Object {$_.FullName -notLike "*$($logDirectory)*"} | Remove-Item -Force -Recurse -Confirm:$false -Verbose:$VerbosePreference -WhatIf:$WhatIfPreference
+			Get-ChildItem -Path $rootDirectory -Recurse -Depth 100 | Where-Object {$_.FullName -notLike "*$($logDirectory)*"} | Remove-Item -Force -Recurse -Confirm:$false -WhatIf:$WhatIfPreference
 
 			#remove downloaded external modules
 			Get-InstalledModule | Uninstall-Module

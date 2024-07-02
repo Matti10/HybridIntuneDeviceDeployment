@@ -10,7 +10,7 @@ function Invoke-DeviceDeploymentCleanupCommands {
 		try {
 			Unblock-DeviceShutdown
 			Remove-DeviceDeploymentTempData
-
+			THROW "##TODO check mutex is not stuck"
 			Disconnect-AzAccount
 		}
 		catch {

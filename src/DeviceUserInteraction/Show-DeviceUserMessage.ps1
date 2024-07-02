@@ -48,7 +48,7 @@ function Show-DeviceUserMessage {
 					param($message, $timeout, $title, $messageBoxConfigCode)
 					$wshell = New-Object -ComObject Wscript.Shell
 					$result = $wshell.Popup($message, $timeout, $title, $messageBoxConfigCode)
-				} -ArgumentList $message, $timeout, $title, $messageBoxConfigCode
+				} -ArgumentList $message, $timeout, $title, $messageBoxConfigCode | Out-Null
 			}
 		}
 		catch {
