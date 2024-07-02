@@ -36,7 +36,7 @@ try {
 
 		#------------------------------------------ Update Software  ------------------------------------------# 
 		Initialize-DeviceWindowsUpdateEnviroment -Verbose:$VerbosePreference
-		Initialize-DeviceWindowsUpdate -Verbose:$VerbosePreference
+		Update-DeviceWindowsUpdate -Verbose:$VerbosePreference
 
 		if (Test-DeviceDellCommandUpdate -Verbose:$VerbosePreference) {
 			Install-DeviceDellCommandUpdateDrivers -Verbose:$VerbosePreference
@@ -61,5 +61,5 @@ catch {
 	##TODO Write a function to handle errors whether we have fresh connection or not
 
 		#---------------------------------------------- Cleanup -----------------------------------------------# 
-		# Invoke-DeviceDeploymengtCleanupCommands
+		# Invoke-DeviceDeploymentCleanupCommands
 }
