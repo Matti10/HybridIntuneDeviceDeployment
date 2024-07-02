@@ -27,32 +27,33 @@ function Remove-DeviceBloatware {
 					Write-Verbose "Searching $registryRoot$registryLocation"
 					Get-ChildItem -Path "$registryRoot$registryLocation" | ForEach-Object {
 						$properties = $_ | Get-ItemProperty
-						foreach ($softwareItem in $softwareToRemove) {
-							try {
-								$members = $properties | Get-Member
-								if ($null -ne $members) {
-									if ($members.name -contains $softwareItem.searchAttr) {
-										if ($properties."$($softwareItem.searchAttr)" -like $softwareItem.searchString) {
-	
-											if ($members.name -contains $quietUninstallAttr) {
-												Write-Verbose "$quietUninstallAttr found with value $($properties.$quietUninstallAttr)"
-												$splitUninstallString = $properties.$quietUninstallAttr.split(" ")
-											} elseif ($members.name -contains $loudUninstallAttr) {
-												Write-Verbose "$loudUninstallAttr found with value $($properties.$loudUninstallAttr)"
-												$splitUninstallString = $properties.$loudUninstallAttr.split(" ")
-											} else {
-												Write-Verbose "No uninstall string found for object"
+						if ($null -ne $properties) {
+							foreach ($softwareItem in $softwareToRemove) {
+								try {
+									$members = $properties | Get-Member
+									if ($null -ne $members) {
+										if ($members.name -contains $softwareItem.searchAttr) {
+											if ($properties."$($softwareItem.searchAttr)" -like $softwareItem.searchString) {
+												if ($members.name -contains $quietUninstallAttr) {
+													Write-Verbose "$quietUninstallAttr found with value $($properties.$quietUninstallAttr)"
+													$splitUninstallString = $properties.$quietUninstallAttr.split(" ")
+												} elseif ($members.name -contains $loudUninstallAttr) {
+													Write-Verbose "$loudUninstallAttr found with value $($properties.$loudUninstallAttr)"
+													$splitUninstallString = $properties.$loudUninstallAttr.split(" ")
+												} else {
+													Write-Verbose "No uninstall string found for object"
+												}
+		
+												#run the uninstaller
+												Start-Process -FilePath $splitUninstallString[0] -ArgumentList @($splitUninstallString[1..-1] + $softwareItem.AddtnUninstallArgs) -Verbose:$VerbosePreference -Wait -ErrorAction "Stop" -WhatIf:$WhatIfPreference
 											}
-	
-											#run the uninstaller
-											Start-Process -FilePath $splitUninstallString[0] -ArgumentList @($splitUninstallString[1..-1] + $softwareItem.AddtnUninstallArgs) -Verbose:$VerbosePreference -Wait -ErrorAction "Stop" -WhatIf:$WhatIfPreference
 										}
-									}
-								} 
-							}
-							catch {
-								$errorList += $_
-								Write-Error $_
+									} 
+								}
+								catch {
+									$errorList += $_
+									Write-Error $_
+								}
 							}
 						}
 					}
