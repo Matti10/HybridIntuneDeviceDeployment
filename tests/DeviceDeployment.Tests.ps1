@@ -9,8 +9,8 @@ BeforeAll {
 
     # <# --- Import TriCare-Common --- #>
     # if ($PSCommandPath -like "*Mwinsen\Script-Dev*" -or "" -eq $PSCommandPath ) {
-        Import-Module "\\tricaread\public\UsersH$\Mwinsen\Script-Dev\TriCare-Common\TriCare-Common.psm1" -force
-        Import-Module "\\tricaread\public\UsersH$\Mwinsen\Script-Dev\TriCare-DeviceDeployment\TriCare-DeviceDeployment.psm1"  -Force
+        # Import-Module "\\tricaread\public\UsersH$\Mwinsen\Script-Dev\TriCare-Common\TriCare-Common.psm1" -force -ErrorAction "Continue"
+        # Import-Module "\\tricaread\public\UsersH$\Mwinsen\Script-Dev\TriCare-DeviceDeployment\TriCare-DeviceDeployment.psm1"  -Force -ErrorAction "Continue"
     # } else {
     #     Import-Module TriCare-Common
     #     Import-Module .\TriCare-DeviceDeployment | Out-Null
@@ -33,11 +33,11 @@ BeforeDiscovery {
 
     <# --- Import TriCare-Common --- #>
     if ($PSCommandPath -like "*Mwinsen\Script-Dev*" -or "" -eq $PSCommandPath ) {
-        Import-Module "\\tricaread\public\UsersH$\Mwinsen\Script-Dev\TriCare-Common\TriCare-Common.psm1" #-force
-        Import-Module "\\tricaread\public\UsersH$\Mwinsen\Script-Dev\TriCare-DeviceDeployment\TriCare-DeviceDeployment.psm1"  #-Force
+        Import-Module "\\tricaread\public\UsersH$\Mwinsen\Script-Dev\TriCare-Common\TriCare-Common.psm1" -ErrorAction "Continue" #-force
+        Import-Module "\\tricaread\public\UsersH$\Mwinsen\Script-Dev\TriCare-DeviceDeployment\TriCare-DeviceDeployment.psm1" -ErrorAction "Continue"  #-Force
     } else {
-        Import-Module TriCare-Common
-        Import-Module .\TriCare-DeviceDeployment | Out-Null
+        Import-Module TriCare-Common -ErrorAction "Continue"
+        Import-Module .\TriCare-DeviceDeployment | Out-Null -ErrorAction "Continue"
     }
     $config = Get-DeviceDeploymentDefaultConfig
 
@@ -240,6 +240,12 @@ Describe "Build Data" {
             "someSerialThatDoesntExist10"
         ) {
             (Get-DeviceAssetID -serialNumber $_).AssetID | Should -be "TCL001860" #this will need to be manually changed
+        }
+
+        It "Returns the next asset id if serial is unknown" -ForEach @(
+            "someSerialThatDoesntExist10"
+        ) {
+            Get-DeviceAssetID -serialNumber $_ -disaplyUserOutput
         }
     }
     Context "Device Registration in Fresh" {
