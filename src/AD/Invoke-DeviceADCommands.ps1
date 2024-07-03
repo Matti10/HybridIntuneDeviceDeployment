@@ -9,8 +9,8 @@ function Invoke-DeviceADCommands {
 		$errorList = @()
 	}
 	process {
-		if ($PSCmdlet.ShouldProcess("")) {
-			throw "Not implemented ##TODO"
+		if ($PSCmdlet.ShouldProcess($buildData.AssetID)) {
+			
 		}
 	}
 	end {

@@ -5,6 +5,9 @@ function New-BuildInfoObj {
 		[string]$AssetID,
 
 		[Parameter()]
+		[string]$hostname = "$(hostname)",
+
+		[Parameter()]
 		[string]$serialNumber = "",
 
 		[Parameter(Mandatory)]
@@ -40,14 +43,15 @@ function New-BuildInfoObj {
 			try {
 				return [PSCustomObject]@{
 					AssetID      = $AssetID
+					Hostname     = $hostname
 					serialNumber = $serialNumber
 					type         = $type
 					build        = $build
 					OU           = $OU
-					groups       = $groups
+					groups       = "$($groups | ForEach-Object {"$_,"})"
 					ticketID     = $ticketID
 					buildState   = $buildState
-					GUID = "$($serialNumber)-$((Get-Date).ToFileTimeUtc())"
+					GUID         = "$($serialNumber)-$((Get-Date).ToFileTimeUtc())"
 					freshAsset   = $freshAsset
 				}
 			}

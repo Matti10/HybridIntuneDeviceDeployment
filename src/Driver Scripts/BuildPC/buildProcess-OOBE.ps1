@@ -14,19 +14,20 @@ try {
 		#-------------------------- Block Shutdowns until build process is completed --------------------------# 
 		Block-DeviceShutdown -Verbose:$VerbosePreference | Out-Null
 
+		throw "##TODO Set Ticket status to waiting for build"
 
 		#------------------------ Get Build Data and Create Fresh Asset (if required)  ------------------------# 
 		$freshAsset = Register-DeviceWithFresh -Verbose:$VerbosePreference
-		$buildData = Get-DeviceBuildData -freshAsset $freshAsset -Verbose:$VerbosePreference
+		$buildInfo = Get-DeviceBuildData -freshAsset $freshAsset -Verbose:$VerbosePreference
 
 		#------------------------------------------- Rename Device --------------------------------------------# 
 		#----------------------- (needs to happen before device is moved to other OU) -------------------------#
-		Set-DeviceName -AssetId $buildData.AssetID -Verbose:$VerbosePreference
+		Set-DeviceName -AssetId $buildInfo.AssetID -Verbose:$VerbosePreference
 
 		#------------------------------------------ Check into Ticket -----------------------------------------# 
 		#------------------------- (This invokes privilidged commands on serverside) --------------------------#
-		$buildData.buildState = $config.TicketInteraction.BuildStates.checkInState.message # set state to "checked in"
-		Write-DeviceBuildTicket -buildInfo $buildData -Verbose:$VerbosePreference
+		$buildInfo.buildState = $config.TicketInteraction.BuildStates.checkInState.message # set state to "checked in"
+		Write-DeviceBuildTicket -buildInfo $buildInfo -Verbose:$VerbosePreference
 
 		#------------------------------------ Set Generic Local Settings  -------------------------------------# 
 		Set-DeviceLocalSettings -Verbose:$VerbosePreference
@@ -44,7 +45,7 @@ try {
 		}
 		
 		#------------------------------- Wait for AD Commands to Be Completed  --------------------------------# 
-		While (-not (Test-DeviceADCommandCompletion -Verbose:$VerbosePreference)) {
+		While (-not (Test-DeviceADCommandCompletion -Verbose:$VerbosePreference -buildInfo $buildInfo)) {
 			Start-Sleep -Seconds 10
 		}
 		#----------------------------------- Sync Various Managment Systems -----------------------------------# 

@@ -66,7 +66,9 @@
 				"name": "th",
 				"format": "border-width: 1px; padding: 3px; border-style: solid; border-color: black; background-color: %BGCOLOR%;text-allign: center;"
 			}
-		]
+		],
+		"ticketWaitingOnBuildFreshFilter" : "status:15",
+		"ticketClosedStatus" : 15
 	},
 	"Deployment": {
 		"buildTicketNamePatterns": [
