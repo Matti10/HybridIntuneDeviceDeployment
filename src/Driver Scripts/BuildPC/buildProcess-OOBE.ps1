@@ -14,7 +14,7 @@ try {
 		#-------------------------- Block Shutdowns until build process is completed --------------------------# 
 		Block-DeviceShutdown -Verbose:$VerbosePreference | Out-Null
 
-		throw "##TODO Set Ticket status to waiting for build"
+		# throw "##TODO Set Ticket status to waiting for build"
 
 		#------------------------ Get Build Data and Create Fresh Asset (if required)  ------------------------# 
 		$freshAsset = Register-DeviceWithFresh -Verbose:$VerbosePreference
