@@ -13,12 +13,13 @@ try {
 	if (Test-OOBE -whatif) {
 		#-------------------------- Block Shutdowns until build process is completed --------------------------# 
 		Block-DeviceShutdown -Verbose:$VerbosePreference | Out-Null
-
-		throw "##TODO Set Ticket status to waiting for build"
-
+		
 		#------------------------ Get Build Data and Create Fresh Asset (if required)  ------------------------# 
 		$freshAsset = Register-DeviceWithFresh -Verbose:$VerbosePreference
 		$buildInfo = Get-DeviceBuildData -freshAsset $freshAsset -Verbose:$VerbosePreference
+		
+		#------------------------ Set Ticket to Waiting on Build ------------------------# 
+		Set-FreshTicketStatus -ticketID $buildInfo.ticketID -status $config.TicketInteraction.ticketWaitingOnBuildStatus
 
 		#------------------------------------------ Check into Ticket -----------------------------------------# 
 		#------------------------- (This invokes privilidged commands on serverside) --------------------------#
