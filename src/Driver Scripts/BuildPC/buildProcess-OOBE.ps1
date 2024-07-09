@@ -10,7 +10,7 @@ try {
 	Update-AZConfig -EnableLoginByWam $false # this forces login with browser, should not be req
 
 	# Check the device is in OOBE
-	if (Test-OOBE -whatif) {
+	if (Test-OOBE -Verbose:$VerbosePreference) {
 		#-------------------------- Block Shutdowns until build process is completed --------------------------# 
 		Block-DeviceShutdown -Verbose:$VerbosePreference | Out-Null
 		
