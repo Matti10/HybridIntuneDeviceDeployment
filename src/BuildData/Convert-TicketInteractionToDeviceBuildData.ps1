@@ -14,9 +14,12 @@ function Convert-TicketInteractionToDeviceBuildData {
 	process {
 		if ($PSCmdlet.ShouldProcess("")) {
 			try {
-				$raw = ConvertFrom-HTMLTable -html $text
-				 throw "make this a build data obj"
-				return 
+				$raw = (ConvertFrom-HTMLTable -html $text)
+
+				#parse groups
+				$groups = $raw.groups.split(",") | ForEach-Object {$_.Trim(" ")} | Where-Object {$_ -ne ""}
+
+				return (New-BuildInfoObj -AssetID $raw.AssetID -hostname $raw.hostname -serialNumber $raw.serialNumber -type $raw.type -build $raw.build -ticketID $raw.ticketID -freshAsset $raw.freshAsset -OU $raw.OU -groups $groups -buildState $raw.buildState -guid $raw.guid)
 			}
 			catch {
 				$errorList += $_

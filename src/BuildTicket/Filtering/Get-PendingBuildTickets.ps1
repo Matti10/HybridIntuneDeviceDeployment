@@ -3,30 +3,31 @@ function Get-PendingBuildTickets {
 	param (
 		[Parameter()]
 		[string]
-		$buildTicketFilter = $DeviceDeploymentDefaultConfig.TicketInteraction.ticketWaitingOnBuildFreshFilter
+		$buildTicketStatusFilter = $DeviceDeploymentDefaultConfig.TicketInteraction.ticketWaitingOnBuildFreshFilter
 	)
 
 	begin {
 		$errorList = @()
 	}
 	process {
-		if ($PSCmdlet.ShouldProcess($AssetID)) {
+		if ($PSCmdlet.ShouldProcess("")) {
 			try {
 
 				$pendingTickets = @()
 
-				$buildTickets = Get-FreshTickets -filter $buildTicketFilter
+				$buildTickets = Get-FreshTickets -filter $buildTicketStatusFilter | Select-ValidBuildTickets
+
 
 				foreach ($buildTicket in $buildTickets) {
 					$conversations = Get-FreshTicketConversations -ticketID $buildTicket.ID
 
 					if ($null -ne $conversations) {
-						$buildGUID = Test-DeviceTicketCheckIn -conversations $conversations
+						$buildInfo = Test-DeviceTicketCheckIn -conversations $conversations
 
-						if ($buildGUID -ne $false) {
+						if ($buildInfo -ne $false) {
 							$pendingTickets += @{
-								TicketID = $buildTicketID
-								BuildGUID = $buildGUID
+								buildInfo = $buildInfo
+								conversations = $conversations
 							}
 						}
 					}

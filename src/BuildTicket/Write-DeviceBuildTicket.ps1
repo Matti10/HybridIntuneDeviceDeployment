@@ -17,7 +17,10 @@ function Write-DeviceBuildTicket {
 		$buildStates = $DeviceDeploymentDefaultConfig.TicketInteraction.BuildStates,
 
 		[Parameter()]
-		$formattingConfig = $DeviceDeploymentDefaultConfig.TicketInteraction.freshFormatting
+		$formattingConfig = $DeviceDeploymentDefaultConfig.TicketInteraction.freshFormatting,
+		
+		[Parameter()]
+		$listDisplayDelimiter = $DeviceDeploymentDefaultConfig.TicketInteraction.listDisplayDelimiter
 	)
 
 	begin {
@@ -25,7 +28,20 @@ function Write-DeviceBuildTicket {
 	}
 	process {
 		try {
-			$tempBuildInfo = $BuildInfo
+			$tempBuildInfo = [PSCustomObject]@{}
+			#copy values into a temp object (BECAUSE POWERSHELL CANT NOT PASS BY REFERENCE!!!!!!!!)
+			$BuildInfo | Get-Member | Where-Object {$_.MemberType -eq "NoteProperty"} | ForEach-Object {
+				$tempBuildInfo | Add-Member -MemberType NoteProperty -Name $_.Name -Value $BuildInfo."$($_.Name)"
+			}
+
+			# convert the list of groups to a readable format
+			$tempBuildInfo.groups = ""
+			foreach ($group in $BuildInfo.groups) {
+				$tempBuildInfo.groups = "$group$listDisplayDelimiter$($tempBuildInfo.groups)"
+			}
+			$tempBuildInfo.groups = $tempBuildInfo.groups.TrimEnd(", ")
+
+			# change heading of the fresh asset to make it more readable
 			$tempBuildInfo.freshAsset = $tempBuildInfo.freshAsset.asset_tag
 			$content = $content.replace("%TABLE%", (ConvertTo-HtmlTable -itemsList $tempBuildInfo -vertical))
 			$content = $content.replace("%MESSAGE%", $message)

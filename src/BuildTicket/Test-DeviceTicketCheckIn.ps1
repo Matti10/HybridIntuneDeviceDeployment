@@ -20,20 +20,18 @@ function Test-DeviceTicketCheckIn {
 			#sort newest to oldest 
 			$conversations = $conversations | Sort-Object updated_at -Descending
 
-			:mainConversationLoop foreach ($conversation in $conversations) {
+			:mainConversationLoop foreach ($conversation in $conversations | Where-Object {$_.body -like "*$ticketCheckInString*"}) {
 				#test if this note/reply is a ticket check in
-				if ("$($conversation)" -like "*$ticketCheckInString*") {
-					$buildInfo = Convert-TicketInteractionToDeviceBuildData -text $conversation.body
+				$buildInfo = Convert-TicketInteractionToDeviceBuildData -text $conversation.body
 
-					#test if the build associated with the check in is completed
-					foreach ($laterConversation in $conversations | ? {$_.body -like "*$buildInfo*"}) {
-						if ("$($laterConversation)" -like "*$ticketCompletionString*") {
-							Continue :mainConversationLoop
-						}
+				#test if the build associated with the check in is completed
+				foreach ($laterConversation in $conversations | Where-Object {$_.body -like "*$($buildInfo.GUID)*"}) {
+					if ("$($laterConversation)" -like "*$ticketCompletionString*") {
+						Continue mainConversationLoop
 					}
-					
-					return 
 				}
+				
+				return $buildInfo
 			}
 
 			return $false

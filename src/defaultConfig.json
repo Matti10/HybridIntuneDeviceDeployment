@@ -35,6 +35,10 @@
 				"message": "In Progress - Device Checked In",
 				"color": "rgb(102, 153, 255)"
 			},
+			"adPendingState": {
+				"message": "In Progress - Pending AD Commands",
+				"color": "rgb(255, 204, 0)"
+			},
 			"adCompletedState": {
 				"message": "In Progress - AD Commands Completed",
 				"color": "rgb(102, 153, 255)"
@@ -46,6 +50,14 @@
 			"completedState": {
 				"message": "Build Completed",
 				"color": "rgb(153, 255, 102)"
+			},
+			"oldADCompRemovalCompletedState": {
+				"message": "In Progress - Old AD Computer Cleanup Completed",
+				"color": "rgb(102, 153, 255)"
+			},
+			"oldADCompRemovalPendingState": {
+				"message": "In Progress - Pending Old AD Computer Cleanup",
+				"color": "rgb(255, 204, 0)"
 			},
 			"failedState": {
 				"message": "Failed - See Error",
@@ -68,7 +80,14 @@
 			}
 		],
 		"ticketWaitingOnBuildFreshFilter" : "status:15",
-		"ticketClosedStatus" : 15
+		"ticketClosedStatus" : 5,
+		"ticketWaitingOnBuildStatus" : 15,
+		"listDisplayDelimiter" : ", ",
+		"buildTicketTitlePatterns" : [
+			"*Request*: Request to Reimage/Rebuild TriCare Asset*",
+			"*Request*: New Hardware Request*"
+		]
+
 	},
 	"Deployment": {
 		"buildTicketNamePatterns": [

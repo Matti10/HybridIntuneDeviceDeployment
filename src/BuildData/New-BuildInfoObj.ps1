@@ -22,6 +22,9 @@ function New-BuildInfoObj {
 		[Parameter(Mandatory)]
 		$freshAsset,
 
+		[Parameter()]
+		$GUID = "",
+
 		[Parameter(Mandatory)]
 		[string]$OU = "",
 
@@ -41,6 +44,10 @@ function New-BuildInfoObj {
 	process {
 		if ($PSCmdlet.ShouldProcess($AssetID)) {
 			try {
+				if ("" -eq $GUID) {
+					$GUID = "$($serialNumber)-$((Get-Date).ToFileTimeUtc())"
+				}
+				
 				return [PSCustomObject]@{
 					AssetID      = $AssetID
 					Hostname     = $hostname
@@ -48,10 +55,10 @@ function New-BuildInfoObj {
 					type         = $type
 					build        = $build
 					OU           = $OU
-					groups       = "$($groups | ForEach-Object {"$_,"})"
+					groups       = $groups
 					ticketID     = $ticketID
 					buildState   = $buildState
-					GUID         = "$($serialNumber)-$((Get-Date).ToFileTimeUtc())"
+					GUID         = $GUID
 					freshAsset   = $freshAsset
 				}
 			}

@@ -288,7 +288,6 @@ Describe "Build Data" {
     }
 }
 Describe "BuildTicket Interaction" {
-    
     Context "Creating Progress Notes" {
         It "Outputs correct HTML" -ForEach @(
             (Get-FreshAsset -name "TCL000845")

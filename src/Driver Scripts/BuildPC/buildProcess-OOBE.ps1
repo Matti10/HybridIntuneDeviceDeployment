@@ -14,19 +14,29 @@ try {
 		#-------------------------- Block Shutdowns until build process is completed --------------------------# 
 		Block-DeviceShutdown -Verbose:$VerbosePreference | Out-Null
 
-		# throw "##TODO Set Ticket status to waiting for build"
+		throw "##TODO Set Ticket status to waiting for build"
 
 		#------------------------ Get Build Data and Create Fresh Asset (if required)  ------------------------# 
 		$freshAsset = Register-DeviceWithFresh -Verbose:$VerbosePreference
 		$buildInfo = Get-DeviceBuildData -freshAsset $freshAsset -Verbose:$VerbosePreference
 
-		#------------------------------------------- Rename Device --------------------------------------------# 
-		#----------------------- (needs to happen before device is moved to other OU) -------------------------#
-		Set-DeviceName -AssetId $buildInfo.AssetID -Verbose:$VerbosePreference
-
 		#------------------------------------------ Check into Ticket -----------------------------------------# 
 		#------------------------- (This invokes privilidged commands on serverside) --------------------------#
 		$buildInfo.buildState = $config.TicketInteraction.BuildStates.checkInState.message # set state to "checked in"
+		Write-DeviceBuildTicket -buildInfo $buildInfo -Verbose:$VerbosePreference
+		
+		#------------------------------------------- Rename Device --------------------------------------------# 
+		#----------------------- (needs to happen before device is moved to other OU) -------------------------#
+		$buildInfo.buildState = $config.TicketInteraction.BuildStates.oldADCompRemovalPendingState.message
+		Write-DeviceBuildTicket -buildInfo $buildInfo -Verbose:$VerbosePreference
+
+		# Wait for old ad object to be removed if it exists
+		While (-not (Test-DeviceADDeviceRemovalCompletion -Verbose:$VerbosePreference -buildInfo $buildInfo)) {
+			Start-Sleep -Seconds 10
+		}
+		Set-DeviceName -AssetId $buildInfo.AssetID -Verbose:$VerbosePreference
+
+		$buildInfo.buildState = $config.TicketInteraction.BuildStates.adPendingState.message
 		Write-DeviceBuildTicket -buildInfo $buildInfo -Verbose:$VerbosePreference
 
 		#------------------------------------ Set Generic Local Settings  -------------------------------------# 
