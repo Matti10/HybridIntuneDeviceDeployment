@@ -41,8 +41,13 @@ function Write-DeviceBuildTicket {
 			}
 			$tempBuildInfo.groups = $tempBuildInfo.groups.TrimEnd(", ")
 
-			# change heading of the fresh asset to make it more readable
-			$tempBuildInfo.freshAsset = $tempBuildInfo.freshAsset.asset_tag
+			# change fresh asset object to its asset id
+			try {
+				$tempBuildInfo.freshAsset = $tempBuildInfo.freshAsset.asset_tag
+			} catch {
+				#do nothing - the fresh asset feild is already the fresh asset tag (rather than a fresh asset object)
+			}
+
 			$content = $content.replace("%TABLE%", (ConvertTo-HtmlTable -itemsList $tempBuildInfo -vertical))
 			$content = $content.replace("%MESSAGE%", $message)
 			$content = $content.replace("%TRACE%", "Message sent by $(hostname) at $(Get-Date -Format $dateFormat)")
