@@ -43,9 +43,15 @@ function Remove-DeviceBloatware {
 												} else {
 													Write-Verbose "No uninstall string found for object"
 												}
+
+												if($null -ne $softwareItem.AddtnUninstallArgs) {
+													$args =  @($splitUninstallString[1..-1] + $softwareItem.AddtnUninstallArgs)
+												} else {
+													$args =  @($splitUninstallString[1..-1])
+												}
 		
 												#run the uninstaller
-												Start-Process -FilePath $splitUninstallString[0] -ArgumentList @($splitUninstallString[1..-1] + $softwareItem.AddtnUninstallArgs) -Verbose:$VerbosePreference -Wait -ErrorAction "Stop" -WhatIf:$WhatIfPreference
+												Start-Process -FilePath $splitUninstallString[0] -ArgumentList $args -Verbose:$VerbosePreference -Wait -ErrorAction "Stop" -WhatIf:$WhatIfPreference
 											}
 										}
 									} 
