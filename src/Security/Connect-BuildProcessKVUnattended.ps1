@@ -19,11 +19,11 @@ function Connect-BuildProcessKVUnattended {
 		# 	# Get-AZKeyVault -SubscriptionId $SubscriptionID
 		# 	return $true
 		# } catch {
-			$ErrorMessage = $_
-			Write-Verbose "Unable to connect to Azure with certificate; trying interactively"
+			# $ErrorMessage = $_
+			# Write-Verbose "Unable to connect to Azure with certificate; trying interactively"
 
-			if (-not ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")) {
-				Write-Warning "Connect-KVUnattended: You do not have Administrator rights and weren't able to access the certificate directly, so will not be able to access the Certificate Store locally.  Connecting interactively."
+			# if (-not ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")) {
+			# 	Write-Warning "Connect-KVUnattended: You do not have Administrator rights and weren't able to access the certificate directly, so will not be able to access the Certificate Store locally.  Connecting interactively."
 				try {
 					Connect-AzAccount -TenantId $TenantID -Subscription $SubscriptionID -WarningAction:SilentlyContinue | Out-Null
 					$connected = $true
@@ -33,10 +33,10 @@ function Connect-BuildProcessKVUnattended {
 					Write-Host -ForegroundColor Red "Error connecting to Key Vault interactively: $_"
 					return $false
 				}
-			} else {
-				Write-Host "Error connecting to Key Vault without checking for Admin privileges: $ErrorMessage"
-				Write-Host "User is already an admin, so not trying interactively."
-			}
+			# } else {
+			# 	Write-Host "Error connecting to Key Vault without checking for Admin privileges: $ErrorMessage"
+			# 	Write-Host "User is already an admin, so not trying interactively."
+			# }
 
 			return $false
 		# }
