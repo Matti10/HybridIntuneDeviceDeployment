@@ -11,7 +11,11 @@
 		"serverLogPath" : ".\\Logs"
 	},
 	"Dependencies" : [
-		"TriCare-Common"
+		"TriCare-Common",
+		"TriCare-DeviceDeployment",
+        "Az.Accounts",
+        "Az.KeyVault",
+        "Microsoft.Graph.Authentication"
 	],
 	"AssetID": {
 		"freshAssetIDAttr": "name",

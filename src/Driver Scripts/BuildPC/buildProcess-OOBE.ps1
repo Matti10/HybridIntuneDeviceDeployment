@@ -1,4 +1,6 @@
 
+Set-Location -Path "C:\Intune_Setup\buildProcess"
+
 $DebugPreference = "SilentlyContinue"
 $VerbosePreference = "Continue"
 
@@ -7,6 +9,12 @@ Write-Verbose "BuildProcess Execution Started"
 try {
 	#--------------------------- Setup ---------------------------# 
 	$config = Get-DeviceDeploymentDefaultConfig
+
+	#import modules 
+	foreach ($module in $config.Dependencies) {
+		Import-Module $module
+	}
+
 	Update-AZConfig -EnableLoginByWam $false # this forces login with browser, should not be req
 	Connect-BuildProcessKVUnattended
 
