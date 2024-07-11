@@ -30,7 +30,8 @@ function Set-DeviceLocalSettings {
 							
 					}
 					catch {
-						Write-Error "Language CMDs not found (likely due to windows being out of date)"
+						Write-Verbose "Language CMDs not found (likely due to windows being out of date)"
+						#TODO - Rerun this after updates
 					}
 				}
 				#set language, region, Locale, Input Method, etc to be correct
