@@ -8,6 +8,7 @@ try {
 	#--------------------------- Setup ---------------------------# 
 	$config = Get-DeviceDeploymentDefaultConfig
 	Update-AZConfig -EnableLoginByWam $false # this forces login with browser, should not be req
+	Connect-BuildProcessKVUnattended
 
 	# Check the device is in OOBE
 	if (Test-OOBE -Verbose:$VerbosePreference) {
