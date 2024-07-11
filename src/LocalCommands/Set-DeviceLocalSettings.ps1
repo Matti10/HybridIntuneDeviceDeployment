@@ -45,24 +45,25 @@ function Set-DeviceLocalSettings {
 				
 				Set-Culture -CultureInfo en-AU  -ErrorAction "Continue"
 				
-				Set-SystemPreferredUILanguage -language en-AU -ErrorAction "Continue"
-	
+				
 				$langList = New-WinUserLanguageList -Language 'en-AU'
 				$langList.add("en-US")
 				Set-WinUserLanguageList $langList -Force -Confirm:$false
-	
+				
+				Set-SystemPreferredUILanguage -language en-AU -ErrorAction "Continue"
+				
 				#run this again to ensure all changes are copied to settings
 				Install-Language en-AU -CopyToSettings -ErrorAction "Continue"
 			}
 			catch {
 				$errorList += $_
-				Write-Error $_
+				# Write-Error $_
 			}
 		}
 	}
 	end {
 		if ($errorList.count -ne 0) {
-			Write-Error "Error(s) in $($MyInvocation.MyCommand.Name):`n$($errorList | ForEach-Object {"$_`n"})" -ErrorAction Stop
+			Write-Error "Error(s) in $($MyInvocation.MyCommand.Name):`n$($errorList | ForEach-Object {"$_`n"})" -ErrorAction "Continue"
 		}
 	}	
 }
