@@ -48,8 +48,8 @@ try {
 		Remove-DeviceBloatware -Verbose:$VerbosePreference
 
 		#------------------------------------------ Update Software  ------------------------------------------# 
-		Initialize-DeviceWindowsUpdateEnviroment -Verbose:$VerbosePreference
-		Update-DeviceWindowsUpdate -Verbose:$VerbosePreference
+		# Initialize-DeviceWindowsUpdateEnviroment -Verbose:$VerbosePreference
+		# Update-DeviceWindowsUpdate -Verbose:$VerbosePreference
 
 		if (Test-DeviceDellCommandUpdate -Verbose:$VerbosePreference) {
 			Install-DeviceDellCommandUpdateDrivers -Verbose:$VerbosePreference
