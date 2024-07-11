@@ -13,12 +13,12 @@ function Connect-BuildProcessKVUnattended {
 		$ClientID = "ce818db3-7e5f-476b-b9cc-8f9a6ee4b907"
 		$SubscriptionID = "071a86bc-1212-4137-8948-08f4cbebfbf0"
 
-		try {
-			Connect-AzAccount -ApplicationId $ClientID -TenantId $tenantID -CertificateThumbprint $CertificateThumbprint -WarningAction:SilentlyContinue -ErrorAction Stop
-			Write-Verbose " |-- Connected succesfully"
-			# Get-AZKeyVault -SubscriptionId $SubscriptionID
-			return $true
-		} catch {
+		# try {
+		# 	Connect-AzAccount -ApplicationId $ClientID -TenantId $tenantID -CertificateThumbprint $CertificateThumbprint -WarningAction:SilentlyContinue -ErrorAction Stop
+		# 	Write-Verbose " |-- Connected succesfully"
+		# 	# Get-AZKeyVault -SubscriptionId $SubscriptionID
+		# 	return $true
+		# } catch {
 			$ErrorMessage = $_
 			Write-Verbose "Unable to connect to Azure with certificate; trying interactively"
 
@@ -39,7 +39,7 @@ function Connect-BuildProcessKVUnattended {
 			}
 
 			return $false
-		}
+		# }
     } else {
         Write-Verbose "Connect-KVUnattended: Already connected."
         return $true
