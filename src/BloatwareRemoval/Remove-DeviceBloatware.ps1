@@ -49,7 +49,9 @@ function Remove-DeviceBloatware {
 												} else {
 													$args =  @($splitUninstallString[1..-1])
 												}
-		
+												
+												Write-Verbose "Running $($splitUninstallString[0]) with arguments $($args)"
+
 												#run the uninstaller
 												Start-Process -FilePath $splitUninstallString[0] -ArgumentList $args -Verbose:$VerbosePreference -Wait -ErrorAction "Stop"
 											}
