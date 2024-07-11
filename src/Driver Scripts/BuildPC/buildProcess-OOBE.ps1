@@ -1,13 +1,11 @@
 
-Set-Location -Path "C:\Intune_Setup\buildProcess"
-
 $DebugPreference = "SilentlyContinue"
-$VerbosePreference = "Continue"
 
 Write-Verbose "BuildProcess Execution Started"
 
 try {
 	#--------------------------- Setup ---------------------------# 
+	Set-Location -Path "C:\Intune_Setup\buildProcess"
 	$config = Get-DeviceDeploymentDefaultConfig
 
 	#import modules 
@@ -19,13 +17,13 @@ try {
 	Connect-BuildProcessKVUnattended
 
 	# Check the device is in OOBE
-	if (Test-OOBE -Verbose:$VerbosePreference) {
+	if (Test-OOBE -Verbose) {
 		#-------------------------- Block Shutdowns until build process is completed --------------------------# 
-		Block-DeviceShutdown -Verbose:$VerbosePreference | Out-Null
+		Block-DeviceShutdown -Verbose | Out-Null
 		
 		#------------------------ Get Build Data and Create Fresh Asset (if required)  ------------------------# 
-		$freshAsset = Register-DeviceWithFresh -Verbose:$VerbosePreference
-		$buildInfo = Get-DeviceBuildData -freshAsset $freshAsset -Verbose:$VerbosePreference
+		$freshAsset = Register-DeviceWithFresh -Verbose
+		$buildInfo = Get-DeviceBuildData -freshAsset $freshAsset -Verbose
 		
 		#------------------------ Set Ticket to Waiting on Build ------------------------# 
 		Set-FreshTicketStatus -ticketID $buildInfo.ticketID -status $config.TicketInteraction.ticketWaitingOnBuildStatus
@@ -33,44 +31,44 @@ try {
 		#------------------------------------------ Check into Ticket -----------------------------------------# 
 		#------------------------- (This invokes privilidged commands on serverside) --------------------------#
 		$buildInfo.buildState = $config.TicketInteraction.BuildStates.checkInState.message # set state to "checked in"
-		Write-DeviceBuildTicket -buildInfo $buildInfo -Verbose:$VerbosePreference
+		Write-DeviceBuildTicket -buildInfo $buildInfo -Verbose
 		
 		#------------------------------------------- Rename Device --------------------------------------------# 
 		#----------------------- (needs to happen before device is moved to other OU) -------------------------#
 		$buildInfo.buildState = $config.TicketInteraction.BuildStates.oldADCompRemovalPendingState.message
-		Write-DeviceBuildTicket -buildInfo $buildInfo -Verbose:$VerbosePreference
+		Write-DeviceBuildTicket -buildInfo $buildInfo -Verbose
 
 		# Wait for old ad object to be removed if it exists
-		While (-not (Test-DeviceADDeviceRemovalCompletion -Verbose:$VerbosePreference -buildInfo $buildInfo)) {
+		While (-not (Test-DeviceADDeviceRemovalCompletion -Verbose -buildInfo $buildInfo)) {
 			Start-Sleep -Seconds 10
 		}
-		Set-DeviceName -AssetId $buildInfo.AssetID -Verbose:$VerbosePreference
+		Set-DeviceName -AssetId $buildInfo.AssetID -Verbose
 
 		$buildInfo.buildState = $config.TicketInteraction.BuildStates.adPendingState.message
-		Write-DeviceBuildTicket -buildInfo $buildInfo -Verbose:$VerbosePreference
+		Write-DeviceBuildTicket -buildInfo $buildInfo -Verbose
 
 		#------------------------------------ Set Generic Local Settings  -------------------------------------# 
-		Set-DeviceLocalSettings -Verbose:$VerbosePreference
+		Set-DeviceLocalSettings -Verbose
 		
 		#----------------------------------------- Remove Bloatware  ------------------------------------------# 
-		Remove-DeviceBloatware -Verbose:$VerbosePreference
+		Remove-DeviceBloatware -Verbose
 
 		#------------------------------------------ Update Software  ------------------------------------------# 
-		# Initialize-DeviceWindowsUpdateEnviroment -Verbose:$VerbosePreference
-		# Update-DeviceWindowsUpdate -Verbose:$VerbosePreference
+		# Initialize-DeviceWindowsUpdateEnviroment -Verbose
+		# Update-DeviceWindowsUpdate -Verbose
 
-		if (Test-DeviceDellCommandUpdate -Verbose:$VerbosePreference) {
-			Install-DeviceDellCommandUpdateDrivers -Verbose:$VerbosePreference
-			Invoke-DeviceDellCommandUpdateUpdates -Verbose:$VerbosePreference
+		if (Test-DeviceDellCommandUpdate -Verbose) {
+			Install-DeviceDellCommandUpdateDrivers -Verbose
+			Invoke-DeviceDellCommandUpdateUpdates -Verbose
 		}
 		
 		#------------------------------- Wait for AD Commands to Be Completed  --------------------------------# 
-		While (-not (Test-DeviceADCommandCompletion -Verbose:$VerbosePreference -buildInfo $buildInfo)) {
+		While (-not (Test-DeviceADCommandCompletion -Verbose -buildInfo $buildInfo)) {
 			Start-Sleep -Seconds 10
 		}
 		#----------------------------------- Sync Various Managment Systems -----------------------------------# 
-		Invoke-GPUpdate -Verbose:$VerbosePreference #does this want to wait until first login?
-		Invoke-DeviceCompanyPortalSync -Verbose:$VerbosePreference
+		Invoke-GPUpdate -Verbose #does this want to wait until first login?
+		Invoke-DeviceCompanyPortalSync -Verbose
 
 
 		#---------------------------------------------- Cleanup -----------------------------------------------# 
