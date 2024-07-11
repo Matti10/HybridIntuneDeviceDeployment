@@ -51,7 +51,7 @@ function Remove-DeviceBloatware {
 												}
 		
 												#run the uninstaller
-												Start-Process -FilePath $splitUninstallString[0] -ArgumentList $args -Verbose:$VerbosePreference -Wait -ErrorAction "Stop" -WhatIf:$WhatIfPreference
+												Start-Process -FilePath $splitUninstallString[0] -ArgumentList $args -Verbose:$VerbosePreference -Wait -ErrorAction "Stop"
 											}
 										}
 									} 
