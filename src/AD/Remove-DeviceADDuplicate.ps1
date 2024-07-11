@@ -14,13 +14,15 @@ function Remove-DeviceADDuplicate {
 	process {
 		#get ad Comp
 		try {
-			$ADComp = Get-ADComputer -Identity $buildInfo.AssetID
-			$ADComp.Name | Remove-ADDevice -WhatIf:$WhatIfPreference
+			$ADComp = Get-ADComputer -Identity $buildInfo.AssetID -ErrorAction SilentlyContinue
 		} catch {
 			Write-Verbose "No device with name $($buildInfo.AssetID) exists in AD"
 		}
-
-
+		
+		if ($null -ne $ADComp) {
+			$ADComp.Name | Remove-ADDevice -WhatIf:$WhatIfPreference
+		}
+		
 		# add note to ticket that AD removal commands completed
 		$buildInfo.buildState = $ADDeviceRemovalCompletionString
 		Write-DeviceBuildTicket -buildInfo $buildInfo
