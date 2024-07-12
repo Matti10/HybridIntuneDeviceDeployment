@@ -14,10 +14,10 @@ try {
 	}
 
 	Update-AZConfig -EnableLoginByWam $false # this forces login with browser, should not be req
-	Connect-BuildProcessKVUnattended
+	# Connect-BuildProcessKVUnattended
 
 	# Check the device is in OOBE
-	if (Test-OOBE -Verbose) {
+	if (Test-OOBE -Verbose -whatif) {
 		#-------------------------- Block Shutdowns until build process is completed --------------------------# 
 		Block-DeviceShutdown -Verbose | Out-Null
 		
