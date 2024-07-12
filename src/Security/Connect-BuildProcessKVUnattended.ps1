@@ -25,7 +25,7 @@ function Connect-BuildProcessKVUnattended {
 			# if (-not ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")) {
 			# 	Write-Warning "Connect-KVUnattended: You do not have Administrator rights and weren't able to access the certificate directly, so will not be able to access the Certificate Store locally.  Connecting interactively."
 				try {
-					Connect-AzAccount -TenantId $TenantID -Subscription $SubscriptionID -WarningAction:SilentlyContinue | Out-Null
+					$result = (Connect-AzAccount -Credential)
 					$connected = $true
 					return $true
 				} catch {

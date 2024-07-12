@@ -5,16 +5,9 @@ Write-Verbose "BuildProcess Execution Started"
 
 try {
 	#--------------------------- Setup ---------------------------# 
-	Set-Location -Path "C:\Intune_Setup\buildProcess"
 	$config = Get-DeviceDeploymentDefaultConfig
 
-	#import modules 
-	foreach ($module in $config.Dependencies) {
-		Import-Module $module
-	}
-
-	Update-AZConfig -EnableLoginByWam $false # this forces login with browser, should not be req
-	# Connect-BuildProcessKVUnattended
+	Set-FreshAPIKey -API_Key $API_Key
 
 	# Check the device is in OOBE
 	if (Test-OOBE -Verbose -whatif) {
