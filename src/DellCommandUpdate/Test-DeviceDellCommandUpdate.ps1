@@ -11,6 +11,7 @@ function Test-DeviceDellCommandUpdate {
     }
     process {
 		try {
+            Write-Verbose "Searching for Dell Command Update"
 			foreach ($location in $softwareLocations) {
 				if (Test-Path -path $location) {
 					return $location

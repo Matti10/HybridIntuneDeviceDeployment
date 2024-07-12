@@ -13,7 +13,7 @@ function Install-DeviceDellCommandUpdateDrivers {
 		try {
             $commandUpdatePath = Test-DeviceDellCommandUpdate
             if ($commandUpdatePath -ne $false) {
-                
+                Write-Verbose "Running Dell Command Update Driver Updates"
                 #enable the feature
                 & "$commandUpdatePath" /configure -advancedDriverRestore=enable
 

@@ -14,6 +14,8 @@ function Invoke-DeviceDellCommandUpdateUpdates {
             $commandUpdatePath = Test-DeviceDellCommandUpdate
             if ($commandUpdatePath -ne $false) {
                 
+                Write-Verbose "Running Dell Command Update Software Updates"
+
                 #scan for updates
                 & "$commandUpdatePath" /scan "$(if($VerbosePreference -eq "SilentlyContinue") {"-silent"})"
 
