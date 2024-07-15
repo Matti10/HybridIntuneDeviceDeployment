@@ -15,7 +15,7 @@ function Test-DeviceADCommandCompletion {
 	}
 	process {
 		try {
-			
+			Write-Verbose "Waiting for AD Commands $($BuildInfo.ticketID)"
 			#--------------------------- Get All notes for the ticket  ---------------------------# 
 			$conversations = Get-FreshTicketConversations -ticketID $BuildInfo.ticketID
 
