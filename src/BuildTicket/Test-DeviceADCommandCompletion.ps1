@@ -15,17 +15,18 @@ function Test-DeviceADCommandCompletion {
 	}
 	process {
 		try {
-			Write-Verbose "Waiting for AD Commands $($BuildInfo.ticketID)"
-			#--------------------------- Get All notes for the ticket  ---------------------------# 
-			$conversations = Get-FreshTicketConversations -ticketID $BuildInfo.ticketID
-
-			foreach ($conversation in $conversations) {
-				if ("$($conversation)" -like "*$ADCommandCompletionString*$($BuildInfo.GUID)*") {
-					return $true
+			if ($PSCmdlet.ShouldProcess("$($buildInfo)")) {				
+				#--------------------------- Get All notes for the ticket  ---------------------------# 
+				$conversations = Get-FreshTicketConversations -ticketID $BuildInfo.ticketID
+				
+				foreach ($conversation in $conversations) {
+					if ("$($conversation)" -like "*$ADCommandCompletionString*$($BuildInfo.GUID)*") {
+						return $true
+					}
 				}
+				
+				return $false
 			}
-
-			return $false
 		}
 		catch {
 			$errorList += $_
