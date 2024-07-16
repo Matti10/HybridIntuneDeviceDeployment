@@ -69,6 +69,7 @@ try {
 		#---------------------------------------------- Mark as Completed -----------------------------------------------# 
 		$buildInfo.buildState = $config.TicketInteraction.BuildStates.completedState.message
 		Write-DeviceBuildTicket -buildInfo $buildInfo -Verbose
+		Show-DeviceUserMessage -title "Build Completed" -message "Build Succesfully Completed. Please review build ticket and resolve any errors"
 
 		#---------------------------------------------- Cleanup -----------------------------------------------# 
 		# Invoke-DeviceDeploymentCleanupCommands #should probably do this after first login
