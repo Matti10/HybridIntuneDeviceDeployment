@@ -62,6 +62,9 @@ try {
 		Invoke-GPUpdate -Verbose #does this want to wait until first login?
 		Invoke-DeviceCompanyPortalSync -Verbose
 
+		#---------------------------------------------- Mark as Completed -----------------------------------------------# 
+		$buildInfo.buildState = $config.TicketInteraction.BuildStates.completedState.message
+		Write-DeviceBuildTicket -buildInfo $buildInfo -Verbose
 
 		#---------------------------------------------- Cleanup -----------------------------------------------# 
 		# Invoke-DeviceDeploymentCleanupCommands #should probably do this after first login
