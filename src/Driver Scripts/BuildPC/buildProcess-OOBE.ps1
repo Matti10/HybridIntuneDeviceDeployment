@@ -1,4 +1,3 @@
-
 $DebugPreference = "SilentlyContinue"
 
 Write-Verbose "BuildProcess Execution Started"

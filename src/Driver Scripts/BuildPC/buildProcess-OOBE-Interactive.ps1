@@ -5,6 +5,8 @@ Write-Verbose "BuildProcess Execution Started"
 
 try {
 	#--------------------------- Setup ---------------------------# 
+	Import-DeviceBuildModules
+
 	$config = Get-DeviceDeploymentDefaultConfig
 	Update-AZConfig -EnableLoginByWam $false # this forces login with browser, should not be req
 
