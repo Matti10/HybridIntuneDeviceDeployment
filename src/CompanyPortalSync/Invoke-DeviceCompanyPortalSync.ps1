@@ -3,7 +3,6 @@ function Invoke-DeviceCompanyPortalSync {
     param (
         [Parameter()]
         $syncTaskName = $DeviceDeploymentDefaultConfig.CompanyPortalSync.syncTaskName
-
     )
 
     begin {
@@ -13,11 +12,16 @@ function Invoke-DeviceCompanyPortalSync {
 		try {
 			$syncTask = Get-ScheduledTask | Where-Object {$_.TaskName -eq $syncTaskName} 
 
+            # Sync method 1
 			if ($null -eq $syncTask) {
 				Write-Verbose "The Intune sync scheduled task doesn't exist, possibly due to company portal not being installed"
 			} else {
-				$syncTask | Start-ScheduledTask -whatIf:$WhatIfPreference -Verbose:$VerbosePreference
+				$syncTask | Start-ScheduledTask -Verbose:$VerbosePreference
 			}
+
+            # Sync method 2
+            $Shell = New-Object -ComObject Shell.Application
+            $Shell.open("intunemanagementextension://syncapp")
 		}
 		catch {
 			$errorList += $_
