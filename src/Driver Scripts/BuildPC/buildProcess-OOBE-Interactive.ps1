@@ -4,7 +4,7 @@ $DebugPreference = "SilentlyContinue"
 Write-Verbose "BuildProcess Execution Started"
 
 try {
-	#--------------------------- Setup ---------------------------# 
+	#-------------------------------------------------- Setup --------------------------------------------------# 
 	Import-DeviceBuildModules
 
 	$config = Get-DeviceDeploymentDefaultConfig
@@ -17,11 +17,11 @@ try {
 		#-------------------------- Block Shutdowns until build process is completed --------------------------# 
 		Block-DeviceShutdown -Verbose | Out-Null
 		
-		#------------------------ Get Build Data and Create Fresh Asset (if required)  ------------------------# 
+		#------------------------ Get Build Data and Create Fresh Asset (if required) -------------------------# 
 		$freshAsset = Register-DeviceWithFresh -Verbose
 		$buildInfo = Get-DeviceBuildData -freshAsset $freshAsset -Verbose
 		
-		#------------------------ Set Ticket to Waiting on Build ------------------------# 
+		#----------------------------------- Set Ticket to Waiting on Build -----------------------------------# 
 		Set-FreshTicketStatus -ticketID $buildInfo.ticketID -status $config.TicketInteraction.ticketWaitingOnBuildStatus
 
 		#------------------------------------------ Check into Ticket -----------------------------------------# 
