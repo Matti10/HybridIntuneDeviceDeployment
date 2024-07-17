@@ -72,6 +72,8 @@ try {
 		# Invoke-DeviceDeploymentCleanupCommands #should probably do this after first login
 
 		#------------------------------------------ Final Commands --------------------------------------------# 
+		Set-FreshTicketStatus -ticketID $buildInfo.ticketID -status $config.TicketInteraction.ticketClosedStatus
+		
 		Unblock-DeviceShutdown
 
 		shutdown -r -t 10
