@@ -72,7 +72,9 @@ try {
 		# Invoke-DeviceDeploymentCleanupCommands #should probably do this after first login
 
 		#------------------------------------------ Final Commands --------------------------------------------# 
-		Unblock-Device
+		Unblock-DeviceShutdown
+
+		shutdown -r -t 10
 
 	}
 }

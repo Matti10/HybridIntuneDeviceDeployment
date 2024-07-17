@@ -15,9 +15,7 @@ function Remove-DeviceOfficeInstall {
     process {`
 		try {
 			if ($PSCmdlet.ShouldProcess("$(hostname)")) {
-
-						Start-Process -FilePath $officeDeploymentToolPath -ArgumentList "/configure `"$officeInstallerConfig`"" -wait
-	
+				Start-Process -FilePath $officeDeploymentToolPath -ArgumentList "/configure `"$officeInstallerConfig`"" -wait
 			}
 		}
 		catch {
