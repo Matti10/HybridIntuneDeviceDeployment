@@ -23,7 +23,7 @@ function Remove-DeviceBloatware {
     process {
 		try {
 
-			Remove-DeviceOfficeInstall -Verbose
+			Remove-DeviceOfficeInstall -Verbose:$VerbosePreference
 
 			foreach ($registryRoot in $registryRoots) {
 				foreach ($registryLocation in $registryLocations) {

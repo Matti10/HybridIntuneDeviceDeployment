@@ -66,8 +66,14 @@ try {
 		$buildInfo.buildState = $config.TicketInteraction.BuildStates.completedState.message
 		Write-DeviceBuildTicket -buildInfo $buildInfo -Verbose
 
+
+
 		#---------------------------------------------- Cleanup -----------------------------------------------# 
 		# Invoke-DeviceDeploymentCleanupCommands #should probably do this after first login
+
+		#------------------------------------------ Final Commands --------------------------------------------# 
+		Unblock-Device
+
 	}
 }
 catch {
