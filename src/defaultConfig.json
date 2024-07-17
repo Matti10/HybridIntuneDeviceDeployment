@@ -412,8 +412,7 @@
 		],
 		"Office" : {
 			"OfficeInstallerConfigPath" : "C:\\Program Files\\WindowsPowerShell\\Modules\\TriCare-DeviceDeployment\\src\\BloatwareRemoval\\Remove-DeviceOfficeInstallConfig.xml",
-			"officeInstallerName" : "OfficeClickToRun.exe",
-			"searchRoots" : ["C:\\Program Files","C:\\Program Files(x86)"]
+			"ODTPath" : "C:\\Program Files\\WindowsPowerShell\\Modules\\TriCare-DeviceDeployment\\src\\BloatwareRemoval\\ODT.exe"
 		}
 	},
 	"CompanyPortalSync" : {

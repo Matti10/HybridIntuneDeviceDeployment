@@ -5,25 +5,19 @@ function Remove-DeviceOfficeInstall {
         $officeInstallerConfig = $DeviceDeploymentDefaultConfig.Bloatware.Office.OfficeInstallerConfigPath,
 
 		[Parameter()]
-		$officeExeName = $DeviceDeploymentDefaultConfig.Bloatware.Office.officeInstallerName,
+		$officeDeploymentToolPath = $DeviceDeploymentDefaultConfig.Bloatware.Office.ODTPath
 		
-		[Parameter()]
-		$searchRoots = $DeviceDeploymentDefaultConfig.Bloatware.Office.searchRoots
     )
 
     begin {
         $errorList = @()
     }
-    process {
+    process {`
 		try {
 			if ($PSCmdlet.ShouldProcess("$(hostname)")) {
-				foreach ($searchRoot in $searchRoots) {
-					Get-ChildItem -recurse -File | Where-Object {$_.FullName -like "*$officeExeName*"} | ForEach-Object {
-						Write-Verbose "Starting process $($_.Fullname) with args $("/configure $officeInstallerConfig")"
-						Start-Process -FilePath $_.FullName -ArgumentList "/configure $officeInstallerConfig" -wait
-						return
-					} 
-				}
+
+						Start-Process -FilePath $officeDeploymentToolPath -ArgumentList "/configure `"$officeInstallerConfig`"" -wait
+	
 			}
 		}
 		catch {
