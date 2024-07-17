@@ -22,6 +22,9 @@ function Remove-DeviceBloatware {
     }
     process {
 		try {
+
+			Remove-DeviceOfficeInstall -Verbose
+
 			foreach ($registryRoot in $registryRoots) {
 				foreach ($registryLocation in $registryLocations) {
 					Write-Verbose "Searching $registryRoot$registryLocation"

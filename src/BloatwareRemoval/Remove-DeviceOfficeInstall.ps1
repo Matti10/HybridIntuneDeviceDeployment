@@ -16,11 +16,13 @@ function Remove-DeviceOfficeInstall {
     }
     process {
 		try {
-			foreach ($searchRoot in $searchRoots) {
-				Get-ChildItem -recurse -File | Where-Object {$_.FullName -like "*$officeExeName*"} | ForEach-Object {
-					Start-Process -FilePath $_.FullName -ArgumentList "/configure $officeInstallerConfig"
-					return
-				} 
+			if ($PSCmdlet.ShouldProcess("$(hostname)")) {
+				foreach ($searchRoot in $searchRoots) {
+					Get-ChildItem -recurse -File | Where-Object {$_.FullName -like "*$officeExeName*"} | ForEach-Object {
+						Start-Process -FilePath $_.FullName -ArgumentList "/configure $officeInstallerConfig"
+						return
+					} 
+				}
 			}
 		}
 		catch {
