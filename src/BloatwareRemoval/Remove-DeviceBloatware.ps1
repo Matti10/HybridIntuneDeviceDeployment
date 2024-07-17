@@ -36,13 +36,15 @@ function Remove-DeviceBloatware {
 											if ($properties."$($softwareItem.searchAttr)" -like $softwareItem.searchString) {
 												if ($members.name -contains $quietUninstallAttr) {
 													Write-Verbose "$quietUninstallAttr found with value $($properties.$quietUninstallAttr)"
-													$splitUninstallString = $properties.$quietUninstallAttr.split(" ")
+													$uninstallString = $properties.$quietUninstallAttr
 												} elseif ($members.name -contains $loudUninstallAttr) {
 													Write-Verbose "$loudUninstallAttr found with value $($properties.$loudUninstallAttr)"
-													$splitUninstallString = $properties.$loudUninstallAttr.split(" ")
+													$uninstallString = $properties.$loudUninstallAttr
 												} else {
 													Write-Verbose "No uninstall string found for object"
 												}
+
+												$splitUninstallString = $uninstallString.split(" ")
 
 												if($null -ne $softwareItem.AddtnUninstallArgs) {
 													$args =  @($splitUninstallString[1..-1] + $softwareItem.AddtnUninstallArgs)
@@ -53,7 +55,11 @@ function Remove-DeviceBloatware {
 												Write-Verbose "Running $($splitUninstallString[0]) with arguments $($args)"
 
 												#run the uninstaller
-												Start-Process -FilePath $splitUninstallString[0] -ArgumentList $args -Verbose:$VerbosePreference -Wait -ErrorAction "Stop"
+												try {
+													Start-Process -FilePath $splitUninstallString[0] -ArgumentList $args -Verbose:$VerbosePreference -Wait -ErrorAction "Stop"
+												} catch {
+													& "$uninstallString"
+												}
 											}
 										}
 									} 

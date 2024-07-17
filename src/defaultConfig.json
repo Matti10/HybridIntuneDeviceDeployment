@@ -408,23 +408,13 @@
 				"searchAttr" : "DisplayName",
 				"searchString" : "*OneNote*",
 				"AddtnUninstallArgs" : null
-			},
-			{
-				"searchAttr" : "DisplayName",
-				"searchString" : "*Microsoft 365*th",
-				"AddtnUninstallArgs" : null
-			},
-			{
-				"searchAttr" : "DisplayName",
-				"searchString" : "*Microsoft 365*zh",
-				"AddtnUninstallArgs" : null
-			},
-			{
-				"searchAttr" : "DisplayName",
-				"searchString" : "*Microsoft 365*ko",
-				"AddtnUninstallArgs" : null
 			}
-		]
+		],
+		"Office" : {
+			"OfficeInstallerConfigPath" : "C:\\Program Files\\WindowsPowerShell\\Modules\\TriCare-DeviceDeployment\\src\\BloatwareRemoval\\Remove-DeviceOfficeInstallConfig.xml",
+			"officeInstallerName" : "OfficeClickToRun.exe",
+			"searchRoots" : ["C:\\Program Files","C:\\Program Files(x86)"]
+		}
 	},
 	"CompanyPortalSync" : {
 		"syncTaskName" : "PushLaunch"
