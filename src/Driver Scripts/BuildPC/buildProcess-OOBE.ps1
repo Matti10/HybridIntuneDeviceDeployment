@@ -75,9 +75,6 @@ try {
 		Set-FreshTicketStatus -ticketID $buildInfo.ticketID -status $config.TicketInteraction.ticketClosedStatus
 		
 		Unblock-DeviceShutdown
-
-		shutdown -r -t 10
-
 	}
 }
 catch {
