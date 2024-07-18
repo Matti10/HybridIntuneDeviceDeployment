@@ -17,7 +17,8 @@ try {
 		$freshAsset = Register-DeviceWithFresh -Verbose
 		$buildInfo = Get-DeviceBuildData -freshAsset $freshAsset -Verbose
 		
-		#------------------------ Set Ticket to Waiting on Build ------------------------# 
+		#------------------------ Set Ticket to Waiting on Build ------------------------#
+		Set-FreshTicketDescription -ticketID $buildInfo.ticketID -description "$($buildInfo.GUID) Executing Build Process" # set the description so it cannot be null
 		Set-FreshTicketStatus -ticketID $buildInfo.ticketID -status $config.TicketInteraction.ticketWaitingOnBuildStatus
 
 		#------------------------------------------ Check into Ticket -----------------------------------------# 
