@@ -19,11 +19,15 @@ BeforeDiscovery {
 
 Describe "ErrorOutput" {
     Context "Works with connection to fresh" {
-		it "works" {
+		it "works" -ForEach @(
+			{Move-ADObject -identity "CN=TCL001675,OU=Autopilot Domain Join,OU=TriCare-Computers,DC=tricaread,DC=int" -TargetPath "lmaoWRONG"},
+			{Get-Content "Z:\thisDoesntExist.txt" -ErrorAction stop}
+
+		) {
 			$info = Get-DeviceBuildData -freshAsset (Get-FreshAsset -name TCL001629)
 	
 			try {
-				Get-Content "Z:\thisDoesntExist.txt" -ErrorAction stop
+				& $_
 			} catch {
 				{New-BuildProcessError -errorObj $_ -message "AD Commands have Failed. Please manually check that the device is in the listed OU and groups. This has not effected other parts of the build process." -functionName "Invoke-DeviceADCommands" -buildInfo $info -debugMode -ErrorAction "Continue"} | Should -not -Throw
 			}

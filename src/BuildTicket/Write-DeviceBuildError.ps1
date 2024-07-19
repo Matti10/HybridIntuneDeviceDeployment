@@ -39,8 +39,21 @@ function Write-DeviceBuildError {
 			#format error message in a consumable manner
 			$content = "An Error has occoured during the build process"
 
+			# low effort attempt to get the error message (its stored in different places....)
+			try {
+				$errorMsg = $errorObject.exception.Message
+			} catch {
+				try {
+					$errorMsg = $errorObject.exception.ErrorRecord
+				}
+				catch {
+					$errorMsg = "Unknown"
+				}
+			}
+
+			# put message together
 			if ($null -ne $errorObject) {
-				$content += ":<br><b>Solution & Details:</b> $message<br><b>Error Location/Function: $($stack[1].Command)</b> <br><b>Error Message:</b> $($errorObject.exception.ErrorRecord)<br>"
+				$content += ":<br><b>Solution & Details:</b> $message<br><b>Error Location/Function: $($stack[1].Command)</b> <br><b>Error Message:</b> $($errorMsg)<br>"
 			}
 			else {
 				$content += " when running the $($stack[1].Command) function. More details can be found in the log file, located @ $logPath path<br>(remember, to access file explorer in OOBE, press shift+F10, then type 'explorer' into the cmd window)"

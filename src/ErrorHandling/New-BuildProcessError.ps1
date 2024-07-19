@@ -30,7 +30,7 @@ function New-BuildProcessError {
 				$userFriendlyMessage = "$message`nError Detail:`n$($errorObj)"
 
 				if ($debugMode) {
-					Send-eMailMessage -FromEmail "matt.winsen@tricare.com.au" -ToEmail "matt.winsen@tricare.com.au" -Subject "Build Process Error | $functionName" -Body "$errorObj`n" -Verbose:$VerbosePreference
+					Send-eMailMessage -FromEmail "matt.winsen@tricare.com.au" -ToEmail "matt.winsen@tricare.com.au" -Subject "Build Process Error | $functionName" -Body "$($buildInfo | ConvertTo-JSON)`n$errorObj`n" -Verbose:$VerbosePreference
 				}
 
 				try {
