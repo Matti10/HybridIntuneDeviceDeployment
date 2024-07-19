@@ -23,7 +23,7 @@ function Import-DeviceBuildModules {
 	}
 	end {
 		if ($errorList.count -ne 0) {
-			Write-Error "Error(s) in $($MyInvocation.MyCommand.Name):`n$($errorList | ForEach-Object {"$_`n"})" -ErrorAction Stop
+			Write-Error "Error(s) in $($MyInvocation.MyCommand.Name):`n$($errorList | ForEach-Object {"$_`n"})`n $(Get-PSCallStack)" -ErrorAction Stop
 		}
 	}	
 }

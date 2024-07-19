@@ -64,7 +64,7 @@
 				"color": "rgb(255, 204, 0)"
 			},
 			"failedState": {
-				"message": "Failed - See Error",
+				"message": "Errored",
 				"color": "rgb(255, 102, 102)"
 			}
 		},
