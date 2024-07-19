@@ -13,14 +13,17 @@ function Write-DeviceBuildError {
 		[Parameter()]
 		$additionalInfo = $null,
 
-		[Parameter(Mandatory)]
-		$logPath,
+		[Parameter()]
+		$logPath = $DeviceDeploymentDefaultConfig.Logging.buildPCLogPath,
 
 		[Parameter()]
 		[string]$content = $DeviceDeploymentDefaultConfig.TicketInteraction.messageTemplate,
 
 		[Parameter()]
 		$errorState = $DeviceDeploymentDefaultConfig.TicketInteraction.BuildStates.failedState,
+
+		[Parameter()]
+		[string]$message,
 
 		[Parameter()]
 		[string]$dateFormat = $DeviceDeploymentDefaultConfig.Generic.DefaultDateFormat
@@ -37,7 +40,7 @@ function Write-DeviceBuildError {
 			$content = "An Error has occoured during the build process"
 
 			if ($null -ne $errorObject) {
-				$content += ", More details can be found below<br><b>Error Location: $($stack[1].Command)</b> <br><b>Error Message:</b> $($errorObject.exception.ErrorRecord)"
+				$content += ":<br><b>Solution & Details:</b> $message<br><b>Error Location/Function: $($stack[1].Command)</b> <br><b>Error Message:</b> $($errorObject.exception.ErrorRecord)<br>"
 			}
 			else {
 				$content += " when running the $($stack[1].Command) function. More details can be found in the log file, located @ $logPath path<br>(remember, to access file explorer in OOBE, press shift+F10, then type 'explorer' into the cmd window)"
@@ -51,6 +54,12 @@ function Write-DeviceBuildError {
 			$content = "<table><tr><th style=`"background-color:$($errorState.color)`">Error Information</th></tr><tr><td>$content</td></tr></table>"
 
 			Write-DeviceBuildTicket -Message $content -whatif:$WhatIfPreference -buildInfo $BuildInfo
+
+			#vomit out the stack trace for the nerds
+			Write-Host "StackTrace:"
+			foreach ($call in $stack) {
+				Write-Host "$($call)"
+			}
 		}
 		catch {
 			$errorList += $_
