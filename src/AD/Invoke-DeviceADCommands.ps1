@@ -35,16 +35,13 @@ function Invoke-DeviceADCommands {
 			Write-Verbose "Moving $($ADComp.SamAccountName) to $($buildInfo.OU)"
 			Move-ADObject -Identity $ADComp.DistinguishedName -TargetPath $buildInfo.OU -WhatIf:$WhatIfPreference -Verbose:$VerbosePreference
 	
-			# add note to ticket that AD commands completed
-			$buildInfo.buildState = $ADCommandsCompletedString
-			Write-DeviceBuildTicket -buildInfo $buildInfo
 		} catch {
 			$msg = $DeviceDeploymentDefaultConfig.TicketInteraction.GeneralErrorMessage
 
 			New-BuildProcessError -errorObj $_ -message "AD Commands have Failed. Please manually check that the device is in the listed OU and groups. This has not effected other parts of the build process." -functionName "Invoke-DeviceADCommands" -buildInfo $buildInfo -debugMode -ErrorAction "Continue"
 		} finally {
-			# add note to ticket that AD removal commands completed
-			$buildInfo.buildState = $ADDeviceRemovalCompletionString
+			# add note to ticket that AD commands completed
+			$buildInfo.buildState = $ADCommandsCompletedString
 			Write-DeviceBuildTicket -buildInfo $buildInfo -message $msg
 		}
 
