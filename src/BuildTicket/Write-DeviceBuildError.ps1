@@ -53,7 +53,7 @@ function Write-DeviceBuildError {
 
 			# put message together
 			if ($null -ne $errorObject) {
-				$content += ":<br><b>Solution & Details:</b> $message<br><b>Error Location/Function: $($stack[1].Command)</b> <br><b>Error Message:</b> $($errorMsg)<br>"
+				$content += ":<br><b>Solution & Details:</b> $message<br><b>Error Location/Function:</b> $($stack[1].Command)<br><b>Error Message:</b> $($errorMsg)<br>"
 			}
 			else {
 				$content += " when running the $($stack[1].Command) function. More details can be found in the log file, located @ $logPath path<br>(remember, to access file explorer in OOBE, press shift+F10, then type 'explorer' into the cmd window)"

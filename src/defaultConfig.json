@@ -90,7 +90,8 @@
 		"buildTicketTitlePatterns" : [
 			"*Request*: Request to Reimage/Rebuild TriCare Asset*",
 			"*Request*: New Hardware Request*"
-		]
+		],
+		"GeneralErrorMessage": "<p style=\"color:red\"><b>!! Some Commands have Failed. Please See above error Output !!</b></p>"
 
 	},
 	"Deployment": {

@@ -9,6 +9,7 @@ function Remove-DeviceADDuplicate {
 	)
 
 	begin {
+		$msg = ""
 	}
 	process {
 		try {
@@ -26,7 +27,14 @@ function Remove-DeviceADDuplicate {
 
 		}
 		catch {
-			New-BuildProcessError -errorObj $_ -message "AD Commands have Failed for the above device. Please manually check that the device is in the listed OU and groups. This has not effected other parts of the build process." -functionName "Invoke-DeviceADCommands" -buildInfo $buildInfo -debugMode -ErrorAction "Continue"
+			$msg = $DeviceDeploymentDefaultConfig.TicketInteraction.GeneralErrorMessage
+
+			New-BuildProcessError -errorObj $_ -message "Rename Commands have Failed. To solve this, please manually check AD for any OLD AD-Computers with the same AssetID and remove them. Double check that you're not removing this device! Then manually rename the PC" -functionName "Remove-DeviceADDuplicate" -buildInfo $buildInfo -debugMode -ErrorAction "Continue"
+			
+		} finally {
+			# add note to ticket that AD removal commands completed
+			$buildInfo.buildState = $ADDeviceRemovalCompletionString
+			Write-DeviceBuildTicket -buildInfo $buildInfo -message $msg
 		}
 		
 	}
