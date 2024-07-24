@@ -204,7 +204,7 @@
 			},
 			{
 				"freshID": "11000342557",
-				"location": "OU=CYPR",
+				"location": "OU=CGAC",
 				"dept": "OU=ACR",
 				"Groups": [
 					"Intune TimeZone UTC10"
@@ -244,7 +244,7 @@
 			},
 			{
 				"freshID": "11000342562",
-				"location": "OU=MTGR",
+				"location": "OU=MGAC",
 				"dept": "OU=ACR",
 				"Groups": [
 					"Intune TimeZone UTC10"
@@ -268,7 +268,7 @@
 			},
 			{
 				"freshID": "11000342565",
-				"location": "OU=STAFF",
+				"location": "OU=SLAC",
 				"dept": "OU=ACR",
 				"Groups": [
 					"Intune TimeZone UTC10"
@@ -292,7 +292,7 @@
 			},
 			{
 				"freshID": "11000342568",
-				"location": "OU=UMGR",
+				"location": "OU=UMTG",
 				"dept": "OU=ACR",
 				"Groups": [
 					"Intune TimeZone UTC10"
@@ -316,7 +316,7 @@
 			},
 			{
 				"freshID": "11000342570",
-				"location": "OU=CYPR",
+				"location": "OU=CGRC",
 				"dept": "OU=RC",
 				"Groups": [
 					"Intune TimeZone UTC10"
@@ -332,7 +332,7 @@
 			},
 			{
 				"freshID": "11000273221",
-				"location": "OU=HAVL",
+				"location": "OU=HAYV",
 				"dept": "OU=RC",
 				"Groups": [
 					"Intune TimeZone UTC10 DST"
@@ -340,7 +340,7 @@
 			},
 			{
 				"freshID": "11000342572",
-				"location": "OU=JOV",
+				"location": "OU=JORC",
 				"dept": "OU=RC",
 				"Groups": [
 					"Intune TimeZone UTC10"
@@ -348,7 +348,7 @@
 			},
 			{
 				"freshID": "11000342573",
-				"location": "OU=MTGR",
+				"location": "OU=MGRC",
 				"dept": "OU=RC",
 				"Groups": [
 					"Intune TimeZone UTC10"
@@ -356,7 +356,7 @@
 			},
 			{
 				"freshID": "11000342574",
-				"location": "OU=RUN",
+				"location": "OU=RBRC",
 				"dept": "OU=RC",
 				"Groups": [
 					"Intune TimeZone UTC10"
@@ -364,7 +364,7 @@
 			},
 			{
 				"freshID": "11000342575",
-				"location": "OU=STAF",
+				"location": "OU=SLRC",
 				"dept": "OU=RC",
 				"Groups": [
 					"Intune TimeZone UTC10"
