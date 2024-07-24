@@ -98,6 +98,8 @@ Describe "Build Data" {
                 Write-Error -ErrorAction SilentlyContinue -Message ""
             }
 
+            Write-Host "$result"
+
             {Get-ADOrganizationalUnit -identity $result -ErrorAction Stop} | Should -not -throw
         }
     }

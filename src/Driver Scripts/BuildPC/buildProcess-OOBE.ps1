@@ -35,6 +35,7 @@ try {
 		While (-not (Test-DeviceADDeviceRemovalCompletion -Verbose -buildInfo $buildInfo)) {
 			Start-Sleep -Seconds 10
 		}
+		Start-Sleep -Seconds 10 # wait another few seconds to give AD a chance to sync the removeal of old obj
 		Set-DeviceName -AssetId $buildInfo.AssetID -Verbose
 
 		$buildInfo.buildState = $config.TicketInteraction.BuildStates.adPendingState.message

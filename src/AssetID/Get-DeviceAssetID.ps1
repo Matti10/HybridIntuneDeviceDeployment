@@ -48,13 +48,13 @@ function Get-DeviceAssetID {
 			}
 			catch {
 				$errorList += $_
-				Write-Error $_
 			}
 		}
 	}
 	end {
 		if ($errorList.count -ne 0) {
-			Write-Error "Error(s) in $($MyInvocation.MyCommand.Name):`n$($errorList | ForEach-Object {"$_`n"})`n $(Get-PSCallStack)" -ErrorAction Stop
+			throw "##TODO"
+			New-BuildProcessError -errorObj $_ -message "Getting Device AssetID has failed. Check fresh assets for anything suspcious" -functionName "Remove-DeviceADDuplicate" -buildInfo $buildInfo -debugMode -ErrorAction "Continue"
 		}
 	}	
 }

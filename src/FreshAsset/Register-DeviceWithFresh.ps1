@@ -1,8 +1,6 @@
 function Register-DeviceWithFresh {
 	[CmdletBinding(SupportsShouldProcess = $true)]
 	param (
-
-
 		[Parameter()]
 		$localDeviceInfo = (Get-DeviceLocalData)
 	)
@@ -37,7 +35,7 @@ function Register-DeviceWithFresh {
 				$mutex = Unprotect-DeviceAssetIDMutex -mutex $mutex  -Verbose:$VerbosePreference
 
 				Start-Sleep -Seconds 10 # pause to give time for fresh server to create asset
-				
+
 				return Get-FreshAsset -name $AssetID -ErrorAction Stop
 		}
 		}
