@@ -35,7 +35,10 @@ function New-BuildInfoObj {
 		[string]$freshLocation = "",
 
 		[Parameter()]
-		[string]$buildState = $DeviceDeploymentDefaultConfig.TicketInteraction.BuildStates.initialState.message
+		[string]$buildState = $DeviceDeploymentDefaultConfig.TicketInteraction.BuildStates.initialState.message,
+
+		[Parameter()]
+		[string]$IntuneID = ""
 	)
 
 	begin {
@@ -60,6 +63,7 @@ function New-BuildInfoObj {
 					buildState   = $buildState
 					GUID         = $GUID
 					freshAsset   = $freshAsset
+					IntuneID     = $IntuneID
 				}
 			}
 			catch {

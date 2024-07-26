@@ -54,7 +54,9 @@ function Get-DeviceBuildData {
 				$groups = Get-DeviceBuildGroups -build $corrInfo.buildCorrelation -facility $corrInfo.facilityCorrelation
 				$OU = Get-DeviceBuildOU -build $corrInfo.buildCorrelation -facility $corrInfo.facilityCorrelation
 
-				return New-BuildInfoObj -AssetId $FreshAsset.Name -serialNumber $freshAsset.type_fields.(Get-FreshAssetTypeFieldName -field "serial" -freshAsset $freshAsset) -type $buildDetails.device_type_requested -build $buildDetails.hardware_use_build_type -freshLocation $buildDetails.facility[0] -ticketID $buildTicketID -freshAsset $freshAsset -OU $OU -groups $groups
+				$intuneID = Get-DeviceIntuneID
+
+				return New-BuildInfoObj -AssetId $FreshAsset.Name -serialNumber $freshAsset.type_fields.(Get-FreshAssetTypeFieldName -field "serial" -freshAsset $freshAsset) -type $buildDetails.device_type_requested -build $buildDetails.hardware_use_build_type -freshLocation $buildDetails.facility[0] -ticketID $buildTicketID -freshAsset $freshAsset -OU $OU -groups $groups -intuneID $intuneID
 
 			}
 			catch {

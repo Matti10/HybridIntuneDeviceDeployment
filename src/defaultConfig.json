@@ -454,5 +454,9 @@
 	},
 	"BuildStatus" : {
 		"LocalBuildStatusFile" : "C:\\Intune_Setup\\buildProcess\\buildStatus.json"
+	},
+	"Intune" : {
+		"IntuneIDRegPath" : "HKLM:\\SOFTWARE\\Microsoft\\Provisioning\\Diagnostics\\Autopilot\\EstablishedCorrelations",
+		"IntuneIDRegKey" : "EntDMID"
 	}
 }
