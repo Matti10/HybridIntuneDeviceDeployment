@@ -451,5 +451,8 @@
 				"messageBoxConfiguration" : 4149
 			}
 		}
+	},
+	"BuildStatus" : {
+		"LocalBuildStatusFile" : "C:\\Intune_Setup\\buildProcess\\buildStatus.json"
 	}
 }

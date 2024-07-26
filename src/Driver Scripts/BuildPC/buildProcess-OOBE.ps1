@@ -9,7 +9,7 @@ try {
 	Set-FreshAPIKey -API_Key $API_Key
 
 	# Check the device is in OOBE
-	if (Test-OOBE -Verbose) {
+	if ((Test-OOBE -Verbose) -and (Test-DeviceBuildExecuted)) {
 		#-------------------------- Block Shutdowns until build process is completed --------------------------# 
 		Block-DeviceShutdown -Verbose | Out-Null
 		
@@ -18,18 +18,18 @@ try {
 		$buildInfo = Get-DeviceBuildData -freshAsset $freshAsset -Verbose
 		
 		#------------------------ Set Ticket to Waiting on Build ------------------------#
-		Set-FreshTicketDescription -ticketID $buildInfo.ticketID -description "$($buildInfo.GUID) Executing Build Process" # set the description so it cannot be null
+		Set-FreshTicketDescription -ticketID $buildInfo.ticketID -description "$($buildInfo.GUID) Executing Build Process" # set the description so it cannot be null (which causes errors)
 		Set-FreshTicketStatus -ticketID $buildInfo.ticketID -status $config.TicketInteraction.ticketWaitingOnBuildStatus
 
 		#------------------------------------------ Check into Ticket -----------------------------------------# 
 		#------------------------- (This invokes privilidged commands on serverside) --------------------------#
 		$buildInfo.buildState = $config.TicketInteraction.BuildStates.checkInState.message # set state to "checked in"
-		Write-DeviceBuildTicket -buildInfo $buildInfo -Verbose
+		Write-DeviceBuildStatus -buildInfo $buildInfo -Verbose
 		
 		#------------------------------------------- Rename Device --------------------------------------------# 
 		#----------------------- (needs to happen before device is moved to other OU) -------------------------#
 		$buildInfo.buildState = $config.TicketInteraction.BuildStates.oldADCompRemovalPendingState.message
-		Write-DeviceBuildTicket -buildInfo $buildInfo -Verbose
+		Write-DeviceBuildStatus -buildInfo $buildInfo -Verbose
 
 		# Wait for old ad object to be removed if it exists
 		While (-not (Test-DeviceADDeviceRemovalCompletion -Verbose -buildInfo $buildInfo)) {
@@ -39,7 +39,7 @@ try {
 		Set-DeviceName -AssetId $buildInfo.AssetID -Verbose
 
 		$buildInfo.buildState = $config.TicketInteraction.BuildStates.adPendingState.message
-		Write-DeviceBuildTicket -buildInfo $buildInfo -Verbose
+		Write-DeviceBuildStatus -buildInfo $buildInfo -Verbose
 
 		#------------------------------------ Set Generic Local Settings  -------------------------------------# 
 		Set-DeviceLocalSettings -Verbose
@@ -66,7 +66,7 @@ try {
 
 		#---------------------------------------------- Mark as Completed -----------------------------------------------# 
 		$buildInfo.buildState = $config.TicketInteraction.BuildStates.completedState.message
-		Write-DeviceBuildTicket -buildInfo $buildInfo -Verbose
+		Write-DeviceBuildStatus -buildInfo $buildInfo -Verbose
 
 
 
