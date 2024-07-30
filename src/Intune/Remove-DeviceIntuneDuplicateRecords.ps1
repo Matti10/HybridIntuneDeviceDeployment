@@ -18,7 +18,7 @@ function Remove-DeviceIntuneDuplicateRecords {
 				}
 			}
 		} catch {
-			New-BuildProcessError -errorObj $_ -message "Intune duplicate Cleanup has failed. Please search intune for any duplicate object with this devices serial number and manually delete any old objects." -functionName "Remove-DeviceIntuneDeplicateRecords" -buildInfo $buildInfo -debugMode -ErrorAction "Continue"
+			New-BuildProcessError -errorObj $_ -message "Intune duplicate Cleanup has failed. Please search intune for any duplicate object with this devices serial number and manually delete any old objects." -functionName "Remove-DeviceIntuneDuplicateRecords" -buildInfo $buildInfo -debugMode -ErrorAction "Continue"
 		}
 	}
 	end {
