@@ -1,3 +1,56 @@
+
+<# Documentation
+# PowerShell: Connect-BuildProcessKVUnattended
+
+.SYNOPSIS
+`Connect-BuildProcessKVUnattended` is a PowerShell function that connects to keys in the Azure Key Vault. It checks if a connection to Azure already exists and if not, it attempts to connect using pre-specified credentials. If that does not work, it tries to connect interactively. 
+
+.Example
+
+Here's how you call the function:
+
+Connect-BuildProcessKVUnattended
+
+
+.DESCRIPTION
+
+1. It first checks if you're already connected to Azure by calling the `Get-AzContext` cmdlet. If it returns a non-null value, it means you're connected, and it doesn't do anything further.
+
+    
+    $AZContext = Get-AzContext
+    if (-not $AZContext) {
+    
+2. If not connected, it specifies the TenantID, CertificateThumbprint, ClientID and SubscriptionID, stored in variables.
+
+    
+    $TenantID = "72294687-5f37-4c19-8580-1df60cd5e56e"
+    $CertificateThumbprint = "DFD120727D6212BE9E34BBEDFF1D6CACE691C1A8"
+    $ClientID = "ce818db3-7e5f-476b-b9cc-8f9a6ee4b907"
+    $SubscriptionID = "071a86bc-1212-4137-8948-08f4cbebfbf0"
+    
+
+3. Attempts to connect to the Azure account using the specified credentials. 
+
+    
+    Connect-AzAccount -ApplicationId $ClientID -TenantId $tenantID -CertificateThumbprint $CertificateThumbprint -WarningAction:SilentlyContinue -ErrorAction Stop
+    
+
+4. If the connection is unable to be made, it tries to connect interactively by calling `Connect-AzAccount -Credential` . If this connection fails too, it will display an error message.
+
+
+
+5. If already connected to Azure, verbose message is printed and the function exits.
+    
+    else {
+        Write-Verbose "Connect-KVUnattended: Already connected."
+        return $true
+    }
+    
+
+.NOTES
+
+This script requires you to have the Az module installed. Additionally, it assumes that you have the necessary permissions to connect to the specified Azure key vault. 
+#>
 function Connect-BuildProcessKVUnattended {
 
 	

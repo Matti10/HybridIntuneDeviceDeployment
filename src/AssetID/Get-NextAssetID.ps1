@@ -1,3 +1,33 @@
+
+# Documentation
+<#
+.SYNOPSIS
+This function is designed to generate the next appropriate AssetID based on various parameters.
+
+.DESCRIPTION
+The function 'Get-NextAssetID' fetches fresh asset IDs, checks the IDs starting with the provided prefix, and identifies the largest ID. It then generates a new AssetID that's one increment larger, while maintaining a consistent length for all AssetIDs.
+
+.PARAMETER FreshAssetIDAttr
+The attribute of a fresh Asset ID in the deployment configuration.
+
+.PARAMETER adAssetIDAttr
+The attribute of the Asset ID in the deployment configuration associated with Active Directory.
+
+.PARAMETER DeviceADScope
+The location in Active Directory where the devices are stored.
+
+.PARAMETER AssetIDPrefix
+The prefix that all Asset IDs must start with.
+
+.PARAMETER AssetIDLength
+The determined length of the Asset ID.
+
+.EXAMPLE
+Get-NextAssetID -FreshAssetIDAttr 'asset001' -adAssetIDAttr 'asset001' -DeviceADScope 'OU=Workstations,DC=mydomain,DC=com' -AssetIDPrefix 'asset' -AssetIDLength 6
+
+This would output a new AssetID with the prefix 'asset' that's one increment larger than the largest AssetID found, maintaining a length of 6 characters.
+#>
+
 function Get-NextAssetID {
 	[CmdletBinding(SupportsShouldProcess = $true)]
 	param (

@@ -1,3 +1,45 @@
+
+<#
+.SYNOPSIS
+Retrieves the device build data for a specified asset.
+
+.DESCRIPTION
+This function gets the device build data of a given asset. It handles user messaging over multiple attempts to fetch the build tickets. 
+It sorts the build tickets by their last updated time and uses the latest one to get the build details.
+Later, it fetches the Organizational Unit and Groups from Correlation and the Intune ID for the device. 
+In case of any errors while processing the function, it collects them and throws them at the end of the function execution.
+
+.PARAMETER freshAsset
+A mandatory parameter that carries the asset data to get its build data. 
+
+.PARAMETER messageTemplates
+An optional parameter that stores the different messages to show to the user during 1st and subsequent attempts to get the device build data.
+
+.EXAMPLE
+Get-DeviceBuildData -freshAsset $asset -messageTemplates $messages
+
+.INPUTS
+FreshAsset: A PSDriveInfo object containing details of the device.
+MessageTemplates: A hashtable containing templates of different user messages.
+
+.OUTPUTS
+Returns an object containing the below properties:
+
+AssetId: The ID of the device.
+serialNumber: The serial number of the device.
+type: The type of the device.
+build: The build type of the device.
+freshLocation: The facility location of the device.
+ticketID: The ID of the ticket related to the device's build.
+freshAsset: The fresh asset object containing detailed information about the device.
+OU: The Organizational Unit related to the device.
+groups: The groups which the device is part of.
+intuneID: The Intune ID of the device.
+
+.NOTES
+This function relies on the Freshservice API to get asset data.
+It can handle user interaction for messaging during the multiple attempts to fetch build tickets.
+#>
 function Get-DeviceBuildData {
 	[CmdletBinding(SupportsShouldProcess = $true)]
 	param (
