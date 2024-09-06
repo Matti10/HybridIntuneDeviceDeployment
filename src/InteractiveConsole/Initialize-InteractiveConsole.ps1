@@ -12,19 +12,19 @@ function Initialize-InteractiveConsole {
 
 
 				# Define the action - in this case, running a PowerShell script
-				$action = New-ScheduledTaskAction -Execute "Powershell.exe"
+				$action = New-ScheduledTaskAction -Execute "Powershell.exe" -Verbose:$VerbosePreference
 
 				# Define the trigger - here it's set to run daily at 8:00 AM
-				$trigger = New-ScheduledTaskTrigger -Daily -At 8:00AM
+				$trigger = New-ScheduledTaskTrigger -Daily -At 8:00AM -Verbose:$VerbosePreference
 
 				# Define the principal (optional) - specify the user under which the task will run
-				$principal = New-ScheduledTaskPrincipal -UserId "defaultuser0" -LogonType Interactive -RunLevel Highest
+				$principal = New-ScheduledTaskPrincipal -UserId "defaultuser0" -LogonType Interactive -RunLevel Highest -Verbose:$VerbosePreference
 
 				# Register the task - this adds the task to Task Scheduler
-				Register-ScheduledTask -Action $action -Trigger $trigger -Principal $principal -TaskName "MyDailyTask" -Description "This task runs a PowerShell script daily at 8:00 AM"
+				Register-ScheduledTask -Action $action -Trigger $trigger -Principal $principal -TaskName "MyDailyTask" -Description "This task runs a PowerShell script daily at 8:00 AM" -Verbose:$VerbosePreference
 
 				# To run the task manually after registration:
-				Start-ScheduledTask -TaskName "MyDailyTask"
+				Start-ScheduledTask -TaskName "MyDailyTask" -Verbose:$VerbosePreference
 			}
 			catch {
 				$errorList += $_

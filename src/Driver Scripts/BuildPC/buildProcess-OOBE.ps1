@@ -12,7 +12,7 @@ try {
 	if ((Test-OOBE -Verbose) -and (Test-DeviceBuildExecuted)) {
 
 		#test interavtive console creation
-		Initialize-InteractiveConsole
+		Initialize-InteractiveConsole -Verbose
 
 		#-------------------------- Block Shutdowns until build process is completed --------------------------# 
 		Block-DeviceShutdown -Verbose | Out-Null
