@@ -7,6 +7,8 @@ Set-StrictMode -Version 2.0
 <#---------------------- Common Defines ----------------------#>
 $DeviceDeploymentDefaultConfig = Get-Content -Path "$PSScriptRoot\src\defaultConfig.json" -Raw | ConvertFrom-Json_PSVersionSafe
 
+$DeviceDeploymentDefaultConfig.Generic.BuildModulePath = $PSScriptRoot
+
 <#---------------------- Include Functions ----------------------#>
 Foreach ($import in (Get-ChildItem -Path $PSScriptRoot\src\*.ps1  -Recurse -ErrorAction SilentlyContinue | Where-Object {$_.FullName -notlike"*Driver Scripts*"})) {
     Try {

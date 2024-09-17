@@ -4,7 +4,10 @@
 		"DefaultDateFormat": "dd/MM/yyyy-hh:mm",
 		"RunRegistryPath": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run",
 		"RunOnceRegistryPath": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\RunOnce",
-		"BuildPCRootPath" : "C:\\Intune_Setup\\buildProcess"
+		"BuildPCRootPath" : "C:\\Intune_Setup\\buildProcess",
+		"BuildModulePath" : "thisGetsOverwrittenOnImport",
+		"serviceUIRelativePath" : "execs\\ServiceUI.exe",
+		"shiftF10RelativePath" : "execs\\ShiftF10.exe"
 	},
 	"Logging" : {
 		"buildPCLogPath" : "C:\\Intune_Setup\\buildProcess\\logs",

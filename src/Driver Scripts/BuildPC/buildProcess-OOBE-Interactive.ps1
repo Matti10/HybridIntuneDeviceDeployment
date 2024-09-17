@@ -4,10 +4,14 @@ $DebugPreference = "SilentlyContinue"
 Write-Verbose "BuildProcess Execution Started"
 
 try {
-	#-------------------------------------------------- Setup --------------------------------------------------# 
+	#------------------------------------------------- Setup -------------------------------------------------# 
 	Import-DeviceBuildModules
 
 	$config = Get-DeviceDeploymentDefaultConfig
+
+	# run "Shift+F10" to bring GUI up
+	& "$($config.Generic.BuildModulePath)\$($config.Generic.shiftF10RelativePath)"
+	
 	Update-AZConfig -EnableLoginByWam $false # this forces login with browser, should not be req
 
 	Connect-KVUnattended | Out-Null
