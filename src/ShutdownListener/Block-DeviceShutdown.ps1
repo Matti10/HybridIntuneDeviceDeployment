@@ -52,7 +52,7 @@ function Block-DeviceShutdown {
 		if ($PSCmdlet.ShouldProcess("$(hostname)")) {
 			# Start a job to constantly check and abort any upcoming shutdown.
 			return Start-Job -Name $jobName -ScriptBlock {
-				Start-Transcript -Path "C:\Intune_Setup\Logs\$fileName-$timestamp-$jobName.txt"
+				Start-Transcript -Path "C:\Intune_Setup\Logs\BlockDeviceShutdown-$(Get-Date -format "ddMMyyyhhmmss").txt"
 				while ($true)
 				{
 					try {
@@ -64,7 +64,7 @@ function Block-DeviceShutdown {
 						$_
 					}
 					# Wait for the specified number of seconds before next shutdown check.
-					Start-Sleep -Seconds $waitSeconds
+					Start-Sleep -Seconds 30
 				}    
 			}
 		}
