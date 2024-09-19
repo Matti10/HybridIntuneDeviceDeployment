@@ -5,6 +5,7 @@ Write-Verbose "BuildProcess Execution Started"
 
 try {
 	#------------------------------------------------- Setup -------------------------------------------------# 
+	Import-Module TriCare-DeviceDeployment
 	Import-DeviceBuildModules
 
 	$config = Get-DeviceDeploymentDefaultConfig
