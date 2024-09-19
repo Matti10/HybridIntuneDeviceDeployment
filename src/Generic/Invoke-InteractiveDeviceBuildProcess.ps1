@@ -27,7 +27,7 @@ function Invoke-InteractiveDeviceBuildProcess {
         if ($PSCmdlet.ShouldProcess("$(hostname)")) {
             try {
 
-                & $serviceUIPath -session:1 "powershell.exe" -ExecutionPolicy Bypass -NoProfile -File $BuildProcessPath
+                & $serviceUIPath -session:1 "powershell.exe" -ExecutionPolicy Bypass -NoProfile -File "$BuildProcessPath"
             }
             # Catch block to capture any errors that might occur and add them to the error array
             catch {
