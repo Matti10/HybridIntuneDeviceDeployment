@@ -1,4 +1,6 @@
 
+Start-Transcript -path "C:\Intune_Setup\buildProcess\Logs\buildProcessV2.2"
+
 $DebugPreference = "SilentlyContinue"
 
 Write-Verbose "BuildProcess Execution Started"
@@ -87,3 +89,5 @@ catch {
 		#---------------------------------------------- Cleanup -----------------------------------------------# 
 		# Invoke-DeviceDeploymentCleanupCommands
 }
+
+Stop-Transcript
