@@ -58,7 +58,7 @@ function Show-DeviceUserMessage {
 		[string]
 		$title,
 
-		[Parameter(Mandatory)]
+		[Parameter()]
 		[int]
 		$messageBoxConfigCode = $DeviceDeploymentDefaultConfig.DeviceUserInteraction.messageBoxConfigurations.Exclamation,
 
