@@ -435,7 +435,8 @@
 		"messageBoxConfigurations" : {
 			"Exclamation" : 4144,
 			"Retry" : 4149,
-			"Information" : 4160 
+			"Information" : 4160 ,
+			"error" : 16
 		},
 		"messages" : {
 			"assetIdAssignment" : {

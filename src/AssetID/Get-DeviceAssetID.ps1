@@ -64,7 +64,7 @@ function Get-DeviceAssetID {
 					
 					if (-not (Test-AssetID -AssetID $AssetID)) {
 						Write-Verbose "Asset id in fresh ($AssetID), is invalid, generating a new one"
-						throw3
+						throw
 					}
 
 				} catch {

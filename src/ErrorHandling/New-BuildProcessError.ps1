@@ -66,6 +66,11 @@ function New-BuildProcessError {
 	process {
 		if ($PSCmdlet.ShouldProcess("$(hostname)")) {
 			try {
+
+				if ($popup) {
+					Show-DeviceUserMessage -title "Error - Don't Panic!!" -message "$message" -messageBoxConfigCode $DeviceDeploymentDefaultConfig.DeviceUserInteraction.messageBoxConfigurations.error
+				}
+
 				$userFriendlyMessage = "$message`nError Detail:`n$($errorObj)"
 
 				if ($debugMode) {
