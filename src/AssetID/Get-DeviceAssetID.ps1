@@ -88,7 +88,7 @@ function Get-DeviceAssetID {
 	}
 	end {
 		if ($errorList.count -ne 0) {
-			New-BuildProcessError -errorObj $_ -message "Getting Device AssetID has failed. Check fresh assets for anything suspcious" -functionName "Remove-DeviceADDuplicate" -buildInfo $buildInfo -debugMode -ErrorAction "Continue"
+			New-BuildProcessError -errorObj $_ -message "Getting Device AssetID has failed. Check fresh assets for anything suspcious" -functionName "Get-DeviceAssetID" -buildInfo $buildInfo -debugMode -ErrorAction "Continue"
 			throw "##TODO"
 		}
 	}	
