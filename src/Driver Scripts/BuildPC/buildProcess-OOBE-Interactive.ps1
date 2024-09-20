@@ -20,7 +20,7 @@ try {
 	Connect-KVUnattended | Out-Null
 
 	# Check the device is in OOBE
-	if (Test-OOBE -Verbose -whatif) {
+	if (Test-OOBE -Verbose) {
 		#-------------------------- Block Shutdowns until build process is completed --------------------------# 
 		Block-DeviceShutdown -Verbose | Out-Null
 		
