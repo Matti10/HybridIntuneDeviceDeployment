@@ -60,9 +60,9 @@ function Invoke-DeviceCompanyPortalSync {
 				$syncTask | Start-ScheduledTask -Verbose:$VerbosePreference
 			}
 
-            # Regardless of whether we found the task above, try syncing the company portal explicitly
-            $Shell = New-Object -ComObject Shell.Application
-            $Shell.open("intunemanagementextension://syncapp")
+            # # Regardless of whether we found the task above, try syncing the company portal explicitly
+            # $Shell = New-Object -ComObject Shell.Application
+            # $Shell.open("intunemanagementextension://syncapp")
 		}
 		catch {
             # Should any errors occur, catch them, add them to the error list and write them out immediately
