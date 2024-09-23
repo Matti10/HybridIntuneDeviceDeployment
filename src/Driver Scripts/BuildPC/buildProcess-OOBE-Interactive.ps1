@@ -28,7 +28,7 @@ try {
 		$buildInfo = Get-DeviceBuildData -freshAsset $freshAsset -Verbose
 		
 		#----------------------------------- Set Ticket to Waiting on Build -----------------------------------# 
-		Set-FreshTicketStatus -ticketID $buildInfo.ticketID -status $config.TicketInteraction.ticketWaitingOnBuildStatus
+		Set-FreshTicketStatus -ticketID $buildInfo.ticketID -status $config.TicketInteraction.ticketWaitingOnBuildStatus -overwriteDescription
 
 		#------------------------------------------ Check into Ticket -----------------------------------------# 
 		#------------------------- (This invokes privilidged commands on serverside) --------------------------#
