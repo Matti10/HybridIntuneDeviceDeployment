@@ -11,16 +11,15 @@ try {
 	Import-Module TriCare-DeviceDeployment
 
 	$config = Get-DeviceDeploymentDefaultConfig
-
-	# run "Shift+F10" to bring GUI up
-	& "$($config.Generic.BuildModulePath)\$($config.Generic.shiftF10RelativePath)"
 	
-	Update-AZConfig -EnableLoginByWam $false # this forces login with browser, should not be req
-
-	Connect-KVUnattended | Out-Null
-
 	# Check the device is in OOBE
-	if (Test-OOBE -Verbose) {
+	if (Test-OOBE -Verbose) {	
+		# run "Shift+F10" to bring GUI up
+		& "$($config.Generic.BuildModulePath)\$($config.Generic.shiftF10RelativePath)"
+		
+		Update-AZConfig -EnableLoginByWam $false # this forces login with browser, should not be req
+	
+		Connect-KVUnattended | Out-Null
 		#-------------------------- Block Shutdowns until build process is completed --------------------------# 
 		Block-DeviceShutdown -Verbose | Out-Null
 		
