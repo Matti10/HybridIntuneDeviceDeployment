@@ -33,12 +33,12 @@ try {
 		#------------------------------------------ Check into Ticket -----------------------------------------# 
 		#------------------------- (This invokes privilidged commands on serverside) --------------------------#
 		$buildInfo.buildState = $config.TicketInteraction.BuildStates.checkInState.message # set state to "checked in"
-		Write-DeviceBuildTicket -buildInfo $buildInfo -Verbose
+		Write-DeviceBuildStatus -buildInfo $buildInfo -Verbose
 		
 		#------------------------------------------- Rename Device --------------------------------------------# 
 		#----------------------- (needs to happen before device is moved to other OU) -------------------------#
 		$buildInfo.buildState = $config.TicketInteraction.BuildStates.oldADCompRemovalPendingState.message
-		Write-DeviceBuildTicket -buildInfo $buildInfo -Verbose
+		Write-DeviceBuildStatus -buildInfo $buildInfo -Verbose
 
 		# Wait for old ad object to be removed if it exists
 		While (-not (Test-DeviceADDeviceRemovalCompletion -Verbose -buildInfo $buildInfo)) {
@@ -47,7 +47,7 @@ try {
 		Set-DeviceName -AssetId $buildInfo.AssetID -Verbose
 
 		$buildInfo.buildState = $config.TicketInteraction.BuildStates.adPendingState.message
-		Write-DeviceBuildTicket -buildInfo $buildInfo -Verbose
+		Write-DeviceBuildStatus -buildInfo $buildInfo -Verbose
 
 		#------------------------------------ Set Generic Local Settings  -------------------------------------# 
 		Set-DeviceLocalSettings -Verbose
@@ -74,7 +74,7 @@ try {
 
 		#---------------------------------------------- Mark as Completed -----------------------------------------------# 
 		$buildInfo.buildState = $config.TicketInteraction.BuildStates.completedState.message
-		Write-DeviceBuildTicket -buildInfo $buildInfo -Verbose
+		Write-DeviceBuildStatus -buildInfo $buildInfo -Verbose
 		Show-DeviceUserMessage -title "Build Completed" -message "Build Succesfully Completed. Please review build ticket and resolve any errors"
 
 		#---------------------------------------------- Cleanup -----------------------------------------------# 
