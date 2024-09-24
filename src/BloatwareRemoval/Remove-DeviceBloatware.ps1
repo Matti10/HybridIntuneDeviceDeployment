@@ -112,6 +112,7 @@ function Remove-DeviceBloatware {
                                 # If something goes wrong, report it in console and add to error list
                                 catch {
                                     $errorList += $_
+                                    New-BuildProcessError -errorObj $_ -message "$($softwareItem.DisplayName) failed to Uninstall, please uninstall manually" -functionName $PSCmdlet.MyInvocation.MyCommand.Name -popup
                                     Write-Error $_
                                 }
                             }

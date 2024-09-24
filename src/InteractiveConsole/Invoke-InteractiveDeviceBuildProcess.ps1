@@ -39,7 +39,7 @@ function Invoke-InteractiveDeviceBuildProcess {
         if ($PSCmdlet.ShouldProcess("$(hostname)")) {
             try {
 
-                # & $serviceUIPath "C:\windows\System32\WindowsPowerShell\v1.0\powershell.exe" -command ". '$BuildProcessPath'"
+                & $serviceUIPath "C:\windows\System32\WindowsPowerShell\v1.0\powershell.exe" -command ". '$BuildProcessPath'"
 
                 $secondsWaited = 0
                 while ($secondsWaited -le $buildProcessWaitTime) {

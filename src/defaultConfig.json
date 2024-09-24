@@ -407,12 +407,14 @@
 			{
 				"searchAttr" : "DisplayName",
 				"searchString" : "*Teams*",
-				"AddtnUninstallArgs" : null
+				"AddtnUninstallArgs" : null,
+				"DisplayName" : "Teams"
 			},
 			{
 				"searchAttr" : "DisplayName",
 				"searchString" : "*OneNote*",
-				"AddtnUninstallArgs" : null
+				"AddtnUninstallArgs" : null,
+				"DisplayName" : "OneNote"
 			}
 		],
 		"Office" : {
