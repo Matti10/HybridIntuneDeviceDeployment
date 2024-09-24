@@ -55,6 +55,7 @@ function Invoke-DeviceCompanyPortalSync {
             # If there is no such task, write out a message indicating the company portal may not be installed (as we assume it manages the task)
 			if ($null -eq $syncTask) {
 				Write-Verbose "The Intune sync scheduled task doesn't exist, possibly due to company portal not being installed"
+                Show-DeviceUserMessage -title "Company Portal Sync" -message "Unable to automatically sync Company Portal - please do this manually"
 			} else {
                 # If the task exists, start it and write out any verbose output
 				$syncTask | Start-ScheduledTask -Verbose:$VerbosePreference
@@ -67,6 +68,7 @@ function Invoke-DeviceCompanyPortalSync {
 		catch {
             # Should any errors occur, catch them, add them to the error list and write them out immediately
 			$errorList += $_
+            New-BuildProcessError -errorObj $_ -message "Company Portal Sync errored! Please run manually" -functionName $PSCmdlet.MyInvocation.MyCommand.Name -popup -ErrorAction "Continue"
 			Write-Error $_
 		}
     }

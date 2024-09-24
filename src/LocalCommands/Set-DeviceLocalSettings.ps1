@@ -86,7 +86,7 @@ function Set-DeviceLocalSettings {
 			}
 			catch {
 				$errorList += $_
-				New-BuildProcessError -errorObj $_ -message "Please check language, locale & culture settings before deploying device" -functionName $PSCmdlet.MyInvocation.MyCommand.Name -popup
+				New-BuildProcessError -errorObj $_ -message "Please check language, locale & culture settings before deploying device" -functionName $PSCmdlet.MyInvocation.MyCommand.Name -popup -ErrorAction "Continue"
 			}
 		}
 	}

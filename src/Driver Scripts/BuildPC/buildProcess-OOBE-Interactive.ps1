@@ -23,9 +23,13 @@ try {
 		#-------------------------- Block Shutdowns until build process is completed --------------------------# 
 		Block-DeviceShutdown -Verbose | Out-Null
 		
-		#------------------------ Get Build Data and Create Fresh Asset (if required) -------------------------# 
-		$freshAsset = Register-DeviceWithFresh -Verbose
-		$buildInfo = Get-DeviceBuildData -freshAsset $freshAsset -Verbose
+		#------------------------ Get Build Data and Create Fresh Asset (if required) -------------------------#
+		try {
+			$freshAsset = Register-DeviceWithFresh -Verbose
+			$buildInfo = Get-DeviceBuildData -freshAsset $freshAsset -Verbose
+		} catch {
+            New-BuildProcessError -errorObj $_ -message "Unable to Retrive Build Info from Fresh. This without this info the process cannot contine. Please check device exists in fresh and is setup as per build documentation. Then wipe the device and restart" -functionName $PSCmdlet.MyInvocation.MyCommand.Name -popup -ErrorAction "Continue" -ErrorAction "Stop"
+		}
 		
 		#----------------------------------- Set Ticket to Waiting on Build -----------------------------------# 
 		Set-FreshTicketStatus -ticketID $buildInfo.ticketID -status $config.TicketInteraction.ticketWaitingOnBuildStatus -overwriteDescription

@@ -53,6 +53,8 @@ function Set-DeviceName {
 			catch {
 				# On caught error, adds it to error list and writes error
 				$errorList += $_
+				New-BuildProcessError -errorObj $_ -message "Device Rename has failed!! Please rename manually :)" -functionName $PSCmdlet.MyInvocation.MyCommand.Name -popup -ErrorAction "Continue"
+				
 				Write-Error $_
 			}
 		}
