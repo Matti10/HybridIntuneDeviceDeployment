@@ -43,8 +43,11 @@ function Remove-DeviceADDuplicate {
 		try {
 			#get ad Comp
 			try {
+				
 				$ADComp = Get-ADComputer -Identity $buildInfo.AssetID -ErrorAction SilentlyContinue -Verbose:$VerbosePreference
 				$ADComp.Name | Remove-ADDevice -WhatIf:$WhatIfPreference -Verbose:$VerbosePreference
+				Write-Verbose "Removed $($buildInfo.AssetID) from AD"
+
 			} catch {
 				Write-Verbose "No device with name $($buildInfo.AssetID) exists in AD"
 			}
@@ -59,6 +62,7 @@ function Remove-DeviceADDuplicate {
 			# add note to ticket that AD removal commands completed
 			$buildInfo.buildState = $ADDeviceRemovalCompletionString
 			Write-DeviceBuildTicket -buildInfo $buildInfo -message $msg -Verbose:$VerbosePreference
+			Write-Verbose "Wrote to built ticket $($buildInfo | ConvertTo-Json)"
 		}
 		
 	}
