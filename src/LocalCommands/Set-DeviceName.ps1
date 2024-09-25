@@ -47,7 +47,7 @@ function Set-DeviceName {
 			try {
 				# Renames computer only if hostname doesn't already match AssetID
 				if ("$(hostname)" -ne $AssetID) {
-					Rename-Computer -NewName $AssetID -Confirm:$false -WhatIf:$WhatIfPreference -Verbose:$VerbosePreference -Force
+					Rename-Computer -NewName $AssetID -Confirm:$false -WhatIf:$WhatIfPreference -Verbose:$VerbosePreference -Force -ErrorAction Stop
 				}
 			}
 			catch {
