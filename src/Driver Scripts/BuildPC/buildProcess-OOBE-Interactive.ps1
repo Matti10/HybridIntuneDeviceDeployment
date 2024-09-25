@@ -54,19 +54,19 @@ try {
 		Write-DeviceBuildStatus -buildInfo $buildInfo -Verbose
 
 		#------------------------------------ Set Generic Local Settings  -------------------------------------# 
-		Set-DeviceLocalSettings -Verbose
+		# Set-DeviceLocalSettings -Verbose
 		
 		#----------------------------------------- Remove Bloatware  ------------------------------------------# 
-		Remove-DeviceBloatware -Verbose
+		# Remove-DeviceBloatware -Verbose
 
 		#------------------------------------------ Update Software  ------------------------------------------# 
 		# Initialize-DeviceWindowsUpdateEnviroment -Verbose
 		# Update-DeviceWindowsUpdate -Verbose
 
-		if (Test-DeviceDellCommandUpdate -Verbose) {
-			Install-DeviceDellCommandUpdateDrivers -Verbose
-			Invoke-DeviceDellCommandUpdateUpdates -Verbose
-		}
+		# if (Test-DeviceDellCommandUpdate -Verbose) {
+		# 	Install-DeviceDellCommandUpdateDrivers -Verbose
+		# 	Invoke-DeviceDellCommandUpdateUpdates -Verbose
+		# }
 		
 		#------------------------------- Wait for AD Commands to Be Completed  --------------------------------# 
 		While (-not (Test-DeviceADCommandCompletion -Verbose -buildInfo $buildInfo)) {
