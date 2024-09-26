@@ -43,7 +43,10 @@ function Remove-DeviceBloatware {
         $loudUninstallAttr = $DeviceDeploymentDefaultConfig.Bloatware.loudUninstallAttr,
         
         [Parameter()]
-        $registryRoots = @("HKLM:") + (Get-ChildItem -LiteralPath Registry::HKEY_USERS).PSPath
+        $registryRoots = @("HKLM:") + (Get-ChildItem -LiteralPath Registry::HKEY_USERS).PSPath,
+
+        [Parameter()]
+        $buildInfo = ""
     )
 
     # List of errors to be reported at the end of the process
@@ -53,7 +56,7 @@ function Remove-DeviceBloatware {
 
     process {
         try {
-            Remove-DeviceOfficeInstall -Verbose:$VerbosePreference
+            Remove-DeviceOfficeInstall -Verbose:$VerbosePreference -buildInfo $buildInfo
 
             # Loop through all defined roots and locations in the registry
             foreach ($registryRoot in $registryRoots) {
@@ -112,7 +115,7 @@ function Remove-DeviceBloatware {
                                 # If something goes wrong, report it in console and add to error list
                                 catch {
                                     $errorList += $_
-                                    New-BuildProcessError -errorObj $_ -message "$($softwareItem.DisplayName) failed to Uninstall, please uninstall manually" -functionName $PSCmdlet.MyInvocation.MyCommand.Name -popup -ErrorAction "Continue"
+                                    New-BuildProcessError -errorObj $_ -message "$($softwareItem.DisplayName) failed to Uninstall, please uninstall manually" -functionName $PSCmdlet.MyInvocation.MyCommand.Name -popup -ErrorAction "Continue" -buildInfo $buildInfo
                                     Write-Error $_
                                 }
                             }
@@ -124,7 +127,7 @@ function Remove-DeviceBloatware {
         # If something goes wrong, report it in console and add to error list
         catch {
             $errorList += $_
-            New-BuildProcessError -errorObj $_ -message "Issues uninstalling Bloatware, please check and manually uninstall" -functionName $PSCmdlet.MyInvocation.MyCommand.Name -popup -ErrorAction "Continue"
+            New-BuildProcessError -errorObj $_ -message "Issues uninstalling Bloatware, please check and manually uninstall" -functionName $PSCmdlet.MyInvocation.MyCommand.Name -popup -ErrorAction "Continue" -buildInfo $buildInfo
             Write-Error $_
         }
     }

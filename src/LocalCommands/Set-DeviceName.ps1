@@ -2,14 +2,14 @@
 # Documentation
 <#
 .SYNOPSIS
-A PowerShell function that renames a computer based on the AssetID provided.
+A PowerShell function that renames a computer based on the buildInfo.AssetID provided.
 
 .DESCRIPTION
-The Set-DeviceName function renames a computer's name to match the AssetID provided. If the hostname already
+The Set-DeviceName function renames a computer's name to match the buildInfo.AssetID provided. If the hostname already
 matches the asset ID, no action will be taken. If any error occurs during the renaming process, it will be 
 thrown and added to an error list which will be returned at the end of the function execution.
 
-.PARAMETER AssetID
+.PARAMETER buildInfo.AssetID
 This is a mandatory parameter, which is used as the new name for the computer.
 
 .EXAMPLE
@@ -32,9 +32,8 @@ function Set-DeviceName {
 	
 		# A mandatory string parameter used as new computer name
 		[Parameter(Mandatory)]
-		[string]
-		$AssetID
-	
+		$buildInfo
+
 	)
 
 	begin {
@@ -42,18 +41,18 @@ function Set-DeviceName {
 		$errorList = @()
 	}
 	process {
-		# Checks if proposed computer rename should happen using $AssetID
-		if ($PSCmdlet.ShouldProcess($AssetID)) {
+		# Checks if proposed computer rename should happen using $buildInfo.AssetID
+		if ($PSCmdlet.ShouldProcess($buildInfo.AssetID)) {
 			try {
-				# Renames computer only if hostname doesn't already match AssetID
-				if ("$(hostname)" -ne $AssetID) {
-					Rename-Computer -NewName $AssetID -Confirm:$false -WhatIf:$WhatIfPreference -Verbose:$VerbosePreference -Force -ErrorAction Stop
+				# Renames computer only if hostname doesn't already match buildInfo.AssetID
+				if ("$(hostname)" -ne $buildInfo.AssetID) {
+					Rename-Computer -NewName $buildInfo.AssetID -Confirm:$false -WhatIf:$WhatIfPreference -Verbose:$VerbosePreference -Force -ErrorAction Stop
 				}
 			}
 			catch {
 				# On caught error, adds it to error list and writes error
 				$errorList += $_
-				New-BuildProcessError -errorObj $_ -message "Device Rename has failed!! Please rename manually :)" -functionName $PSCmdlet.MyInvocation.MyCommand.Name -popup -ErrorAction "Continue"
+				New-BuildProcessError -errorObj $_ -message "Device Rename has failed!! Please rename manually :)" -functionName $PSCmdlet.MyInvocation.MyCommand.Name -popup -ErrorAction "Continue" -buildInfo $buildInfo
 				
 				Write-Error $_
 			}

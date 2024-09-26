@@ -33,7 +33,11 @@ function Invoke-GPUpdate {
 	[CmdletBinding(SupportsShouldProcess = $true)]
 	param (
 		[string]$runRegistryPath = $DeviceDeploymentDefaultConfig.Generic.RunOnceRegistryPath,
-		[int]$waitTime = 60
+
+		[int]$waitTime = 60,
+
+        [Parameter()]
+        $buildInfo = ""
 	)
 
 	begin {
@@ -56,7 +60,7 @@ function Invoke-GPUpdate {
 		catch {
 			# Add the error to the list and write it
 			$errorList += $_
-            New-BuildProcessError -errorObj $_ -message "GPUpdate experinced errors. Please run manually" -functionName $PSCmdlet.MyInvocation.MyCommand.Name -popup -ErrorAction "Continue"
+            New-BuildProcessError -errorObj $_ -message "GPUpdate experinced errors. Please run manually" -functionName $PSCmdlet.MyInvocation.MyCommand.Name -popup -ErrorAction "Continue" -buildInfo $buildInfo
 			Write-Error $_
 		}
 	}

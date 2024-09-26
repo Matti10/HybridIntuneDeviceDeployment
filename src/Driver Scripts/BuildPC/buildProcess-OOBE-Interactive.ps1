@@ -28,7 +28,7 @@ try {
 			$freshAsset = Register-DeviceWithFresh -Verbose
 			$buildInfo = Get-DeviceBuildData -freshAsset $freshAsset -Verbose
 		} catch {
-            New-BuildProcessError -errorObj $_ -message "Unable to Retrive Build Info from Fresh. This without this info the process cannot contine. Please check device exists in fresh and is setup as per build documentation. Then wipe the device and restart" -functionName $PSCmdlet.MyInvocation.MyCommand.Name -popup -ErrorAction "Continue" -ErrorAction "Stop"
+            New-BuildProcessError -errorObj $_ -message "Unable to Retrive Build Info from Fresh. This without this info the process cannot contine. Please check device exists in fresh and is setup as per build documentation. Then wipe the device and restart" -functionName $PSCmdlet.MyInvocation.MyCommand.Name -popup -ErrorAction "Stop"
 		}
 		
 		#----------------------------------- Set Ticket to Waiting on Build -----------------------------------# 
@@ -54,19 +54,19 @@ try {
 		Write-DeviceBuildStatus -buildInfo $buildInfo -Verbose
 
 		#------------------------------------ Set Generic Local Settings  -------------------------------------# 
-		# Set-DeviceLocalSettings -Verbose
+		Set-DeviceLocalSettings -Verbose -buildInfo $buildInfo
 		
 		#----------------------------------------- Remove Bloatware  ------------------------------------------# 
-		# Remove-DeviceBloatware -Verbose
+		Remove-DeviceBloatware -Verbose -buildInfo $buildInfo
 
 		#------------------------------------------ Update Software  ------------------------------------------# 
 		# Initialize-DeviceWindowsUpdateEnviroment -Verbose
 		# Update-DeviceWindowsUpdate -Verbose
 
-		# if (Test-DeviceDellCommandUpdate -Verbose) {
-		# 	Install-DeviceDellCommandUpdateDrivers -Verbose
-		# 	Invoke-DeviceDellCommandUpdateUpdates -Verbose
-		# }
+		if (Test-DeviceDellCommandUpdate -Verbose) {
+			Install-DeviceDellCommandUpdateDrivers -Verbose -buildInfo $buildInfo
+			Invoke-DeviceDellCommandUpdateUpdates -Verbose -buildInfo $buildInfo
+		}
 		
 		#------------------------------- Wait for AD Commands to Be Completed  --------------------------------# 
 		While (-not (Test-DeviceADCommandCompletion -Verbose -buildInfo $buildInfo)) {
@@ -74,7 +74,7 @@ try {
 		}
 		#----------------------------------- Sync Various Managment Systems -----------------------------------# 
 		Invoke-GPUpdate -Verbose #does this want to wait until first login?
-		Invoke-DeviceCompanyPortalSync -Verbose
+		Invoke-DeviceCompanyPortalSync -Verbose -buildInfo $buildInfo
 
 		#---------------------------------------------- Mark as Completed -----------------------------------------------# 
 		$buildInfo.buildState = $config.TicketInteraction.BuildStates.completedState.message
@@ -86,8 +86,9 @@ try {
 	}
 }
 catch {
+	New-BuildProcessError -errorObj $_ -message "There has been an error in the build process, please see the below output:`n$_" -functionName "Build Process Main" -popup -ErrorAction "Stop"
+
 	$_
-	##TODO Write a function to handle errors whether we have fresh connection or not
 
 		#---------------------------------------------- Cleanup -----------------------------------------------# 
 		# Invoke-DeviceDeploymentCleanupCommands

@@ -28,7 +28,8 @@ Care should be taken to always run this function after updates have been install
 function Set-DeviceLocalSettings {
 	[CmdletBinding(SupportsShouldProcess = $true)]
 	param (
-
+        [Parameter()]
+        $buildInfo = ""
 	)
 
 	begin {
@@ -86,7 +87,7 @@ function Set-DeviceLocalSettings {
 			}
 			catch {
 				$errorList += $_
-				New-BuildProcessError -errorObj $_ -message "Please check language, locale & culture settings before deploying device" -functionName $PSCmdlet.MyInvocation.MyCommand.Name -popup -ErrorAction "Continue"
+				New-BuildProcessError -errorObj $_ -message "Please check language, locale & culture settings before deploying device" -functionName $PSCmdlet.MyInvocation.MyCommand.Name -popup -ErrorAction "Continue" -buildInfo $buildInfo
 			}
 		}
 	}

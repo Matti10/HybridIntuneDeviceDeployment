@@ -33,7 +33,10 @@ function Invoke-DeviceDellCommandUpdateUpdates {
     [CmdletBinding(SupportsShouldProcess = $true)]
     param (
         [Parameter()]
-        $softwareLocations = $DeviceDeploymentDefaultConfig.DellCommandUpdate.installLocations
+        $softwareLocations = $DeviceDeploymentDefaultConfig.DellCommandUpdate.installLocations,
+
+        [Parameter()]
+        $buildInfo = ""
     )
     begin {
         # Initialize an array to hold any errors that occur during execution
@@ -61,7 +64,7 @@ function Invoke-DeviceDellCommandUpdateUpdates {
 		catch {
             # Catch any errors and add them to the error list
 			$errorList += $_
-            New-BuildProcessError -errorObj $_ -message "Dell Command Update experinced errors. Please run manually" -functionName $PSCmdlet.MyInvocation.MyCommand.Name -popup -ErrorAction "Continue"
+            New-BuildProcessError -errorObj $_ -message "Dell Command Update experinced errors. Please run manually" -functionName $PSCmdlet.MyInvocation.MyCommand.Name -popup -ErrorAction "Continue" -buildInfo $buildInfo
 			Write-Error $_
 		}
     }

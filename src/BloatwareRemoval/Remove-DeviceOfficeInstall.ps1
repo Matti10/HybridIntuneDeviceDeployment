@@ -35,7 +35,10 @@ function Remove-DeviceOfficeInstall {
 
 		# Parameter defining the path of the executable office deployment tool
 		[Parameter()]
-		$officeDeploymentToolPath = $DeviceDeploymentDefaultConfig.Bloatware.Office.ODTPath
+		$officeDeploymentToolPath = $DeviceDeploymentDefaultConfig.Bloatware.Office.ODTPath,
+
+		[Parameter()]
+        $buildInfo = ""
     )
 
     # Beginning of the function initializing an empty array to record errors
@@ -53,7 +56,7 @@ function Remove-DeviceOfficeInstall {
 		catch {
             # In case an error occurs in the process, it gets added to the error list
 			$errorList += $_
-            New-BuildProcessError -errorObj $_ -message "Office failed to Uninstall, please uninstall manually if required" -functionName $PSCmdlet.MyInvocation.MyCommand.Name -popup -ErrorAction "Continue"
+            New-BuildProcessError -errorObj $_ -message "Office failed to Uninstall, please uninstall manually if required" -functionName $PSCmdlet.MyInvocation.MyCommand.Name -popup -ErrorAction "Continue"  -buildInfo $buildInfo
 			Write-Error $_
 		}
     }

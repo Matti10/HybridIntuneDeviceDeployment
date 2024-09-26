@@ -40,7 +40,10 @@ function Invoke-DeviceCompanyPortalSync {
     [CmdletBinding(SupportsShouldProcess = $true)]
     param (
         [Parameter()]
-        $syncTaskName = $DeviceDeploymentDefaultConfig.CompanyPortalSync.syncTaskName
+        $syncTaskName = $DeviceDeploymentDefaultConfig.CompanyPortalSync.syncTaskName,
+
+        [Parameter()]
+        $buildInfo = ""
     )
 
     # Start by initializing an empty array for any errors that may happen during the script
@@ -68,7 +71,7 @@ function Invoke-DeviceCompanyPortalSync {
 		catch {
             # Should any errors occur, catch them, add them to the error list and write them out immediately
 			$errorList += $_
-            New-BuildProcessError -errorObj $_ -message "Company Portal Sync errored! Please run manually" -functionName $PSCmdlet.MyInvocation.MyCommand.Name -popup -ErrorAction "Continue"
+            New-BuildProcessError -errorObj $_ -message "Company Portal Sync errored! Please run manually" -functionName $PSCmdlet.MyInvocation.MyCommand.Name -popup -ErrorAction "Continue" -buildInfo $buildInfo
 			Write-Error $_
 		}
     }

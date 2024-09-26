@@ -37,7 +37,10 @@ function Install-DeviceDellCommandUpdateDrivers {
     param (
         # Parameter definition for the software locations.
         [Parameter()]
-        $softwareLocations = $DeviceDeploymentDefaultConfig.DellCommandUpdate.installLocations
+        $softwareLocations = $DeviceDeploymentDefaultConfig.DellCommandUpdate.installLocations,
+
+        [Parameter()]
+        $buildInfo = ""
     )
     begin {
         # Initialize error list to empty.
@@ -63,7 +66,7 @@ function Install-DeviceDellCommandUpdateDrivers {
         catch {
             # In case of an error, add it to the error list and write it to the Error Stream.
             $errorList += $_
-            New-BuildProcessError -errorObj $_ -message "Dell Command Update experinced errors. Please run manually" -functionName $PSCmdlet.MyInvocation.MyCommand.Name -popup -ErrorAction "Continue"
+            New-BuildProcessError -errorObj $_ -message "Dell Command Update experinced errors. Please run manually" -functionName $PSCmdlet.MyInvocation.MyCommand.Name -popup -ErrorAction "Continue" -buildInfo $buildInfo
             Write-Error $_
         }
     }
