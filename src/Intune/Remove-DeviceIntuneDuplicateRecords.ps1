@@ -39,6 +39,9 @@ function Remove-DeviceIntuneDuplicateRecords {
     # The process block is where we do the work
     process {
         try {
+            if ($null -eq $buildInfo.intuneID -or "" -eq $buildInfo.intuneID -or $null -eq $buildInfo.serialNumber -or "" -eq $buildInfo.serialNumber) {
+                Write-Error "Intune ID or Serial is empty!!`n$($buildInfo | ConvertTo-JSON)" -erroraction stop
+            }
             # This will get all the devices managed by Intune with the same serial number as the provided device
             $duplicates = Get-MgDeviceManagementManagedDevice -Filter "serialNumber eq '$($buildInfo.serialNumber)'"
             # We then iterate through all the devices found
