@@ -48,7 +48,7 @@ try {
 		While (-not (Test-DeviceADDeviceRemovalCompletion -Verbose -buildInfo $buildInfo)) {
 			Start-Sleep -Seconds 10
 		}
-		Set-DeviceName -AssetId $buildInfo.AssetID -Verbose
+		Set-DeviceName -buildInfo $buildInfo -Verbose
 
 		$buildInfo.buildState = $config.TicketInteraction.BuildStates.adPendingState.message
 		Write-DeviceBuildStatus -buildInfo $buildInfo -Verbose
