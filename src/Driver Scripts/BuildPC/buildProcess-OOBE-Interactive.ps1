@@ -1,5 +1,5 @@
 
-Start-Transcript -path "C:\Intune_Setup\buildProcess\Logs\buildProcessV2.2\interactiveRun-$(Get-Date -format "ddMMyyyyhhmmss").log"
+Start-Transcript -path "C:\Intune_Setup\buildProcess\Logs\buildProcessV2.4\interactiveRun-$(Get-Date -format "ddMMyyyyhhmmss").log"
 
 $DebugPreference = "SilentlyContinue"
 
@@ -87,8 +87,6 @@ try {
 }
 catch {
 	New-BuildProcessError -errorObj $_ -message "There has been an error in the build process, please see the below output:`n$_" -functionName "Build Process Main" -popup -ErrorAction "Stop"
-
-	$_
 
 		#---------------------------------------------- Cleanup -----------------------------------------------# 
 		# Invoke-DeviceDeploymentCleanupCommands

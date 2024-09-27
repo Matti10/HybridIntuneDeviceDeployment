@@ -9,8 +9,8 @@ The Set-DeviceName function renames a computer's name to match the buildInfo.Ass
 matches the asset ID, no action will be taken. If any error occurs during the renaming process, it will be 
 thrown and added to an error list which will be returned at the end of the function execution.
 
-.PARAMETER buildInfo.AssetID
-This is a mandatory parameter, which is used as the new name for the computer.
+.PARAMETER buildInfo
+This is a mandatory parameter, which contains the new name for the computer.
 
 .EXAMPLE
 Set-DeviceName -AssetID 'NEW-COMPUTER-1234'
@@ -53,8 +53,6 @@ function Set-DeviceName {
 				# On caught error, adds it to error list and writes error
 				$errorList += $_
 				New-BuildProcessError -errorObj $_ -message "Device Rename has failed!! Please rename manually :)" -functionName $PSCmdlet.MyInvocation.MyCommand.Name -popup -ErrorAction "Continue" -buildInfo $buildInfo
-				
-				Write-Error $_
 			}
 		}
 	}

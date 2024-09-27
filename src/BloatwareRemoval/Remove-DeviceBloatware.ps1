@@ -116,7 +116,6 @@ function Remove-DeviceBloatware {
                                 catch {
                                     $errorList += $_
                                     New-BuildProcessError -errorObj $_ -message "$($softwareItem.DisplayName) failed to Uninstall, please uninstall manually" -functionName $PSCmdlet.MyInvocation.MyCommand.Name -popup -ErrorAction "Continue" -buildInfo $buildInfo
-                                    Write-Error $_
                                 }
                             }
                         }
@@ -128,7 +127,6 @@ function Remove-DeviceBloatware {
         catch {
             $errorList += $_
             New-BuildProcessError -errorObj $_ -message "Issues uninstalling Bloatware, please check and manually uninstall" -functionName $PSCmdlet.MyInvocation.MyCommand.Name -popup -ErrorAction "Continue" -buildInfo $buildInfo
-            Write-Error $_
         }
     }
     
