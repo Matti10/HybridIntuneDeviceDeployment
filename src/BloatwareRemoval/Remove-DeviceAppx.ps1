@@ -45,22 +45,23 @@ function Remove-DeviceAppx {
     process {
 		try {
             # Condition to control the office removal process
-			if ($PSCmdlet.ShouldProcess("$(hostname)")) {
-                # Process to run the office deployment tool with given officeInstallerConfig
-                foreach ($AppX in $AllAppX.DisplayName) {
-                    if ($AppX -notin $exemptAppx) {
-                        Write-Verbose "Removing $AppX"
-                        Remove-AppxProvisionedPackage -Online -PackageName $AppX
+            # Process to run the office deployment tool with given officeInstallerConfig
+            foreach ($AppX in $AllAppX) {
+                if ($AppX.DisplayName -notin $exemptAppx) {
+                        if ($PSCmdlet.ShouldProcess("$($AppX.DisplayName)")) {
+                            Write-Verbose "Removing $($AppX.DisplayName)"
+                            Remove-AppxProvisionedPackage -Online -PackageName $AppX.PackageName
+                        }
                     } else {
-                        Write-Verbose "$AppX is exempt from removal"
+                        Write-Verbose "$($AppX.DisplayName) is exempt from removal"
                     }
                 }
-			}
 		}
 		catch {
             # In case an error occurs in the process, it gets added to the error list
 			$errorList += $_
-            New-BuildProcessError -errorObj $_ -message "Office failed to Uninstall, please uninstall manually if required" -functionName $PSCmdlet.MyInvocation.MyCommand.Name -popup -ErrorAction "Continue"  -buildInfo $buildInfo
+            $_
+            # New-BuildProcessError -errorObj $_ -message "Office failed to Uninstall, please uninstall manually if required" -functionName $PSCmdlet.MyInvocation.MyCommand.Name -popup -ErrorAction "Continue"  -buildInfo $buildInfo
 		}
     }
     end {
