@@ -87,14 +87,14 @@ function Set-DeviceLocalSettings {
 			}
 			catch {
 				$errorList += $_
-				New-BuildProcessError -errorObj $_ -message "Please check language, locale & culture settings before deploying device" -functionName $PSCmdlet.MyInvocation.MyCommand.Name -popup -ErrorAction "Continue" -buildInfo $buildInfo
+
 			}
 		}
 	}
 	end {
 		# At the end of process, all errors (if any occurred) are printed
 		if ($errorList.count -ne 0) {
-			Write-Error "Error(s) in $($MyInvocation.MyCommand.Name):`n$($errorList | ForEach-Object {"$_`n"})`n $(Get-PSCallStack)" -ErrorAction "Continue"
+			New-BuildProcessError -errorObj $_ -message "Please check language, locale & culture settings before deploying device" -functionName $PSCmdlet.MyInvocation.MyCommand.Name -popup -ErrorAction "Continue" -buildInfo $buildInfo
 		}
 	}	
 }

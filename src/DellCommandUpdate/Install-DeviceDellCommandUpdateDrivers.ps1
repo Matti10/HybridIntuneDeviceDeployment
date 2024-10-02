@@ -66,13 +66,12 @@ function Install-DeviceDellCommandUpdateDrivers {
         catch {
             # In case of an error, add it to the error list and write it to the Error Stream.
             $errorList += $_
-            New-BuildProcessError -errorObj $_ -message "Dell Command Update experinced errors. Please run manually" -functionName $PSCmdlet.MyInvocation.MyCommand.Name -popup -ErrorAction "Continue" -buildInfo $buildInfo
         }
     }
     end {
         # If there were any errors, stop the process and display the error details.
         if ($errorList.count -ne 0) {
-            Write-Error "Error(s) in $($MyInvocation.MyCommand.Name):`n$($errorList | ForEach-Object {"$_`n"})`n $(Get-PSCallStack)" -ErrorAction Stop
+            New-BuildProcessError -errorObj $_ -message "Dell Command Update experinced errors. Please run manually" -functionName $PSCmdlet.MyInvocation.MyCommand.Name -popup -ErrorAction "Continue" -buildInfo $buildInfo
         }
     }  
 }

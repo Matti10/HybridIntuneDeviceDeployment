@@ -60,14 +60,14 @@ function Invoke-GPUpdate {
 		catch {
 			# Add the error to the list and write it
 			$errorList += $_
-            New-BuildProcessError -errorObj $_ -message "GPUpdate experinced errors. Please run manually" -functionName $PSCmdlet.MyInvocation.MyCommand.Name -popup -ErrorAction "Continue" -buildInfo $buildInfo
+
 		}
 	}
 
 	end {
 		# If there are errors, stop the process and give information about the errors
 		if ($errorList.count -ne 0) {
-			Write-Error "Error(s) in $($MyInvocation.MyCommand.Name):`n$($errorList | ForEach-Object {"$_`n"})`n $(Get-PSCallStack)" -ErrorAction Stop
+            New-BuildProcessError -errorObj $_ -message "GPUpdate experinced errors. Please run manually" -functionName $PSCmdlet.MyInvocation.MyCommand.Name -popup -ErrorAction "Continue" -buildInfo $buildInfo
 		}
 	}	
 }

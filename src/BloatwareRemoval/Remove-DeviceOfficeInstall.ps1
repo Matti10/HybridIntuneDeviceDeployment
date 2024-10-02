@@ -56,13 +56,13 @@ function Remove-DeviceOfficeInstall {
 		catch {
             # In case an error occurs in the process, it gets added to the error list
 			$errorList += $_
-            New-BuildProcessError -errorObj $_ -message "Office failed to Uninstall, please uninstall manually if required" -functionName $PSCmdlet.MyInvocation.MyCommand.Name -popup -ErrorAction "Continue"  -buildInfo $buildInfo
+
 		}
     }
     end {
         # If the error list isn't empty, it will print all the errors
         if ($errorList.count -ne 0) {
-            Write-Error "Error(s) in $($MyInvocation.MyCommand.Name):`n$($errorList | ForEach-Object {"$_`n"})`n $(Get-PSCallStack)" -ErrorAction "Continue"
+            New-BuildProcessError -errorObj $_ -message "Office failed to Uninstall, please uninstall manually if required" -functionName $PSCmdlet.MyInvocation.MyCommand.Name -popup -ErrorAction "Continue"  -buildInfo $buildInfo
         }
     }	
 }

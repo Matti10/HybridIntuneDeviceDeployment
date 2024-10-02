@@ -71,13 +71,12 @@ function Invoke-DeviceCompanyPortalSync {
 		catch {
             # Should any errors occur, catch them, add them to the error list and write them out immediately
 			$errorList += $_
-            New-BuildProcessError -errorObj $_ -message "Company Portal Sync errored! Please run manually" -functionName $PSCmdlet.MyInvocation.MyCommand.Name -popup -ErrorAction "Continue" -buildInfo $buildInfo
 		}
     }
     end {
         # If there have been any errors, write them all out along with a callstack for debugging
         if ($errorList.count -ne 0) {
-            Write-Error "Error(s) in $($MyInvocation.MyCommand.Name):`n$($errorList | ForEach-Object {"$_`n"})`n $(Get-PSCallStack)" -ErrorAction Stop
+            New-BuildProcessError -errorObj $_ -message "Company Portal Sync errored! Please run manually" -functionName $PSCmdlet.MyInvocation.MyCommand.Name -popup -ErrorAction "Continue" -buildInfo $buildInfo
         }
     }	
 }

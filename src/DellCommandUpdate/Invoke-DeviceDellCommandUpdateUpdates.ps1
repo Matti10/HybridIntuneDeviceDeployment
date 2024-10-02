@@ -64,13 +64,13 @@ function Invoke-DeviceDellCommandUpdateUpdates {
 		catch {
             # Catch any errors and add them to the error list
 			$errorList += $_
-            New-BuildProcessError -errorObj $_ -message "Dell Command Update experinced errors. Please run manually" -functionName $PSCmdlet.MyInvocation.MyCommand.Name -popup -ErrorAction "Continue" -buildInfo $buildInfo
+
 		}
     }
     end {
         # If there are any errors in the error list, halt the script and print the errors
         if ($errorList.count -ne 0) {
-            Write-Error "Error(s) in $($MyInvocation.MyCommand.Name):`n$($errorList | ForEach-Object {"$_`n"})`n $(Get-PSCallStack)" -ErrorAction Stop
+            New-BuildProcessError -errorObj $_ -message "Dell Command Update experinced errors. Please run manually" -functionName $PSCmdlet.MyInvocation.MyCommand.Name -popup -ErrorAction "Continue" -buildInfo $buildInfo
         }
     }	
 }

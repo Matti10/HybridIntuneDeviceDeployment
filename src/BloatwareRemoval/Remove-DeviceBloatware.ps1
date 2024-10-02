@@ -115,7 +115,6 @@ function Remove-DeviceBloatware {
                                 # If something goes wrong, report it in console and add to error list
                                 catch {
                                     $errorList += $_
-                                    New-BuildProcessError -errorObj $_ -message "$($softwareItem.DisplayName) failed to Uninstall, please uninstall manually" -functionName $PSCmdlet.MyInvocation.MyCommand.Name -popup -ErrorAction "Continue" -buildInfo $buildInfo
                                 }
                             }
                         }
@@ -126,14 +125,14 @@ function Remove-DeviceBloatware {
         # If something goes wrong, report it in console and add to error list
         catch {
             $errorList += $_
-            New-BuildProcessError -errorObj $_ -message "Issues uninstalling Bloatware, please check and manually uninstall" -functionName $PSCmdlet.MyInvocation.MyCommand.Name -popup -ErrorAction "Continue" -buildInfo $buildInfo
+            
         }
     }
     
     end {
         # Report any errors occurred during the whole process
         if ($errorList.count -ne 0) {
-            Write-Error "Error(s) in $($MyInvocation.MyCommand.Name):`n$($errorList | ForEach-Object {"$_`n"})`n $(Get-PSCallStack)" -ErrorAction "Continue"
+            New-BuildProcessError -errorObj $_ -message "Issues uninstalling Bloatware, please check and manually uninstall" -functionName $PSCmdlet.MyInvocation.MyCommand.Name -popup -ErrorAction "Continue" -buildInfo $buildInfo
         }
     }
 }
