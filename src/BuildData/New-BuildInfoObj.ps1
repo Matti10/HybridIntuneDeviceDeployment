@@ -28,7 +28,7 @@ A Mandatory parameter which reflects the Organisational Unit.
 .PARAMETER groups 
 An array parameter that requires one or more group names this device belongs to.
 
-.PARAMETER ticketID 
+.PARAMETER recordID 
 A string that represents the ticket ID associated with the build, this parameter is Mandatory.
 
 .PARAMETER freshAsset 
@@ -47,7 +47,7 @@ An optional parameter for the build state. If not provided, the initial build st
 Optional parameter for the IntuneID.
 
 .EXAMPLE
-$buildInfo = New-BuildInfoObj -AssetID "123" -type "Server" -build "1.0.0" -ticketID "tick123" -freshAsset $true -OU "IT" -groups "Group1", "Group2"
+$buildInfo = New-BuildInfoObj -AssetID "123" -type "Server" -build "1.0.0" -recordID "tick123" -freshAsset $true -OU "IT" -groups "Group1", "Group2"
 
 This example creates a build information object for an asset with ID 123, type 'Server', build '1.0.0', ticket ID 'tick123', freshAsset $true, OU 'IT', and is a member of 'Group1' and 'Group2'.
 
@@ -55,7 +55,7 @@ This example creates a build information object for an asset with ID 123, type '
 You can pipe a string to New-BuildInfoObj.
 
 .OUTPUTS
-New-BuildInfoObj outputs a PSCustomObject with properties for AssetID, hostname, serialNumber, type, build, OU, groups, ticketID, buildState, GUID, freshAsset, freshLocation, and IntuneID.
+New-BuildInfoObj outputs a PSCustomObject with properties for AssetID, hostname, serialNumber, type, build, OU, groups, recordID, buildState, GUID, freshAsset, freshLocation, and IntuneID.
 
 
 #>
@@ -79,7 +79,7 @@ function New-BuildInfoObj {
 		[string]$build,
 
 		[Parameter(Mandatory)]
-		[string]$ticketID,
+		[string]$recordID,
 
 		[Parameter(Mandatory)]
 		$freshAsset,
@@ -121,7 +121,7 @@ function New-BuildInfoObj {
 					build        = $build
 					OU           = $OU
 					groups       = $groups
-					ticketID     = $ticketID
+					recordID     = $recordID
 					buildState   = $buildState
 					GUID         = $GUID
 					freshAsset   = $freshAsset

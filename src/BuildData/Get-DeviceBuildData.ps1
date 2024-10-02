@@ -30,7 +30,7 @@ serialNumber: The serial number of the device.
 type: The type of the device.
 build: The build type of the device.
 freshLocation: The facility location of the device.
-ticketID: The ID of the ticket related to the device's build.
+recordID: The ID of the ticket related to the device's build.
 freshAsset: The fresh asset object containing detailed information about the device.
 OU: The Organizational Unit related to the device.
 groups: The groups which the device is part of.
@@ -86,9 +86,9 @@ function Get-DeviceBuildData {
 				} while ($null -eq $buildTickets)
 
 				#get the newest ticket
-				$buildTicketID = ($buildTickets | Sort-Object -Property updated_at -Descending)[0]."request_id".split("-")[1] # request id has a prefix "SR-"/"INC-" 
+				$buildrecordID = ($buildTickets | Sort-Object -Property updated_at -Descending)[0]."request_id".split("-")[1] # request id has a prefix "SR-"/"INC-" 
 
-				$buildDetails = (Get-FreshTicketsRequestedItems -ticketID $buildTicketID).custom_fields
+				$buildDetails = (Get-FreshTicketsRequestedItems -recordID $buildrecordID).custom_fields
 
 				# Get OU and Groups from Correlation
 				$corrInfo = Find-DeviceCorrelationInfo -build $buildDetails.hardware_use_build_type -facility $buildDetails.facility[0]
@@ -98,7 +98,7 @@ function Get-DeviceBuildData {
 
 				$intuneID = Get-DeviceIntuneID
 
-				return New-BuildInfoObj -AssetId $FreshAsset.Name -serialNumber $freshAsset.type_fields.(Get-FreshAssetTypeFieldName -field "serial" -freshAsset $freshAsset) -type $buildDetails.device_type_requested -build $buildDetails.hardware_use_build_type -freshLocation $buildDetails.facility[0] -ticketID $buildTicketID -freshAsset $freshAsset -OU $OU -groups $groups -intuneID $intuneID
+				return New-BuildInfoObj -AssetId $FreshAsset.Name -serialNumber $freshAsset.type_fields.(Get-FreshAssetTypeFieldName -field "serial" -freshAsset $freshAsset) -type $buildDetails.device_type_requested -build $buildDetails.hardware_use_build_type -freshLocation $buildDetails.facility[0] -recordID $buildrecordID -freshAsset $freshAsset -OU $OU -groups $groups -intuneID $intuneID
 
 			}
 			catch {

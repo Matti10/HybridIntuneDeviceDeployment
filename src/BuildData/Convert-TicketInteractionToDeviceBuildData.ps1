@@ -50,7 +50,7 @@ function Convert-TicketInteractionToDeviceBuildData {
                 $groups = $raw.groups.split(",") | ForEach-Object {$_.Trim(" ")} | Where-Object {$_ -ne ""}
 
                 # Return a new object containing build information
-                return (New-BuildInfoObj -AssetID $raw.AssetID -hostname $raw.hostname -serialNumber $raw.serialNumber -type $raw.type -build $raw.build -ticketID $raw.ticketID -freshAsset $raw.freshAsset -OU $raw.OU -groups $groups -buildState $raw.buildState -guid $raw.guid -IntuneID $raw.IntuneID)
+                return (New-BuildInfoObj -AssetID $raw.AssetID -hostname $raw.hostname -serialNumber $raw.serialNumber -type $raw.type -build $raw.build -recordID $raw.recordID -freshAsset $raw.freshAsset -OU $raw.OU -groups $groups -buildState $raw.buildState -guid $raw.guid -IntuneID $raw.IntuneID)
             }
             catch {
                 # Catch and record any errors while executing the function
