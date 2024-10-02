@@ -420,6 +420,44 @@
 		"Office" : {
 			"OfficeInstallerConfigPath" : "C:\\Program Files\\WindowsPowerShell\\Modules\\TriCare-DeviceDeployment\\src\\BloatwareRemoval\\Remove-DeviceOfficeInstallConfig.xml",
 			"ODTPath" : "C:\\Program Files\\WindowsPowerShell\\Modules\\TriCare-DeviceDeployment\\src\\BloatwareRemoval\\ODT.exe"
+		},
+		"AppX" : {
+			"Exempt" : [
+				"Microsoft.WindowsStore",
+				"DellInc.DellCommandUpdate",
+				"AdobeAcrobatDCCoreApp",
+				"DellInc.DellCommandUpdate",
+				"Microsoft.BingWeather",
+				"Microsoft.CompanyPortal",
+				"Microsoft.DesktopAppInstaller",
+				"Microsoft.HEIFImageExtension",
+				"Microsoft.MicrosoftEdge.Stable",
+				"Microsoft.MicrosoftStickyNotes",
+				"Microsoft.MSPaint",
+				"Microsoft.OutlookForWindows",
+				"Microsoft.Paint",
+				"Microsoft.RawImageExtension",
+				"Microsoft.ScreenSketch",
+				"Microsoft.StorePurchaseApp",
+				"Microsoft.Todos",
+				"Microsoft.VCLibs.140.00",
+				"Microsoft.VP9VideoExtensions",
+				"Microsoft.Wallet",
+				"Microsoft.WebMediaExtensions",
+				"Microsoft.WebpImageExtension",
+				"Microsoft.Windows.Photos",
+				"Microsoft.WindowsAlarms",
+				"Microsoft.WindowsCalculator",
+				"Microsoft.WindowsCamera",
+				"Microsoft.WindowsNotepad",
+				"Microsoft.WindowsSoundRecorder",
+				"Microsoft.WindowsStore",
+				"Microsoft.WindowsTerminal",
+				"MicrosoftCorporationII.QuickAssist",
+				"MicrosoftTeams",
+				"MicrosoftWindows.Client.WebExperience",
+				"MSTeams"
+			]
 		}
 	},
 	"CompanyPortalSync" : {
