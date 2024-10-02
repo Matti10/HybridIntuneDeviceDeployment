@@ -132,7 +132,9 @@ function Remove-DeviceBloatware {
     end {
         # Report any errors occurred during the whole process
         if ($errorList.count -ne 0) {
-            New-BuildProcessError -errorObj $_ -message "Issues uninstalling Bloatware, please check and manually uninstall" -functionName $PSCmdlet.MyInvocation.MyCommand.Name -popup -ErrorAction "Continue" -buildInfo $buildInfo
+			$errorList | ForEach-Object {
+                New-BuildProcessError -errorObj $_ -message "Issues uninstalling Bloatware, please check and manually uninstall" -functionName $PSCmdlet.MyInvocation.MyCommand.Name -popup -ErrorAction "Continue" -buildInfo $buildInfo
+            }
         }
     }
 }

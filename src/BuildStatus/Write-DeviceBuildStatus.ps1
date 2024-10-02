@@ -55,7 +55,9 @@ function Write-DeviceBuildStatus {
     end {
         # Throw an error if there were errors during the script execution
         if ($errorList.count -ne 0) {
-            New-BuildProcessError -errorObj $_ -message "Error Communicating with Fresh Ticket. Matt may be able to manually fix this for you. If not, Please check device exists in fresh and is setup as per build documentation. Then wipe the device and restart" -functionName $PSCmdlet.MyInvocation.MyCommand.Name -popup -ErrorAction "Continue" -buildInfo $buildInfo
+			$errorList | ForEach-Object {
+                New-BuildProcessError -errorObj $_ -message "Error Communicating with Fresh Ticket. Matt may be able to manually fix this for you. If not, Please check device exists in fresh and is setup as per build documentation. Then wipe the device and restart" -functionName $PSCmdlet.MyInvocation.MyCommand.Name -popup -ErrorAction "Continue" -buildInfo $buildInfo
+            }
         }
     }	
 }

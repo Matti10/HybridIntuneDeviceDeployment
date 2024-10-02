@@ -58,7 +58,9 @@ function Set-DeviceName {
 	end {
 		# If there are errors, writes them out and stops execution
 		if ($errorList.count -ne 0) {
-			New-BuildProcessError -errorObj $_ -message "Device Rename has failed!! Please rename manually :)" -functionName $PSCmdlet.MyInvocation.MyCommand.Name -popup -ErrorAction "Continue" -buildInfo $buildInfo
+			$errorList | ForEach-Object {
+				New-BuildProcessError -errorObj $_ -message "Device Rename has failed!! Please rename manually :)" -functionName $PSCmdlet.MyInvocation.MyCommand.Name -popup -ErrorAction "Continue" -buildInfo $buildInfo
+			}
 		}
 	}	
 }

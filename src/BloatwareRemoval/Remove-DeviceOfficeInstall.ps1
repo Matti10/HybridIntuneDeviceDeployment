@@ -62,7 +62,9 @@ function Remove-DeviceOfficeInstall {
     end {
         # If the error list isn't empty, it will print all the errors
         if ($errorList.count -ne 0) {
-            New-BuildProcessError -errorObj $_ -message "Office failed to Uninstall, please uninstall manually if required" -functionName $PSCmdlet.MyInvocation.MyCommand.Name -popup -ErrorAction "Continue"  -buildInfo $buildInfo
+			$errorList | ForEach-Object {
+                New-BuildProcessError -errorObj $_ -message "Office failed to Uninstall, please uninstall manually if required" -functionName $PSCmdlet.MyInvocation.MyCommand.Name -popup -ErrorAction "Continue"  -buildInfo $buildInfo
+            }
         }
     }	
 }
