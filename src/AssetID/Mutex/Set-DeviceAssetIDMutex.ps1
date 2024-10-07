@@ -25,7 +25,7 @@ Value that will be set if the mutex has not been accessed.
 Set-DeviceAssetIDMutex -mutex $testMutex -objectID 'testID' -recordID 'recordID' -accessedValue 'Yes' -notAccessedValue 'No'
 
 .NOTES
-This function requires the `Set-FreshCustomObject` function to commit the new value to the asset.
+This function requires the `Set-FreshCustomObjectRecords` function to commit the new value to the asset.
 #>
 
 function Set-DeviceAssetIDMutex {
@@ -76,7 +76,7 @@ function Set-DeviceAssetIDMutex {
 				}
 
 				# Set the new value to the asset ID and return its data
-				return (Set-FreshCustomObject -objectID $objectID -recordID $recordID -record $mutex).custom_object.data
+				return (Set-FreshCustomObjectRecords -objectID $objectID -recordID $recordID -record $mutex).custom_object.data
 			}
 			catch {
 				# Catch any errors, add them to the error list, and write them to the error stream

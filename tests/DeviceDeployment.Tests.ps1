@@ -178,7 +178,7 @@ Describe "Build Data" {
 
     Context "Asset ID Mutex" {
         It "Gets the fresh custom object" {
-            (Get-FreshCustomObject -objectID "11000002068").bo_display_id | Should -be "2"
+            (Get-FreshCustomObjectRecords -objectID "11000002068").bo_display_id | Should -be "2"
         }
 
         It "Sets the fresh custom object" {
@@ -190,7 +190,7 @@ Describe "Build Data" {
 
             Set-DeviceAssetIDMutex -mutex $ogRecord
 
-            (Get-FreshCustomObject -objectID "11000002068").SetBy | Should -be "$setValue"
+            (Get-FreshCustomObjectRecords -objectID "11000002068").SetBy | Should -be "$setValue"
         }
 
         It "Protects the Mutex and has a valid setby" {

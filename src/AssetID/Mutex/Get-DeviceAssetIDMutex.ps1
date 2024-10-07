@@ -6,7 +6,7 @@ The Get-DeviceAssetIDMutex function is a custom Cmdlet written in PowerShell tha
 
 It particularly checks if a record relating to a custom object has been accessed or not. Based on these checks, it returns the status of the record accessed and who set it.
 
-Specifically, it uses the Get-FreshCustomObject function (another custom function not defined in this script) to fetch the object detail from a system, aggregates all encountered errors, and writes them to the output before stopping the execution.
+Specifically, it uses the Get-FreshCustomObjectRecords function (another custom function not defined in this script) to fetch the object detail from a system, aggregates all encountered errors, and writes them to the output before stopping the execution.
 
 _$CurrentlyAccessed_ is a boolean variable that is determined by checking if the _CurrentlyAccessed_ property of the retrieved object matches the _AccessedValue_ or _NotAccessedValue_
 
@@ -57,7 +57,7 @@ function Get-DeviceAssetIDMutex {
 	process {
 		if ($PSCmdlet.ShouldProcess($recordID)) {
 			try {
-				$value = (Get-FreshCustomObject -objectID $objectID) | Where-Object {$_.bo_display_id -eq $recordID} #there is only one record, get position one just to be sure
+				$value = (Get-FreshCustomObjectRecords -objectID $objectID) | Where-Object {$_.bo_display_id -eq $recordID} #there is only one record, get position one just to be sure
 
 				if ($value.CurrentlyAccessed -eq $notAccessedValue) {
 					$currentlyAccessed = $false
