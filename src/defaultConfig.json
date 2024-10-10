@@ -465,5 +465,8 @@
 	"Intune" : {
 		"IntuneIDRegPath" : "HKLM:\\SOFTWARE\\Microsoft\\Provisioning\\Diagnostics\\Autopilot\\EstablishedCorrelations",
 		"IntuneIDRegKey" : "EntDMID"
+	},
+	"ADCommands" : {
+		"replicationSeconds" : 30
 	}
 }

@@ -33,7 +33,10 @@ function Remove-DeviceADDuplicate {
 		$buildInfo,
 
 		[Parameter()]
-		[string]$ADDeviceRemovalCompletionString = $DeviceDeploymentDefaultConfig.TicketInteraction.BuildStates.oldADCompRemovalCompletedState.message
+		[string]$ADDeviceRemovalCompletionString = $DeviceDeploymentDefaultConfig.TicketInteraction.BuildStates.oldADCompRemovalCompletedState.message,
+		
+		[Parameter()]
+		[string]$pauseTime = $DeviceDeploymentDefaultConfig.ADCommands.replicationSeconds
 	)
 
 	begin {
@@ -43,15 +46,18 @@ function Remove-DeviceADDuplicate {
 		try {
 			#get ad Comp
 			try {
-				
 				$ADComp = Get-ADComputer -Identity $buildInfo.AssetID -ErrorAction SilentlyContinue -Verbose:$VerbosePreference
-				$ADComp.Name | Remove-ADDevice -WhatIf:$WhatIfPreference -Verbose:$VerbosePreference
-				Write-Verbose "Removed $($buildInfo.AssetID) from AD"
-
 			} catch {
 				Write-Verbose "No device with name $($buildInfo.AssetID) exists in AD"
+				return
 			}
 
+			$ADComp.Name | Remove-ADDevice -WhatIf:$WhatIfPreference -Verbose:$VerbosePreference
+			Write-Verbose "Removed $($buildInfo.AssetID) from AD"
+
+			#pause to allow time for deletion to replicate across DC's
+			Write-Verbose "Waiting for $pauseTime seconds to allow changes to replicate"
+			Start-Sleep -Seconds $pauseTime
 		}
 		catch {
 			$msg = $DeviceDeploymentDefaultConfig.TicketInteraction.GeneralErrorMessage
