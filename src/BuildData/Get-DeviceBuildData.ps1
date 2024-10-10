@@ -45,6 +45,12 @@ function Get-DeviceBuildData {
 	param (
 		[Parameter(ValueFromPipeline,Mandatory)]
 		$freshAsset,
+		
+		[Parameter()]
+		$freshBuildAttr = $DeviceDeploymentDefaultConfig.FreshAssetIntergration.BuildAttr,
+		
+		[Parameter()]
+		$freshFacilityAttr = $DeviceDeploymentDefaultConfig.FreshAssetIntergration.FacilityAttr,
 
 		[Parameter()]
 		$messageTemplates = $DeviceDeploymentDefaultConfig.DeviceUserInteraction.Messages
@@ -64,41 +70,21 @@ function Get-DeviceBuildData {
 					} elseif ($attemptCount -gt 1) {
 						Show-DeviceUserMessage -message $messageTemplates.buildTicketAssignmentOtherAttempts.message -title $messageTemplates.buildTicketAssignmentOtherAttempts.title -wait -messageBoxConfigCode $messageTemplates.buildTicketAssignmentOtherAttempts.messageBoxConfiguration -placeholderValue $freshAsset.Name
 					}
+					#after user has (hopefully) updated the fresh asset, get data again
+					$freshAsset = Get-FreshAsset -name $freshAsset.Name
+					$attemptCount++
 
-					$buildTickets = $freshAsset | Get-FreshAssetsTickets -ErrorAction SilentlyContinue
-				
-					# filter non build tickets out
-					try {
-						$buildTickets = $buildTickets | Where-Object {
-							foreach ($pattern in $DeviceDeploymentDefaultConfig.Deployment.buildTicketNamePatterns) {
-								if ($_.request_details -like $pattern) {
-									return $true
-								}
-							}
-							return $false
-						}
-					}
-					catch [System.Management.Automation.PropertyNotFoundException] {
-						Write-Verbose "Device has no build tickets"
-					}
-					
-					$attemptCount++ #increment attemptCount
-				} while ($null -eq $buildTickets)
-
-				#get the newest ticket
-				$buildrecordID = ($buildTickets | Sort-Object -Property updated_at -Descending)[0]."request_id".split("-")[1] # request id has a prefix "SR-"/"INC-" 
-
-				$buildDetails = (Get-FreshTicketsRequestedItems -recordID $buildrecordID).custom_fields
+				} while ($null -eq $freshAsset.$freshFacilityAttr -or $null -eq $freshAsset.type_fields.$freshBuildAttr)
 
 				# Get OU and Groups from Correlation
-				$corrInfo = Find-DeviceCorrelationInfo -build $buildDetails.hardware_use_build_type -facility $buildDetails.facility[0]
+				$corrInfo = Find-DeviceCorrelationInfo -build $freshAsset.type_fields.$freshBuildAttr -facility $freshAsset.$freshFacilityAttr
 
 				$groups = Get-DeviceBuildGroups -build $corrInfo.buildCorrelation -facility $corrInfo.facilityCorrelation
 				$OU = Get-DeviceBuildOU -build $corrInfo.buildCorrelation -facility $corrInfo.facilityCorrelation
 
 				$intuneID = Get-DeviceIntuneID
 
-				return New-BuildInfoObj -AssetId $FreshAsset.Name -serialNumber $freshAsset.type_fields.(Get-FreshAssetTypeFieldName -field "serial" -freshAsset $freshAsset) -type $buildDetails.device_type_requested -build $buildDetails.hardware_use_build_type -freshLocation $buildDetails.facility[0] -recordID $buildrecordID -freshAsset $freshAsset -OU $OU -groups $groups -intuneID $intuneID
+				return New-BuildInfoObj -AssetId $FreshAsset.Name -serialNumber $freshAsset.type_fields.(Get-FreshAssetTypeFieldName -field "serial" -freshAsset $freshAsset) -build $freshAsset.type_fields.$freshBuildAttr -freshLocation $freshAsset.$freshFacilityAttr -freshAsset $freshAsset -OU $OU -groups $groups -intuneID $intuneID #-type $buildDetails.device_type_requested
 
 			}
 			catch {

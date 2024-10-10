@@ -21,13 +21,13 @@ BeforeDiscovery {
 Describe "Getting Data from Fresh" {
     Context "Testing if devices have checked in" {
 		It "returns valid build GUID when check in is valid" {
-			$result = Test-DeviceTicketCheckIn -conversations (Get-FreshTicketConversations -ticketID 101629) 
+			$result = Test-DeviceTicketCheckIn -conversations (Get-FreshTicketConversations -recordID 101629) 
 			$result.GUID | Should -not -be "99VVK63-133640215375952942"
 			$result.GUID | Should -BeLike "*99VVK63-*"
 		}
 
 		It "returns false when device hasnt checked in" {
-			Test-DeviceTicketCheckIn -conversations (Get-FreshTicketConversations -ticketID 101631) | Should -BeFalse
+			Test-DeviceTicketCheckIn -conversations (Get-FreshTicketConversations -recordID 101631) | Should -BeFalse
 		}
 	}
 }
@@ -95,7 +95,7 @@ Describe "Filtering Build Tickets" {
 			$ticket = "103751"
 			$buildInfo = (Get-FreshAsset -Name TCL001629 | Get-DeviceBuildData)
 			$ogFreshAsset = $buildInfo.freshAsset
-			$buildInfo.ticketID = $ticket
+			$buildInfo.recordID = $ticket
 			
 			$buildInfo.buildState = "In Progress - Device Checked In"
 			Write-DeviceBuildTicket -buildInfo $buildInfo
@@ -112,19 +112,19 @@ Describe "Filtering Build Tickets" {
 
 
 
-			Set-FreshTicketStatus -ticketID $ticket -status 15
+			Set-FreshTicketStatus -recordID $ticket -status 15
 			$result = Get-PendingBuildTickets
-			$result.BuildInfo.ticketID | Should -Contain $ticket
-			($result.BuildInfo | ? {$_.ticketID -eq $ticket}).GUID | Should -not -be $newGUID
+			$result.BuildInfo.recordID | Should -Contain $ticket
+			($result.BuildInfo | ? {$_.recordID -eq $ticket}).GUID | Should -not -be $newGUID
 
-			Set-FreshTicketStatus -ticketID $ticket -status 5
+			Set-FreshTicketStatus -recordID $ticket -status 5
 		}
 
 		It "Doesn't get a ticket that has completed its build" {
 			$ticket = "103749"
 			$buildInfo = (Get-FreshAsset -Name TCL001629 | Get-DeviceBuildData)
 
-			$buildInfo.ticketID = $ticket
+			$buildInfo.recordID = $ticket
 			$buildInfo.buildState = "In Progress - Device Checked In"
 			Write-DeviceBuildTicket -buildInfo $buildInfo
 
@@ -132,12 +132,12 @@ Describe "Filtering Build Tickets" {
 			Write-DeviceBuildTicket -buildInfo $buildInfo
 
 
-			Set-FreshTicketStatus -ticketID $ticket -status 15
+			Set-FreshTicketStatus -recordID $ticket -status 15
 
 
-			(Get-PendingBuildTickets).BuildInfo.ticketID | Should -not -Contain $ticket
+			(Get-PendingBuildTickets).BuildInfo.recordID | Should -not -Contain $ticket
 
-			Set-FreshTicketStatus -ticketID $ticket -status 5
+			Set-FreshTicketStatus -recordID $ticket -status 5
 
 		}
 	}
@@ -146,15 +146,15 @@ Describe "Filtering Build Tickets" {
 			$ticket = "103749"
 			$buildInfo = (Get-FreshAsset -Name TCL001629 | Get-DeviceBuildData)
 
-			$buildInfo.ticketID = $ticket
+			$buildInfo.recordID = $ticket
 
 
-			Set-FreshTicketStatus -ticketID $ticket -status 15
+			Set-FreshTicketStatus -recordID $ticket -status 15
 
 
 			"$(Get-PendingBuildTickets | Select-DevicePendingADCommands)" | Should -not -BeLike "*$ticket*"
 
-			Set-FreshTicketStatus -ticketID $ticket -status 5
+			Set-FreshTicketStatus -recordID $ticket -status 5
 		}
 
 
@@ -162,7 +162,7 @@ Describe "Filtering Build Tickets" {
 			$ticket = "103752"
 			$buildInfo = (Get-FreshAsset -Name TCL001629 | Get-DeviceBuildData)
 
-			$buildInfo.ticketID = $ticket
+			$buildInfo.recordID = $ticket
 			
 			$buildInfo.buildState = "In Progress - Device Checked In"
 			Write-DeviceBuildTicket -buildInfo $buildInfo
@@ -180,29 +180,29 @@ Describe "Filtering Build Tickets" {
 			Write-DeviceBuildTicket -buildInfo $buildInfo
 			
 
-			Set-FreshTicketStatus -ticketID $ticket -status 15
+			Set-FreshTicketStatus -recordID $ticket -status 15
 
 			$result = Get-PendingBuildTickets | Select-DevicePendingADCommands
-			$result.ticketID | Should -Contain $ticket
-			($result | ? {$_.ticketID -eq $ticket}).GUID | Should -not -be $newGUID
+			$result.recordID | Should -Contain $ticket
+			($result | ? {$_.recordID -eq $ticket}).GUID | Should -not -be $newGUID
 
 
-			Set-FreshTicketStatus -ticketID $ticket -status 5
+			Set-FreshTicketStatus -recordID $ticket -status 5
 		}
 
 		It "doesnt get tickets not waiting onrename cmds" {
 			$ticket = "103749"
 			$buildInfo = (Get-FreshAsset -Name TCL001629 | Get-DeviceBuildData)
 
-			$buildInfo.ticketID = $ticket
+			$buildInfo.recordID = $ticket
 
 
-			Set-FreshTicketStatus -ticketID $ticket -status 15
+			Set-FreshTicketStatus -recordID $ticket -status 15
 
 
 			"$(Get-PendingBuildTickets | Select-DevicePendingOldADCompRemoval)" | Should -not -BeLike "*$ticket*"
 
-			Set-FreshTicketStatus -ticketID $ticket -status 5
+			Set-FreshTicketStatus -recordID $ticket -status 5
 		}
 
 
@@ -210,7 +210,7 @@ Describe "Filtering Build Tickets" {
 			$ticket = "103752"
 			$buildInfo = (Get-FreshAsset -Name TCL001629 | Get-DeviceBuildData)
 
-			$buildInfo.ticketID = $ticket
+			$buildInfo.recordID = $ticket
 			
 			$buildInfo.buildState = "In Progress - Device Checked In"
 			Write-DeviceBuildTicket -buildInfo $buildInfo
@@ -228,13 +228,13 @@ Describe "Filtering Build Tickets" {
 			Write-DeviceBuildTicket -buildInfo $buildInfo
 			
 
-			Set-FreshTicketStatus -ticketID $ticket -status 15
+			Set-FreshTicketStatus -recordID $ticket -status 15
 
 			$result = Get-PendingBuildTickets | Select-DevicePendingOldADCompRemoval
-			$result.ticketID | Should -Contain $ticket
-			($result | ? {$_.ticketID -eq $ticket}).GUID | Should -not -be $newGUID
+			$result.recordID | Should -Contain $ticket
+			($result | ? {$_.recordID -eq $ticket}).GUID | Should -not -be $newGUID
 
-			Set-FreshTicketStatus -ticketID $ticket -status 5
+			Set-FreshTicketStatus -recordID $ticket -status 5
 
 		}
 	}

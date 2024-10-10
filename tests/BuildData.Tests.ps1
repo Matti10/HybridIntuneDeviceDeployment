@@ -1,6 +1,7 @@
 BeforeAll {
 
     Set-StrictMode -Version 2.0
+
     <# --- Import TriCare-Common --- #>
     if ($PSCommandPath -like "*Script-Dev*" -or "" -eq $PSCommandPath ) {
 		Import-Module "\\tricaread\public\UsersH$\Mwinsen\Script-Dev\TriCare-Common\TriCare-Common.psm1"  -Force
@@ -10,8 +11,6 @@ BeforeAll {
 		Import-Module TriCare-DeviceDeployment | Out-Null
     }
 
-	Set-FreshAPIKey -API_Key (Unprotect-String -encryptedString "AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAAzAHtRA5HSkKHYFaSWBLfagAAAAACAAAAAAADZgAAwAAAABAAAAAC/qYwxhMfoyxy5QRmZbQXAAAAAASAAACgAAAAEAAAAPl+NPlquKeV/rY0/dxPL54YAAAApGYk+XDDktyVSHA0822U36GsRkAEta95FAAAACVrQYzGoe75lD1B8IX9Lf9SK0ub")
-
 }
 BeforeDiscovery {
 	# Import-Module "\\tricaread\public\UsersH$\Mwinsen\Script-Dev\TriCare-Common\TriCare-Common.psm1"
@@ -19,21 +18,22 @@ BeforeDiscovery {
 }
 
 Describe "Data in Fresh" {
-	Context "Setting Data to BuildQueue" {
-		It "Creates a record" -foreach @(
+	Context "Getting Data from Fresh Asset" {
+		It "Retrives expected build data from Fresh Asset" -foreach @(
 			"TCL001629"
-		) {
+		){
+			$freshAsset = Get-FreshAsset -name $_
+			$result = Get-DeviceBuildData -freshAsset $freshAsset
+		
 
-			$buildInfo = Get-DeviceBuildData -freshAsset (Get-FreshAsset -name $_)
-
-			$result = Write-DeviceBuildQueue -buildInfo $buildInfo
-
-			$result.bo_record_id | Should -not -BeNullOrEmpty
+			$result.AssetID | Should -Be $_
+			$result.hostname | Should -be "$(hostname)"
+			$result.build | Should -not -BeNullOrEmpty
+			$result.OU | Should -not -BeNullOrEmpty
+			$result.groups | Should -not -BeNullOrEmpty
+			$result.buildState| Should -not -BeNullOrEmpty
+			$result.serialNumber | Should -be $freshAsset.type_fields.serial_number_11000673046
 		}
 	}
-    Context "Testing if devices have checked in" {
-		It "returns valid build GUID when check in is valid" {
-			
-		}
-	}
+
 }

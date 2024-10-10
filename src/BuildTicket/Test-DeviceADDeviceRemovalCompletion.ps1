@@ -51,7 +51,7 @@ function Test-DeviceADDeviceRemovalCompletion {
 	process {
 		try {
 			# Fetch all conversations for the ticket  
-			$conversations = Get-FreshTicketConversations -ticketID $BuildInfo.ticketID
+			$conversations = Get-FreshTicketConversations -recordID $BuildInfo.recordID
 
 			# Check each conversation to see if AD Device Removal has been completed
 			foreach ($conversation in $conversations) {

@@ -72,13 +72,13 @@ function New-BuildInfoObj {
 		[Parameter()]
 		[string]$serialNumber = "",
 
-		[Parameter(Mandatory)]
-		[string]$type,
+		# [Parameter(Mandatory)]
+		# [string]$type,
 
 		[Parameter(Mandatory)]
 		[string]$build,
 
-		[Parameter(Mandatory)]
+		[Parameter()]
 		[string]$recordID,
 
 		[Parameter(Mandatory)]
@@ -117,7 +117,6 @@ function New-BuildInfoObj {
 					AssetID      = $AssetID
 					Hostname     = $hostname
 					serialNumber = $serialNumber
-					type         = $type
 					build        = $build
 					OU           = $OU
 					groups       = $groups

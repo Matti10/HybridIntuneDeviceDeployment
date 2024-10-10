@@ -121,8 +121,8 @@ function Write-DeviceBuildTicket {
 				$content = $content -replace "%BGCOLOR%", "$($buildState.color)"
 			}
 			
-			if ($PSCmdlet.ShouldProcess("Ticket: $($BuildInfo.ticketID) State: $($buildState)")) {
-				New-FreshTicketNote -ticketID $BuildInfo.ticketID -content $content | Out-Null
+			if ($PSCmdlet.ShouldProcess("Ticket: $($BuildInfo.recordID) State: $($buildState)")) {
+				New-FreshTicketNote -recordID $BuildInfo.recordID -content $content | Out-Null
 			}
 			else {
 				return $content

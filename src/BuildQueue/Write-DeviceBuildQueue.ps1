@@ -59,22 +59,10 @@ function Write-DeviceBuildQueue {
 		[System.Object]$BuildInfo,
 
 		[Parameter()]
-		[string]$message = "",
-
-		[Parameter()]
-		[string]$content = $DeviceDeploymentDefaultConfig.TicketInteraction.messageTemplate,
-
-		[Parameter()]
-		[string]$dateFormat = $DeviceDeploymentDefaultConfig.Generic.DefaultDateFormat,
-
-		[Parameter()]
 		$buildStates = $DeviceDeploymentDefaultConfig.TicketInteraction.BuildStates,
-
-		[Parameter()]
-		$formattingConfig = $DeviceDeploymentDefaultConfig.TicketInteraction.freshFormatting,
 		
 		[Parameter()]
-		$listDisplayDelimiter = $DeviceDeploymentDefaultConfig.TicketInteraction.listDisplayDelimiter
+		$customObjectID = $DeviceDeploymentDefaultConfig.BuildQueue.CustomObjectID
 	)
 
 	begin {
@@ -82,38 +70,16 @@ function Write-DeviceBuildQueue {
 	}
 	process {
 		try {
-			$tempBuildInfo = [PSCustomObject]@{}
-			#copy values into a temp object (BECAUSE POWERSHELL CANT NOT PASS BY REFERENCE!!!!!!!!)
-			$BuildInfo | Get-Member | Where-Object {$_.MemberType -eq "NoteProperty"} | ForEach-Object {
-				$tempBuildInfo | Add-Member -MemberType NoteProperty -Name $_.Name -Value $BuildInfo."$($_.Name)"
-			}
-
-			# convert the list of groups to a readable format
-			$tempBuildInfo.groups = ""
-			foreach ($group in $BuildInfo.groups) {
-				$tempBuildInfo.groups = "$group$listDisplayDelimiter$($tempBuildInfo.groups)"
-			}
-			$tempBuildInfo.groups = $tempBuildInfo.groups.TrimEnd(", ")
-
 			# change fresh asset object to its asset id
 			try {
-				$tempBuildInfo.freshAsset = $tempBuildInfo.freshAsset.asset_tag
+				$BuildInfo.freshAsset = $tempBuildInfo.freshAsset.asset_tag
 			} catch {
 				#do nothing - the fresh asset feild is already the fresh asset tag (rather than a fresh asset object)
 			}
-
-			#find the current build state
-			$buildState = $buildStates.initialState
-			foreach ($state in ($buildStates | Get-Member | Where-Object { $_.MemberType -eq "NoteProperty" }).Name) {
-				if ($content -like "*$($buildStates.$state.message)*") {
-					$buildState = $buildStates.$state
-				}
-			}
 			
-			if ($PSCmdlet.ShouldProcess("Ticket: $($BuildInfo.ticketID) State: $($buildState)")) {
-				New-FreshTicketNote -ticketID $BuildInfo.ticketID -content $content | Out-Null
-			}
-			else {
+			if ($PSCmdlet.ShouldProcess("CustomObjectID: $($BuildInfo.recordID) State: $($buildInfo.buildState)")) {
+				return New-FreshCustomObjectRecord -record $BuildInfo -objectID $customObjectID
+			} else {
 				return $content
 			}
 		}

@@ -46,7 +46,7 @@ function Get-PendingBuildTickets {
 
 
 				foreach ($buildTicket in $buildTickets) {
-					$conversations = Get-FreshTicketConversations -ticketID $buildTicket.ID
+					$conversations = Get-FreshTicketConversations -recordID $buildTicket.ID
 
 					if ($null -ne $conversations) {
 						$buildInfo = Test-DeviceTicketCheckIn -conversations $conversations

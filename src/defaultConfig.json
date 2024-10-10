@@ -10,6 +10,10 @@
 		"shiftF10RelativePath" : "execs\\ShiftF10.exe",
 		"BuildProcessWaitSeconds" : 3600
 	},
+	"FreshAssetIntergration" : {
+		"buildAttr" : "build_11000673051",
+		"facilityAttr" : "location_id"
+	},
 	"Logging" : {
 		"buildPCLogPath" : "C:\\Intune_Setup\\buildProcess\\logs",
 		"serverLogPath" : ".\\Logs"
@@ -97,6 +101,9 @@
 		],
 		"GeneralErrorMessage": "<p style=\"color:red\"><b>!! Some Commands have Failed. Please See above error Output !!</b></p>"
 
+	},
+	"BuildQueue" : {
+		"CustomObjectID" : "11000002434"
 	},
 	"Deployment": {
 		"buildTicketNamePatterns": [
@@ -449,12 +456,12 @@
 			},
 			"buildTicketAssignmentFirstAttempt" : {
 				"title" : "Device Missing Build Ticket",
-				"message" : "Device doesn't have any build tickets associated with it. If this is a new build, you will need to create a ticket for the AssetID `%PLACEHOLDER%`",
+				"message" : "The Fresh Asset `%PLACEHOLDER%` doesn't have the Location and/or Build fields set. Please set these attributes and press retry to continue",
 				"messageBoxConfiguration" : 4149
 			},
 			"buildTicketAssignmentOtherAttempts" : {
 				"title" : "Device Missing Build Ticket",
-				"message" : "Device (%PLACEHOLDER%) doesn't have any build tickets associated with it. Please check that there is a valid build service request and that '%PLACEHOLDER%' is assigned to said ticket under the assets tab",
+				"message" : "The Fresh Asset `%PLACEHOLDER%` doesn't have the Location and/or Build fields set. Please set these attributes and press retry to continue. For help, please find the documentation in Fresh's solutions",
 				"messageBoxConfiguration" : 4149
 			}
 		}

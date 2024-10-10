@@ -33,7 +33,7 @@ try {
 	}
 	
 	#----------------------------------- Set Ticket to Waiting on Build -----------------------------------# 
-	Set-FreshTicketStatus -ticketID $buildInfo.ticketID -status $config.TicketInteraction.ticketWaitingOnBuildStatus -overwriteDescription
+	Set-FreshTicketStatus -recordID $buildInfo.recordID -status $config.TicketInteraction.ticketWaitingOnBuildStatus -overwriteDescription
 
 	#------------------------------------------ Check into Ticket -----------------------------------------# 
 	#------------------------- (This invokes privilidged commands on serverside) --------------------------#

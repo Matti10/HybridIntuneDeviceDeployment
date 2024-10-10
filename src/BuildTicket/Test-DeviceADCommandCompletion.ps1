@@ -41,7 +41,7 @@ function Test-DeviceADCommandCompletion {
             if ($PSCmdlet.ShouldProcess("$($BuildInfo)")) {                
                 #--------------------------- Get All notes for the ticket  ---------------------------# 
                 # Retrieve all conversations for the given ticket ID
-                $conversations = Get-FreshTicketConversations -ticketID $BuildInfo.ticketID
+                $conversations = Get-FreshTicketConversations -recordID $BuildInfo.recordID
                 
                 # Loop through each conversation
                 foreach ($conversation in $conversations) {

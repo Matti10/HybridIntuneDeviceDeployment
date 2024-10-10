@@ -38,7 +38,7 @@ System.Object: If there are pending commands, the function returns the 'buildInf
 ### Example 1
 
 
-$buildData = Get-BuildTicketData -TicketID '123456'
+$buildData = Get-BuildTicketData -recordID '123456'
 Select-DevicePendingCommands -buildTicketData $buildData -commandsPendingString "commands_pending" -commandsCompleteString "commands_complete"
 
 
