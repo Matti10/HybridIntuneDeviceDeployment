@@ -456,9 +456,44 @@
 				"title" : "Device Missing Build Ticket",
 				"message" : "Device (%PLACEHOLDER%) doesn't have any build tickets associated with it. Please check that there is a valid build service request and that '%PLACEHOLDER%' is assigned to said ticket under the assets tab",
 				"messageBoxConfiguration" : 4149
+			},
+
+			"retyBuildProcess" : {
+				"title" : "Do you want to Retry",
+				"message" : "Due to a Previous Error, the build process has failed. Please FIX THE ERROR, then select one of the below options:`n- Press Retry to Restart the Build`n- Press Abort to WIPE the PC`n - Press cancel to continue to windows %PLACEHOLDER%",
+				"messageBoxConfiguration" : 18
 			}
+		},
+		"results" : {
+			1
+
+"button": "OK"
+
+"result":2
+
+"button": "Cancel"
+
+"result":3
+
+"button": "Abort"
+
+"result":4
+
+"button": "Retry"
+
+"result":5
+
+"button": "Ignore"
+
+"result":6
+
+"button": "Yes"
+
+"result":7
+
+"button": "No"
 		}
-	},
+	}"result":,
 	"BuildStatus" : {
 		"LocalBuildStatusFile" : "C:\\Intune_Setup\\buildProcess\\buildStatus.json"
 	},

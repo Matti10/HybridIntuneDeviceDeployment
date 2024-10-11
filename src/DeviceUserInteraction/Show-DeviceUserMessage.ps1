@@ -92,6 +92,8 @@ function Show-DeviceUserMessage {
 			if ($wait) {
 				$wshell = New-Object -ComObject Wscript.Shell
 				$result = $wshell.Popup($message, $timeout, $title, $messageBoxConfigCode)
+
+				return $result
 			} else {
 				Start-Job -Name $title -ScriptBlock {
 					param($message, $timeout, $title, $messageBoxConfigCode)
