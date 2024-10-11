@@ -15,8 +15,8 @@ During the processing block, data manipulation operations are performed to make 
 END
 At the end of function execution, if there are any errors in the errorList, those are written out to the error stream.
 
-.PARAMETER BuildInfo  
-This (mandatory) parameter takes a [System.Object] type input and gets its value from the pipeline. The BuildInfo object contains all the information about the device build that is used as input for the ticket.
+.PARAMETER record  
+This (mandatory) parameter takes a [System.Object] type input and gets its value from the pipeline. The record object contains all the information about the device build that is used as input for the ticket.
 
 .PARAMETER message  
 This parameter takes a [string] type input. It specifies the message text that is to be included in the ticket content.
@@ -47,9 +47,9 @@ This function requires the presence of other functions and objects like New-Fres
 .EXAMPLE
 To use the function, you can do something like:
 
-$BuildInfo | Write-DeviceBuildTicket -message "This is a test message"
+$record | Write-DeviceBuildTicket -message "This is a test message"
 
-This command will use the given message and data from $BuildInfo to write to the build ticket. 
+This command will use the given message and data from $record to write to the build ticket. 
 
 #>
 function Write-DeviceBuildQueue {
@@ -62,7 +62,10 @@ function Write-DeviceBuildQueue {
 		$buildStates = $DeviceDeploymentDefaultConfig.TicketInteraction.BuildStates,
 		
 		[Parameter()]
-		$customObjectID = $DeviceDeploymentDefaultConfig.BuildQueue.CustomObjectID
+		$customObjectID = $DeviceDeploymentDefaultConfig.BuildQueue.CustomObjectID,
+		
+		[Parameter()]
+		$listDisplayDelimiter = $DeviceDeploymentDefaultConfig.TicketInteraction.listDisplayDelimiter
 	)
 
 	begin {
@@ -70,17 +73,36 @@ function Write-DeviceBuildQueue {
 	}
 	process {
 		try {
+			$record = [PSCustomObject]@{}
+			#copy values into a temp object (BECAUSE POWERSHELL CANT NOT PASS BY REFERENCE!!!!!!!!)
+			$BuildInfo | Get-Member | Where-Object {$_.MemberType -eq "NoteProperty"} | ForEach-Object {
+				$record | Add-Member -MemberType NoteProperty -Name $_.Name -Value $BuildInfo."$($_.Name)"
+			}
 			# change fresh asset object to its asset id
 			try {
-				$BuildInfo.freshAsset = $tempBuildInfo.freshAsset.asset_tag
+				$record.freshAsset = "$($record.freshAsset.display_ID)"
 			} catch {
 				#do nothing - the fresh asset feild is already the fresh asset tag (rather than a fresh asset object)
 			}
-			
-			if ($PSCmdlet.ShouldProcess("CustomObjectID: $($BuildInfo.recordID) State: $($buildInfo.buildState)")) {
-				return New-FreshCustomObjectRecord -record $BuildInfo -objectID $customObjectID
+
+			# represent list of groups as a string
+			$tempGroups = $record.groups
+			$record.groups = ""
+			foreach ($group in $tempGroups) {
+				$record.groups += "$group$listDisplayDelimiter$($record.groups)"
+			}
+			$record.groups = $record.groups.TrimEnd($listDisplayDelimiter)
+
+			if (Test-DeviceCheckIn -buildInfo $BuildInfo) {
+				
 			} else {
-				return $content
+				if ($PSCmdlet.ShouldProcess("CustomObjectID: $($record.recordID) State: $($buildInfo.buildState)")) {
+					$result = New-FreshCustomObjectRecord -record $record -objectID $customObjectID
+					$BuildInfo.RecordID = $result.bo_display_id
+					return $BuildInfo
+				} else {
+					return $record
+				}
 			}
 		}
 		catch {

@@ -28,18 +28,11 @@ A list of conversations, an optional string identifying check-in state, and anot
 Upon successful completion, the function either returns the build information or false. In case of errors in execution, it throws a detailed error message.
 #>
 
-function Test-DeviceTicketCheckIn {
+function Test-DeviceCheckIn {
 	[CmdletBinding(SupportsShouldProcess = $true)]
 	param (
-		[Parameter(Mandatory)]
-		$conversations, #Mandatory parameter that accepts a list of conversations
-
-		#Optional parameters for customizing the check in string and completion string respectively.
-		[Parameter()]
-		[string]$ticketCheckInString = $DeviceDeploymentDefaultConfig.TicketInteraction.BuildStates.checkInState.message,
-
-		[Parameter()]
-		[string]$ticketCompletionString = $DeviceDeploymentDefaultConfig.TicketInteraction.BuildStates.completedState.message
+		[Parameter(Mandatory,ValueFromPipeline)]
+		$buildInfo #Mandatory parameter that accepts a list of conversations
 	)
 
 	begin {
@@ -48,26 +41,11 @@ function Test-DeviceTicketCheckIn {
 	process {
 		try {
 
-			#sort newest to oldest 
-			$conversations = $conversations | Sort-Object updated_at -Descending 
-
-			#Main loop to process conversations
-			:mainConversationLoop foreach ($conversation in $conversations | Where-Object {$_.body -like "*$ticketCheckInString*"}) {
-				
-				#test if this note/reply is a ticket check in and convert it to device build data
-				$buildInfo = Convert-TicketInteractionToDeviceBuildData -text $conversation.body
-
-				#test if the build associated with the check in is completed
-				foreach ($laterConversation in $conversations | Where-Object {$_.body -like "*$($buildInfo.GUID)*"}) {
-					if ("$($laterConversation)" -like "*$ticketCompletionString*") {
-						Continue mainConversationLoop #skips the current iteration of mainConversationLoop if ticket is already completed 
-					}
-				}
-				
-				return $buildInfo #Returns build info if the ticket is not completed
+			if ($null -eq $buildInfo.RecordID -or "" -eq $buildInfo.RecordID) {
+				return $false
 			}
 
-			return $false #Returns false if there are no conversations matching the provided check in string
+			return $true #Returns false if there are no conversations matching the provided check in string
 		}
 		catch {
 			$errorList += $_ #Handle error and add it to the error list

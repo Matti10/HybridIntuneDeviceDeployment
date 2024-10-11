@@ -19,21 +19,52 @@ BeforeDiscovery {
 }
 
 Describe "Data in Fresh" {
-	Context "Setting Data to BuildQueue" {
-		It "Creates a record" -foreach @(
-			"TCL001629"
-		) {
+	Context "Setting Data to BuildQueue" -foreach @(
+		"TCL001142","TCL001079","TCL001154","TCL001306","TCL000559","TCL001425","TCL001254","TCL001275","TCL001072","TCL001299","TCL000827","tCL001657","TCL000752","TCL001102","TCL000705","TCL000941","TCL000889","TCL001647","TCL001069","TCL000619","TCL001340","TCL001469","TCL000821","TCL001861","TCL000796","TCL000822","TCL001635","TCL001597","TCL001374","TCL000820"
+	) {
+		It "Creates a record if there isn't already a record for the current build" {
 
 			$buildInfo = Get-DeviceBuildData -freshAsset (Get-FreshAsset -name $_)
 
 			$result = Write-DeviceBuildQueue -buildInfo $buildInfo
 
-			$result.bo_record_id | Should -not -BeNullOrEmpty
+			$result.Recordid | Should -not -BeNullOrEmpty
+
+			throw "use convert function to test, and test that function first"
+		}
+
+		It "Updates a record if there is a record for the current build" {
+
+			$buildInfo = Get-DeviceBuildData -freshAsset (Get-FreshAsset -name $_)
+
+			$result = Write-DeviceBuildQueue -buildInfo $buildInfo
+
+			$result.Recordid | Should -not -BeNullOrEmpty
+			throw "use convert function to test, and test that function first"
+
 		}
 	}
-    Context "Testing if devices have checked in" {
-		It "returns valid build GUID when check in is valid" {
+    Context "Testing if devices have checked in" -ForEach @(
+		"TCL001046","TCL001168","TCL001369","TCL001113","TCL001497","TCL001567","TCL000753","TCL001463","TCL001518","TCL000709","TCL001169","TCL001007","TCL001319","TCL001180","TCL001649","TCL001306","TCL000668","TCL001337","TCL001157","TCL000313","TCL000279","TCL001401","TCL000860","TCL001096","TCL000992","TCL000297","TCL000414"
+	) {
+		It "returns true when check in is valid" {
+			$buildInfo = Get-DeviceBuildData -freshAsset (Get-FreshAsset -name $_)
 			
+			$result = Write-DeviceBuildQueue -buildInfo $buildInfo
+
+			Test-DeviceCheckIn -buildInfo $result | Should -BeTrue
+
+			Remove-FreshCustomObjectRecord -objectID "11000002434" -recordID $result.recordID
+		}
+
+		It "returns true when check in is valid" {
+			$buildInfo = Get-DeviceBuildData -freshAsset (Get-FreshAsset -name $_)
+			
+			$result = Write-DeviceBuildQueue -buildInfo $buildInfo
+
+			Test-DeviceCheckIn -buildInfo $result | Should -BeTrue
+
+			Remove-FreshCustomObjectRecord -objectID "11000002434" -recordID $result.recordID
 		}
 	}
 }
