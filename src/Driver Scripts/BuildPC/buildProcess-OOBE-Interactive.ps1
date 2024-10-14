@@ -28,7 +28,7 @@ try {
 			$freshAsset = Register-DeviceWithFresh -Verbose
 			$buildInfo = Get-DeviceBuildData -freshAsset $freshAsset -Verbose
 		} catch {
-			New-BuildProcessError -errorObj $_ -message "Unable to Retrive Build Info from Fresh. This without this info the process cannot contine. Please check device exists in fresh and is setup as per build documentation. Then wipe the device and restart" -functionName "Device Registration with Fresh" -popup -ErrorAction "Stop"
+			New-BuildProcessError -errorObj $_ -message "Unable to Retrive Build Info from Fresh. This without this info the process cannot contine. Please check device exists in fresh and is setup as per build documentation, then retry" -functionName "Device Registration with Fresh" -popup -ErrorAction "Stop"
 			break
 		}
 		
@@ -87,7 +87,8 @@ try {
 	}	
 }
 catch {
-	New-BuildProcessError -errorObj $_ -message "There has been an error in the build process, please see the below output:`n$_" -functionName "Build Process Main" -popup -ErrorAction "Stop" -buildInfo $buildInfo
+	Invoke-BuildProcessRetry -message "Error Details: $_"
+	New-BuildProcessError -errorObj $_ -message "There has been an error in the build process, please see the below output:`n$_" -functionName "Build Process Main" -ErrorAction "Stop" -buildInfo $buildInfo
 
 		#---------------------------------------------- Cleanup -----------------------------------------------# 
 		# Invoke-DeviceDeploymentCleanupCommands

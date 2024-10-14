@@ -4,22 +4,23 @@
 		"DefaultDateFormat": "dd/MM/yyyy-hh:mm",
 		"RunRegistryPath": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run",
 		"RunOnceRegistryPath": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\RunOnce",
-		"BuildPCRootPath" : "C:\\Intune_Setup\\buildProcess",
-		"BuildModulePath" : "thisGetsOverwrittenOnImport",
-		"serviceUIRelativePath" : "execs\\ServiceUI.exe",
-		"shiftF10RelativePath" : "execs\\ShiftF10.exe",
-		"BuildProcessWaitSeconds" : 3600
+		"BuildPCRootPath": "C:\\Intune_Setup\\buildProcess",
+		"BuildModulePath": "thisGetsOverwrittenOnImport",
+		"BuildProcessRelativePath" : "\\src\\Driver Scripts\\BuildPC\\buildProcess-OOBE-Interactive.ps1",
+		"serviceUIRelativePath": "execs\\ServiceUI.exe",
+		"shiftF10RelativePath": "execs\\ShiftF10.exe",
+		"BuildProcessWaitSeconds": 3600
 	},
-	"Logging" : {
-		"buildPCLogPath" : "C:\\Intune_Setup\\buildProcess\\logs",
-		"serverLogPath" : ".\\Logs"
+	"Logging": {
+		"buildPCLogPath": "C:\\Intune_Setup\\buildProcess\\logs",
+		"serverLogPath": ".\\Logs"
 	},
-	"Dependencies" : [
+	"Dependencies": [
 		"TriCare-Common",
 		"TriCare-DeviceDeployment",
-        "Az.Accounts",
-        "Az.KeyVault",
-        "Microsoft.Graph.Authentication"
+		"Az.Accounts",
+		"Az.KeyVault",
+		"Microsoft.Graph.Authentication"
 	],
 	"AssetID": {
 		"freshAssetIDAttr": "name",
@@ -87,16 +88,15 @@
 				"format": "border-width: 1px; padding: 3px; border-style: solid; border-color: black; background-color: %BGCOLOR%;text-allign: center;"
 			}
 		],
-		"ticketWaitingOnBuildFreshFilter" : "status:15",
-		"ticketClosedStatus" : 5,
-		"ticketWaitingOnBuildStatus" : 15,
-		"listDisplayDelimiter" : ", ",
-		"buildTicketTitlePatterns" : [
+		"ticketWaitingOnBuildFreshFilter": "status:15",
+		"ticketClosedStatus": 5,
+		"ticketWaitingOnBuildStatus": 15,
+		"listDisplayDelimiter": ", ",
+		"buildTicketTitlePatterns": [
 			"*Request*: Request to Reimage/Rebuild TriCare Asset*",
 			"*Request*: New Hardware Request*"
 		],
 		"GeneralErrorMessage": "<p style=\"color:red\"><b>!! Some Commands have Failed. Please See above error Output !!</b></p>"
-
 	},
 	"Deployment": {
 		"buildTicketNamePatterns": [
@@ -384,124 +384,103 @@
 			}
 		]
 	},
-	"WindowsUpdate" : {
-		"packageProviderName" : "NuGet",
-		"packageProviderMinVersion" : 3,
-		"packageName" : "PSWindowsUpdate",
-		"packageMinVersion" : 2
+	"WindowsUpdate": {
+		"packageProviderName": "NuGet",
+		"packageProviderMinVersion": 3,
+		"packageName": "PSWindowsUpdate",
+		"packageMinVersion": 2
 	},
-	"DellCommandUpdate" : {
-		"installLocations" : [
+	"DellCommandUpdate": {
+		"installLocations": [
 			"C:\\Program Files\\Dell\\CommandUpdate\\dcu-cli.exe",
 			"C:\\Program Files(x86)\\Dell\\CommandUpdate\\dcu-cli.exe"
 		]
 	},
-	"Bloatware" : {
-		"quietUninstallAttr" : "QuietUninstallString",
-		"loudUninstallAttr" : "UninstallString",
-		"registryLocations" : [
+	"Bloatware": {
+		"quietUninstallAttr": "QuietUninstallString",
+		"loudUninstallAttr": "UninstallString",
+		"registryLocations": [
 			"\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall",
 			"\\SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall"
 		],
-		"softwareToRemove" : [
+		"softwareToRemove": [
 			{
-				"searchAttr" : "DisplayName",
-				"searchString" : "*Teams*",
-				"AddtnUninstallArgs" : null,
-				"DisplayName" : "Teams"
+				"searchAttr": "DisplayName",
+				"searchString": "*Teams*",
+				"AddtnUninstallArgs": null,
+				"DisplayName": "Teams"
 			},
 			{
-				"searchAttr" : "DisplayName",
-				"searchString" : "*OneNote*",
-				"AddtnUninstallArgs" : null,
-				"DisplayName" : "OneNote"
+				"searchAttr": "DisplayName",
+				"searchString": "*OneNote*",
+				"AddtnUninstallArgs": null,
+				"DisplayName": "OneNote"
 			}
 		],
-		"Office" : {
-			"OfficeInstallerConfigPath" : "C:\\Program Files\\WindowsPowerShell\\Modules\\TriCare-DeviceDeployment\\src\\BloatwareRemoval\\Remove-DeviceOfficeInstallConfig.xml",
-			"ODTPath" : "C:\\Program Files\\WindowsPowerShell\\Modules\\TriCare-DeviceDeployment\\src\\BloatwareRemoval\\ODT.exe"
+		"Office": {
+			"OfficeInstallerConfigPath": "C:\\Program Files\\WindowsPowerShell\\Modules\\TriCare-DeviceDeployment\\src\\BloatwareRemoval\\Remove-DeviceOfficeInstallConfig.xml",
+			"ODTPath": "C:\\Program Files\\WindowsPowerShell\\Modules\\TriCare-DeviceDeployment\\src\\BloatwareRemoval\\ODT.exe"
 		}
 	},
-	"CompanyPortalSync" : {
-		"syncTaskName" : "PushLaunch"
+	"CompanyPortalSync": {
+		"syncTaskName": "PushLaunch"
 	},
-	"Security" : {
-        "KeyVaultName": "tc-ae-d-kv",
-        "FreshAPIKey_KeyVaultKey": "freshservice-apikey-matt"
-    },
-	"ShutdownListener" : {
-		"jobName" : "Block-DeviceShutdown",
-		"waitSeconds" : 30
+	"Security": {
+		"KeyVaultName": "tc-ae-d-kv",
+		"FreshAPIKey_KeyVaultKey": "freshservice-apikey-matt"
 	},
-	"DeviceUserInteraction" : {
-		"placeholderValue" : "%PLACEHOLDER%",
-		"messageBoxConfigurations" : {
-			"Exclamation" : 4144,
-			"Retry" : 4149,
-			"Information" : 4160 ,
-			"error" : 16
+	"ShutdownListener": {
+		"jobName": "Block-DeviceShutdown",
+		"waitSeconds": 30
+	},
+	"DeviceUserInteraction": {
+		"placeholderValue": "%PLACEHOLDER%",
+		"messageBoxConfigurations": {
+			"Exclamation": 4144,
+			"Retry": 4149,
+			"Information": 4160,
+			"error": 16
 		},
-		"messages" : {
-			"assetIdAssignment" : {
-				"title" : "Device Asset ID Assignment",
-				"message" : "Device has been assigned AssetID `%PLACEHOLDER%`. If required, please attach an asset tag to the device",
-				"messageBoxConfiguration" : 4160
+		"messages": {
+			"assetIdAssignment": {
+				"title": "Device Asset ID Assignment",
+				"message": "Device has been assigned AssetID `%PLACEHOLDER%`. If required, please attach an asset tag to the device",
+				"messageBoxConfiguration": 4160
 			},
-			"buildTicketAssignmentFirstAttempt" : {
-				"title" : "Device Missing Build Ticket",
-				"message" : "Device doesn't have any build tickets associated with it. If this is a new build, you will need to create a ticket for the AssetID `%PLACEHOLDER%`",
-				"messageBoxConfiguration" : 4149
+			"buildTicketAssignmentFirstAttempt": {
+				"title": "Device Missing Build Ticket",
+				"message": "Device doesn't have any build tickets associated with it. If this is a new build, you will need to create a ticket for the AssetID `%PLACEHOLDER%`",
+				"messageBoxConfiguration": 4149
 			},
-			"buildTicketAssignmentOtherAttempts" : {
-				"title" : "Device Missing Build Ticket",
-				"message" : "Device (%PLACEHOLDER%) doesn't have any build tickets associated with it. Please check that there is a valid build service request and that '%PLACEHOLDER%' is assigned to said ticket under the assets tab",
-				"messageBoxConfiguration" : 4149
+			"buildTicketAssignmentOtherAttempts": {
+				"title": "Device Missing Build Ticket",
+				"message": "Device (%PLACEHOLDER%) doesn't have any build tickets associated with it. Please check that there is a valid build service request and that '%PLACEHOLDER%' is assigned to said ticket under the assets tab",
+				"messageBoxConfiguration": 4149
 			},
-
-			"retyBuildProcess" : {
-				"title" : "Do you want to Retry",
-				"message" : "Due to a Previous Error, the build process has failed. Please FIX THE ERROR, then select one of the below options:`n- Press Retry to Restart the Build`n- Press Abort to WIPE the PC`n - Press cancel to continue to windows %PLACEHOLDER%",
-				"messageBoxConfiguration" : 18
+			"retryBuildProcess": {
+				"title": "Do you want to Retry",
+				"message": "Due to a previous error, the build process has failed. Additional details are below and/or in another popup. \n\nPlease FIX the error, then select one of the below options:\n - Press Abort to WIPE the PC\n - Press Retry to Restart the Build\n - Press cancel to continue to windows\n\n\n%PLACEHOLDER%",
+				"messageBoxConfiguration": 18
 			}
 		},
-		"results" : {
-			1
-
-"button": "OK"
-
-"result":2
-
-"button": "Cancel"
-
-"result":3
-
-"button": "Abort"
-
-"result":4
-
-"button": "Retry"
-
-"result":5
-
-"button": "Ignore"
-
-"result":6
-
-"button": "Yes"
-
-"result":7
-
-"button": "No"
+		"results": {
+			"OK": 1,
+			"Cancel": 2,
+			"Abort": 3,
+			"Retry": 4,
+			"Ignore": 5,
+			"Yes": 6,
+			"No": 7
 		}
-	}"result":,
-	"BuildStatus" : {
-		"LocalBuildStatusFile" : "C:\\Intune_Setup\\buildProcess\\buildStatus.json"
 	},
-	"Intune" : {
-		"IntuneIDRegPath" : "HKLM:\\SOFTWARE\\Microsoft\\Provisioning\\Diagnostics\\Autopilot\\EstablishedCorrelations",
-		"IntuneIDRegKey" : "EntDMID"
+	"BuildStatus": {
+		"LocalBuildStatusFile": "C:\\Intune_Setup\\buildProcess\\buildStatus.json"
 	},
-	"ADCommands" : {
-		"replicationSeconds" : 30
+	"Intune": {
+		"IntuneIDRegPath": "HKLM:\\SOFTWARE\\Microsoft\\Provisioning\\Diagnostics\\Autopilot\\EstablishedCorrelations",
+		"IntuneIDRegKey": "EntDMID"
+	},
+	"ADCommands": {
+		"replicationSeconds": 30
 	}
 }
