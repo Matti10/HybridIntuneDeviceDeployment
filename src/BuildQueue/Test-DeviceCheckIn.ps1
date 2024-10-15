@@ -40,12 +40,10 @@ function Test-DeviceCheckIn {
 	}
 	process {
 		try {
-
 			if ($null -eq $buildInfo.RecordID -or "" -eq $buildInfo.RecordID) {
 				return $false
 			}
-
-			return $true #Returns false if there are no conversations matching the provided check in string
+			return $true
 		}
 		catch {
 			$errorList += $_ #Handle error and add it to the error list

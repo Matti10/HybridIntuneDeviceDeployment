@@ -63,6 +63,9 @@ function Write-DeviceBuildQueue {
 		
 		[Parameter()]
 		$customObjectID = $DeviceDeploymentDefaultConfig.BuildQueue.CustomObjectID,
+        
+		[Parameter()]
+        $freshRecordIDAttr = $DeviceDeploymentDefaultConfig.BuildQueue.freshRecordIDAttr,
 		
 		[Parameter()]
 		$listDisplayDelimiter = $DeviceDeploymentDefaultConfig.TicketInteraction.listDisplayDelimiter
@@ -98,7 +101,7 @@ function Write-DeviceBuildQueue {
 			} else {
 				if ($PSCmdlet.ShouldProcess("CustomObjectID: $($record.recordID) State: $($buildInfo.buildState)")) {
 					$result = New-FreshCustomObjectRecord -record $record -objectID $customObjectID
-					$BuildInfo.RecordID = $result.bo_display_id
+					$BuildInfo.RecordID = $result.$freshRecordIDAttr
 					return $BuildInfo
 				} else {
 					return $record

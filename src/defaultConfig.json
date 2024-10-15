@@ -103,7 +103,11 @@
 
 	},
 	"BuildQueue" : {
-		"CustomObjectID" : "11000002434"
+		"CustomObjectID" : "11000002434",
+		"excludedFreshAttrs" : [
+			"bo_*"
+		],
+		"freshRecordIDAttr" : "bo_display_id"
 	},
 	"Deployment": {
 		"buildTicketNamePatterns": [
@@ -122,6 +126,16 @@
 			},
 			{
 				"buildtype": "Facility Management/Operations",
+				"OU": "OU=Operational Device",
+				"hasDepartment": true,
+				"Groups": [
+					"UR Sites Device Group",
+					"Intune_Operational_Devices"
+				],
+				"note" : "This is a legacy name used by the orginal build process"
+			},
+			{
+				"buildtype": "Operational",
 				"OU": "OU=Operational Device",
 				"hasDepartment": true,
 				"Groups": [

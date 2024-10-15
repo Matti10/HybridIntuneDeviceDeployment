@@ -20,19 +20,24 @@ String
 Object
 
 .NOTES
-This function uses the ConvertFrom-HTMLTable cmdlet to convert HTML tables into PSCustomObjects. This function returns a custom object using the New-BuildInfoObj function, after being passed data obtained from the conversion process.
 
 .LINK
 Get-MyTicket
 #>
-function Convert-TicketInteractionToDeviceBuildData {
+function Convert-BuildQueueToBuildData {
     [CmdletBinding(SupportsShouldProcess = $true)]
     param (
-    
         [Parameter(Mandatory,ValueFromPipeline)]
-        [string]
-        $text
-        
+        $record,
+
+        [Parameter()]
+        $freshRecordIDAttr = $DeviceDeploymentDefaultConfig.BuildQueue.freshRecordIDAttr,
+
+        [Parameter()]
+        $excludedFreshAttrs = $DeviceDeploymentDefaultConfig.BuildQueue.excludedFreshAttrs,
+
+        [Parameter()]
+		$listDisplayDelimiter = $DeviceDeploymentDefaultConfig.TicketInteraction.listDisplayDelimiter
     )
 
     # Initiate an empty array that will store any caught errors
@@ -43,14 +48,13 @@ function Convert-TicketInteractionToDeviceBuildData {
         # Check if the system should process the operation or not
         if ($PSCmdlet.ShouldProcess("")) {
             try {
-                # Convert the input HTML table into PSObject form 
-                $raw = (ConvertFrom-HTMLTable -html $text)
+                if ("" -eq $record.recordID -or $null -eq $record.recordID) {
+                    $record.recordID = $record.$freshRecordIDAttr
+                }
 
-                # Parse and trim group data to ensure valid inputs
-                $groups = $raw.groups.split(",") | ForEach-Object {$_.Trim(" ")} | Where-Object {$_ -ne ""}
+                $record.groups = $record.groups.split($listDisplayDelimiter)
 
-                # Return a new object containing build information
-                return (New-BuildInfoObj -AssetID $raw.AssetID -hostname $raw.hostname -serialNumber $raw.serialNumber -type $raw.type -build $raw.build -recordID $raw.recordID -freshAsset $raw.freshAsset -OU $raw.OU -groups $groups -buildState $raw.buildState -guid $raw.guid -IntuneID $raw.IntuneID)
+                return $record | Select-Object -ExcludeProperty $excludedFreshAttrs
             }
             catch {
                 # Catch and record any errors while executing the function
