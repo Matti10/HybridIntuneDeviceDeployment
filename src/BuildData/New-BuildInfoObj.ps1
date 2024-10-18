@@ -105,6 +105,10 @@ function New-BuildInfoObj {
 
 	begin {
 		$errorList = @()
+
+		if ($null -eq (Get-AzContext)) {
+			Connect-KVUnattended | Out-Null
+		}
 	}
 	process {
 		if ($PSCmdlet.ShouldProcess($AssetID)) {
@@ -125,6 +129,7 @@ function New-BuildInfoObj {
 					GUID         = $GUID
 					freshAsset   = $freshAsset
 					IntuneID     = $IntuneID
+					userEmail 	 = (Get-AzContext).Account
 				}
 			}
 			catch {

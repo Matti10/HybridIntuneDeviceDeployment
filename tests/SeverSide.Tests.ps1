@@ -10,6 +10,8 @@ BeforeAll {
 		Import-Module TriCare-Common | Out-Null
 		Import-Module .\TriCare-DeviceDeployment | Out-Null
     }
+	$creds = Get-Credential
+
 
 }
 BeforeDiscovery {
@@ -86,6 +88,18 @@ Describe "AD Commands" {
 	) {
 		# $_ | Remove-DeviceADDuplicate -whatif
 		"e"
+	}
+	Context "Running with different credentials" -ForEach @(
+		(Get-FreshAsset -Name TCL001629 | Get-DeviceBuildData),
+		(Get-FreshAsset -Name TCL001117 | Get-DeviceBuildData),
+		(Get-FreshAsset -Name TCL001680 | Get-DeviceBuildData),
+		(Get-FreshAsset -Name TCL001630 | Get-DeviceBuildData)
+	) {
+
+		It "runs with different creds" {
+			$_ | Invoke-DeviceADCommands -whatif -Credential $creds
+			$_ | Remove-DeviceADDuplicate -whatif -Credential $creds
+		}
 	}
 }
 

@@ -22,6 +22,8 @@ Describe "Data in Fresh" {
 		It "Retrives expected build data from Fresh Asset" -foreach @(
 			"TCL001629"
 		){
+			Connect-KVUnattended | Out-Null
+
 			$freshAsset = Get-FreshAsset -name $_
 			$result = Get-DeviceBuildData -freshAsset $freshAsset
 		
@@ -33,6 +35,7 @@ Describe "Data in Fresh" {
 			$result.groups | Should -not -BeNullOrEmpty
 			$result.buildState| Should -not -BeNullOrEmpty
 			$result.serialNumber | Should -be $freshAsset.type_fields.serial_number_11000673046
+			$result.userEmail | Should -not -BeNullOrEmpty
 		}
 	}
 

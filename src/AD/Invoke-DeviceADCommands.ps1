@@ -40,7 +40,13 @@ function Invoke-DeviceADCommands {
 		$buildInfo,
 
 		[Parameter()]
-		$ADCommandsCompletedString = $DeviceDeploymentDefaultConfig.TicketInteraction.BuildStates.adCompletedState.message
+		$ADCommandsCompletedString = $DeviceDeploymentDefaultConfig.TicketInteraction.BuildStates.adCompletedState.message,
+
+		[Parameter()]
+		[ValidateNotNull()]
+        [System.Management.Automation.PSCredential]
+        [System.Management.Automation.Credential()]
+        $Credential = [System.Management.Automation.PSCredential]::Empty
 	)
 
 	begin {
@@ -50,11 +56,11 @@ function Invoke-DeviceADCommands {
 		try {
 			#get ad Comp
 			try {
-				$ADComp = Get-ADComputer -Identity $buildInfo.AssetID
+				$ADComp = Get-ADComputer -Identity $buildInfo.AssetID -Credential $Credential
 			} catch {
 				# if comp cant be found using asset id, try with hostname (lest rename fails)
 				try {
-					$ADComp = Get-ADComputer -Identity $buildInfo.hostname
+					$ADComp = Get-ADComputer -Identity $buildInfo.hostname -Credential $Credential
 				} catch {
 					Write-Error "Computer with AssetID/Hostname $($buildInfo.AssetID)/$($buildInfo.hostname) doesn't exist in AD" -ErrorAction stop
 				}
@@ -63,12 +69,12 @@ function Invoke-DeviceADCommands {
 			# add to groups
 			foreach ($group in $buildInfo.groups) {
 				Write-Verbose "Adding $($ADComp.SamAccountName) to $group"
-				Add-ADGroupMember -Identity $group -Members $ADComp.SamAccountName -WhatIf:$WhatIfPreference -Verbose:$VerbosePreference
+				Add-ADGroupMember -Identity $group -Members $ADComp.SamAccountName -WhatIf:$WhatIfPreference -Verbose:$VerbosePreference -Credential $Credential
 			}
 	
 			# move to correct OU
 			Write-Verbose "Moving $($ADComp.SamAccountName) to $($buildInfo.OU)"
-			Move-ADObject -Identity $ADComp.DistinguishedName -TargetPath $buildInfo.OU -WhatIf:$WhatIfPreference -Verbose:$VerbosePreference
+			Move-ADObject -Identity $ADComp.DistinguishedName -TargetPath $buildInfo.OU -WhatIf:$WhatIfPreference -Verbose:$VerbosePreference -Credential $Credential
 	
 		} catch {
 			$msg = $DeviceDeploymentDefaultConfig.TicketInteraction.GeneralErrorMessage

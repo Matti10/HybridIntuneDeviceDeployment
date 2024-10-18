@@ -41,14 +41,10 @@ function Write-DeviceBuildStatus {
             try {
                 # Write the build info in JSON format to the local status file
                 Set-Content -Path $localStatusFile -Value ($buildInfo | ConvertTo-Json) -Verbose:$VerbosePreference
-                
-                # Write the build info to the device build ticket
-                Write-DeviceBuildTicket -buildInfo $buildInfo -Verbose:$VerbosePreference
             }
             catch {
                 # Catch error and add it to the error list
                 $errorList += $_
-                
             }
         }
     }

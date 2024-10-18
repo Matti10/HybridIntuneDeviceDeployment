@@ -6,7 +6,7 @@ $DebugPreference = "SilentlyContinue"
 Write-Verbose "BuildProcess Execution Started"
 
 try {
-	#------------------------------------------------- Setup -------------------------------------------------# 
+	#------------------------------------------------ Setup ------------------------------------------------# 
 	Import-Module TriCare-Common
 	Import-Module TriCare-DeviceDeployment
 
@@ -34,25 +34,21 @@ try {
 	
 	#----------------------------------- Set Ticket to Waiting on Build -----------------------------------# 
 	Set-FreshTicketStatus -recordID $buildInfo.recordID -status $config.TicketInteraction.ticketWaitingOnBuildStatus -overwriteDescription
-
-	#------------------------------------------ Check into Ticket -----------------------------------------# 
-	#------------------------- (This invokes privilidged commands on serverside) --------------------------#
-	$buildInfo.buildState = $config.TicketInteraction.BuildStates.checkInState.message # set state to "checked in"
-	Write-DeviceBuildStatus -buildInfo $buildInfo -Verbose
 	
 	#------------------------------------------- Rename Device --------------------------------------------# 
 	#----------------------- (needs to happen before device is moved to other OU) -------------------------#
 	$buildInfo.buildState = $config.TicketInteraction.BuildStates.oldADCompRemovalPendingState.message
 	Write-DeviceBuildStatus -buildInfo $buildInfo -Verbose
 
-	# Wait for old ad object to be removed if it exists
-	While (-not (Test-DeviceADDeviceRemovalCompletion -Verbose -buildInfo $buildInfo)) {
-		Start-Sleep -Seconds 10
-	}
+	Remove-DeviceADDuplicate -buildInfo $buildInfo -verbose
+	
 	Set-DeviceName -buildInfo $buildInfo -Verbose
 
+	#---------------------------------------- Complete AD Commands ----------------------------------------# 
 	$buildInfo.buildState = $config.TicketInteraction.BuildStates.adPendingState.message
 	Write-DeviceBuildStatus -buildInfo $buildInfo -Verbose
+
+	Invoke-DeviceADCommands -buildInfo $buildInfo -Verbose
 
 	#------------------------------------ Set Generic Local Settings  -------------------------------------# 
 	Set-DeviceLocalSettings -Verbose -buildInfo $buildInfo
@@ -69,28 +65,25 @@ try {
 		Invoke-DeviceDellCommandUpdateUpdates -Verbose -buildInfo $buildInfo
 	}
 	
-	#------------------------------- Wait for AD Commands to Be Completed  --------------------------------# 
-	While (-not (Test-DeviceADCommandCompletion -Verbose -buildInfo $buildInfo)) {
-		Start-Sleep -Seconds 10
-	}
+
 	#----------------------------------- Sync Various Managment Systems -----------------------------------# 
 	Invoke-GPUpdate -Verbose #does this want to wait until first login?
 	Invoke-DeviceCompanyPortalSync -Verbose -buildInfo $buildInfo
 
-	#---------------------------------------------- Mark as Completed -----------------------------------------------# 
+	#----------------------------------------- Mark as Completed ------------------------------------------# 
 	$buildInfo.buildState = $config.TicketInteraction.BuildStates.completedState.message
 	Write-DeviceBuildStatus -buildInfo $buildInfo -Verbose
 	Show-DeviceUserMessage -title "Build Completed" -message "Build Succesfully Completed. Please review build ticket and resolve any errors"
 
-	#---------------------------------------------- Cleanup -----------------------------------------------# 
-	# Invoke-DeviceDeploymentCleanupCommands #should probably do this after first login
-	
+
 }
 catch {
 	New-BuildProcessError -errorObj $_ -message "There has been an error in the build process, please see the below output:`n$_" -functionName "Build Process Main" -popup -ErrorAction "Stop" -buildInfo $buildInfo
 
-		#---------------------------------------------- Cleanup -----------------------------------------------# 
-		# Invoke-DeviceDeploymentCleanupCommands
+	
 }
-
-Stop-Transcript
+finally {
+	#---------------------------------------------- Cleanup -----------------------------------------------# 
+	# Invoke-DeviceDeploymentCleanupCommands
+	Stop-Transcript
+}

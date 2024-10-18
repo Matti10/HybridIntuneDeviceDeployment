@@ -448,7 +448,9 @@
 	},
 	"Security" : {
         "KeyVaultName": "tc-ae-d-kv",
-        "FreshAPIKey_KeyVaultKey": "freshservice-apikey-matt"
+        "FreshAPIKey_KeyVaultKey": "freshservice-apikey-matt",
+		"elevatedPassword_KeyVaultKey" : "",
+		"elevatedUserName" : "TRICAREAD\\PC_Build_SVC"
     },
 	"ShutdownListener" : {
 		"jobName" : "Block-DeviceShutdown",
