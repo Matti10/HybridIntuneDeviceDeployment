@@ -33,24 +33,19 @@ function Build-CheckSum {
     )
 
     # Get all files in the specified directory and its subdirectories, sorted by full name
-    $files = Get-ChildItem -Recurse -File -Path $rootPath | Sort-Object FullName
+    $files = Get-ChildItem -Recurse -File -Path $rootPath | Where-Object {$_.FullName -notLike "*checksum*"} | Sort-Object FullName
     
     # Generate checksums for each file and store them in an array
     $checksums = foreach ($file in $files) {
         # Compute the MD5 hash for the current file
         $hash = Get-FileHash -Path $file.FullName -Algorithm MD5
         # Format the checksum and file path as a string
-        "$($hash.Hash)  $($file.FullName)"
+        "$($hash.Hash)"
     }
     
-    # Combine all individual checksums into a single string and compute a final checksum
-    $stringAsStream = [System.IO.MemoryStream]::new()
-    $writer = [System.IO.StreamWriter]::new($stringAsStream)
-    $writer.write($checksums)
-    $writer.Flush()
-    $stringAsStream.Position = 0
+    
 
-    $finalChecksum = (Get-FileHash -InputStream $stringAsStream).Hash
+    $finalChecksum = $checksums
     Write-Host "Checksum for repo: $($finalChecksum)"
     
     if (-not $noFileOutput) {
@@ -94,10 +89,10 @@ function Test-CheckSum {
     )
 
     # Read the remote checksum from the specified file
-    $remoteChecksum = Get-Content -Path $checksumPath
+    $remoteChecksum = "$(Get-Content -Path $checksumPath)"
     
     # Generate the local checksum for the current files
-    $localChecksum = Build-CheckSum -checksumPath $checksumPath -rootPath $rootPath -noFileOutput
+    $localChecksum = "$(Build-CheckSum -checksumPath $checksumPath -rootPath $rootPath -noFileOutput)"
 
     # Compare the remote checksum with the locally generated checksum
     if ($remoteChecksum -ne $localChecksum) {
