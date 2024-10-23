@@ -26,7 +26,10 @@ function Build-CheckSum {
         [string]$checksumPath = ".\checksum\checksum.txt",
         
         [Parameter()]
-        [string]$rootPath = ".\"
+        [string]$rootPath = ".\",
+
+        [Parameter()]
+        [switch]$noFileOutput
     )
 
     # Get all files in the specified directory and its subdirectories, sorted by full name
@@ -41,12 +44,22 @@ function Build-CheckSum {
     }
     
     # Combine all individual checksums into a single string and compute a final checksum
-    $finalChecksum = $checksums | Out-String | Get-FileHash -Algorithm MD5
-    $finalChecksumString = "Checksum for commit: $($finalChecksum.Hash)"
+    $stringAsStream = [System.IO.MemoryStream]::new()
+    $writer = [System.IO.StreamWriter]::new($stringAsStream)
+    $writer.write($checksums)
+    $writer.Flush()
+    $stringAsStream.Position = 0
+
+    $finalChecksum = (Get-FileHash -InputStream $stringAsStream).Hash
+    Write-Host "Checksum for repo: $($finalChecksum)"
     
-    # Save the final checksum to the specified file path
-    $finalChecksumString | Out-File -FilePath $checksumPath
-    Write-Host "Checksum for commit generated and saved to $checksumPath."
+    if (-not $noFileOutput) {
+        # Save the final checksum to the specified file path
+        $finalChecksum | Out-File -FilePath $checksumPath
+        Write-Host "Checksum for commit generated and saved to $checksumPath."
+    }
+
+    return $finalChecksum
 }
 
 <#
@@ -84,7 +97,7 @@ function Test-CheckSum {
     $remoteChecksum = Get-Content -Path $checksumPath
     
     # Generate the local checksum for the current files
-    $localChecksum = Build-CheckSum -checksumPath $checksumPath -rootPath $rootPath
+    $localChecksum = Build-CheckSum -checksumPath $checksumPath -rootPath $rootPath -noFileOutput
 
     # Compare the remote checksum with the locally generated checksum
     if ($remoteChecksum -ne $localChecksum) {
