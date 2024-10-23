@@ -1,7 +1,7 @@
 trigger:
   branches:
     include:
-      - main  # or your desired branch
+      - prod  # or your desired branch
 
 pool:
   vmImage: 'windows-latest'  # Use a Windows image for PowerShell
