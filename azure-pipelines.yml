@@ -1,0 +1,24 @@
+trigger:
+  branches:
+    include:
+      - prod  # or your desired branch
+
+pool:
+  vmImage: 'windows-latest'  # Use a Windows image for PowerShell
+
+steps:
+- checkout: self
+
+- powershell: |
+    # dot include the checksum functions
+    . .\checksum\checksum.ps1
+    # Call the Build-CheckSum function to generate the checksum
+    Build-CheckSum -checksumPath ".\checksum\checksum.txt"
+
+  displayName: 'Generate Checksum'
+
+- task: PublishBuildArtifacts@1
+  inputs:
+    pathToPublish: '.\checksum\checksum.txt'
+    artifactName: 'Checksum'
+    publishLocation: 'Container'
