@@ -11,11 +11,11 @@ steps:
   persistCredentials: true  # Allow Git push by reusing the pipeline's credentials
 
 - powershell: |
-    # Fetch all branches so that 'main' is available for checkout
+    # Fetch all branches so that 'prod' is available for checkout
     git fetch origin
 
-    # Check out the correct branch (main) to avoid detached HEAD issues
-    git checkout main
+    # Check out the correct branch (prod) to avoid detached HEAD issues
+    git checkout prod
 
     # Include the checksum functions
     . .\checksum\checksum.ps1
@@ -29,7 +29,7 @@ steps:
     
     git add .\checksum\checksum.txt
     git commit -m "Updated checksum file as part of pipeline"
-    git push origin main  # Push back to the 'main' branch
+    git push origin prod  # Push back to the 'prod' branch
 
   displayName: 'Generate and Push Checksum'
 
