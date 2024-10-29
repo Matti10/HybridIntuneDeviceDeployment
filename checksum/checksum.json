@@ -68,7 +68,7 @@
         "Path":  "\\src\\BuildData\\Convert-TicketInteractionToDeviceBuildData.ps1"
     },
     {
-        "Hash":  "2CF6EE358C8246A65031D10C882677B91CD7229F",
+        "Hash":  "BE168FC705D45A903B3CF3B2A21D1D7315920993",
         "Path":  "\\src\\BuildData\\Get-DeviceBuildData.ps1"
     },
     {
