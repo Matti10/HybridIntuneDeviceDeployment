@@ -23,38 +23,43 @@ function Build-CheckSum {
     [CmdletBinding(SupportsShouldProcess = $true)]
     param (
         [Parameter()]
-        [string]$checksumPath = ".\checksum\checksum.txt",
+        [string]$checksumPath = "$((Get-Location).ProviderPath)\checksum\checksum.json",
         
         [Parameter()]
-        [string]$rootPath = ".\",
+        [string]$rootPath = ((Get-Location).ProviderPath),
 
         [Parameter()]
         [switch]$noFileOutput
     )
+    try {
 
-    # Get all files in the specified directory and its subdirectories, sorted by full name
-    $files = Get-ChildItem -Recurse -File -Path $rootPath | Where-Object {$_.FullName -notLike "*checksum*"} | Sort-Object FullName
+        # Get all files in the specified directory and its subdirectories, sorted by full name
+        $files = Get-ChildItem -Recurse -File -Path $rootPath | Where-Object { $_.FullName -like "*src*" -or $_.FullName -like "*.psm1*" } | Sort-Object FullName
+        
+        # Generate checksums for each file and store them in an array
+        $checksums = foreach ($file in $files) {
+            $stringAsStream = [System.IO.MemoryStream]::new()
+            $writer = [System.IO.StreamWriter]::new($stringAsStream)
+            $writer.write("$(Get-Content -Path $file.FullName)")
+            $writer.Flush()
+            $stringAsStream.Position = 0
+            @{
+                Hash = (Get-FileHash -InputStream $stringAsStream).hash
+                Path = $file.fullname.replace($rootPath, "")
+            }
+        } 
     
-    # Generate checksums for each file and store them in an array
-    $checksums = foreach ($file in $files) {
-        # Compute the MD5 hash for the current file
-        $hash = Get-FileHash -Path $file.FullName -Algorithm MD5
-        # Format the checksum and file path as a string
-        "$($hash.Hash)"
+        if (-not $noFileOutput) {
+            # Save the final checksum to  the specified file path
+            New-Item -Path $checksumPath -Force -value ($checksums | ConvertTo-Json) -Confirm:$false -ItemType File
+            Write-Host "Checksum for commit generated and saved to $checksumPath."
+        }
+    
+        return $checksums
+    } catch {
+        Get-PSCallStack
+        Write-Error $_ -ErrorAction Stop
     }
-    
-    
-
-    $finalChecksum = $checksums
-    Write-Host "Checksum for repo: $($finalChecksum)"
-    
-    if (-not $noFileOutput) {
-        # Save the final checksum to the specified file path
-        $finalChecksum | Out-File -FilePath $checksumPath
-        Write-Host "Checksum for commit generated and saved to $checksumPath."
-    }
-
-    return $finalChecksum
 }
 
 <#
@@ -82,24 +87,32 @@ function Test-CheckSum {
     [CmdletBinding(SupportsShouldProcess = $true)]
     param (
         [Parameter()]
-        [string]$checksumPath = ".\checksum\checksum.txt",
-
+        [string]$checksumPath = "$((Get-Location).ProviderPath)\checksum\checksum.json",
+        
         [Parameter()]
-        [string]$rootPath = ".\"
+        [string]$rootPath = ((Get-Location).ProviderPath)
     )
 
     # Read the remote checksum from the specified file
-    $remoteChecksum = "$(Get-Content -Path $checksumPath)"
+    $remoteChecksum = Get-Content -Path $checksumPath | ConvertFrom-Json
     
     # Generate the local checksum for the current files
-    $localChecksum = "$(Build-CheckSum -checksumPath $checksumPath -rootPath $rootPath -noFileOutput)"
+    $localChecksum = Build-CheckSum -checksumPath $checksumPath -rootPath $rootPath -noFileOutput
 
     # Compare the remote checksum with the locally generated checksum
+    $valid = $true
     if ($remoteChecksum -ne $localChecksum) {
-        Write-Error "Checksum validation has failed on this repo." -ErrorAction:$ErrorActionPreference
-        return $false
-    } else {
-        Write-Verbose "Checksum validation successful."
-        return $true
+        foreach ($localFile in $localChecksum) {
+            $remoteFile = $remoteChecksum | Where-Object { $_.Path -eq $localFile.Path }
+            if ($null -eq $remoteFile -or $remoteFile.Hash -ne $localFile.Hash ) {
+                Write-Error "Checksum validation has failed for $($localFile.Path)" -ErrorAction:$ErrorActionPreference
+                $valid = $valid -and $false
+            }
+        }
     }
+
+    if ($valid) {
+        Write-Verbose "Checksum validation successful."
+    }
+    return $valid
 }

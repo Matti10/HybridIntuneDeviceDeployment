@@ -8,17 +8,33 @@ pool:
 
 steps:
 - checkout: self
+  persistCredentials: true  # Allow Git push by reusing the pipeline's credentials
 
 - powershell: |
-    # dot include the checksum functions
-    . .\checksum\checksum.ps1
-    # Call the Build-CheckSum function to generate the checksum
-    Build-CheckSum -checksumPath ".\checksum\checksum.txt"
+    # Fetch all branches so that 'prod' is available for checkout
+    git fetch origin
 
-  displayName: 'Generate Checksum'
+    # Check out the correct branch (prod) to avoid detached HEAD issues
+    git checkout prod
+
+    # Include the checksum functions
+    . .\checksum\checksum.ps1
+
+    # Call the Build-CheckSum function to generate the checksum
+    Build-CheckSum -checksumPath ".\checksum\checksum.json"
+
+    # Git add, commit, and push the checksum file back to the repo
+    git config user.email "buildagent@tricare.com.au"
+    git config user.name "Build Agent"
+    
+    git add .\checksum\checksum.json
+    git commit -m "Updated checksum file as part of pipeline"
+    git push origin prod  # Push back to the 'prod' branch
+
+  displayName: 'Generate and Push Checksum'
 
 - task: PublishBuildArtifacts@1
   inputs:
-    pathToPublish: '.\checksum\checksum.txt'
+    pathToPublish: '.\checksum\checksum.json'
     artifactName: 'Checksum'
     publishLocation: 'Container'
