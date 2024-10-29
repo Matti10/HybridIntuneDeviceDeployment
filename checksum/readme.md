@@ -4,9 +4,9 @@ Checksum Generation
 Overview
 --------
 
-This document outlines the implementation of a checksum generation and validation system designed to ensure the integrity of files in a Git repository during development and deployment processes in Azure DevOps. The system utilizes PowerShell scripts to generate and validate checksums based on the contents of the repository.
+This document outlines the implementation of a checksum generation and validation system designed to ensure the integrity of files in a Git repository during deployment processes in Azure DevOps. The system utilizes PowerShell scripts to generate and validate checksums based on the contents of the repository.
 
-This allow the intergrity of the data to be verified after its been downloaded
+This allows the intergrity of the data to be verified after its been downloaded
 
 System Components
 -----------------
@@ -94,23 +94,46 @@ pool:
 
 steps:
 - checkout: self
+  persistCredentials: true  # Allow Git push by reusing the pipeline's credentials
 
 - powershell: |
+    # Fetch all branches so that 'main' is available for checkout
+    git fetch origin
+
+    # Check out the correct branch (main) to avoid detached HEAD issues
+    git checkout main
+
+    # Include the checksum functions
+    . .\checksum\checksum.ps1
+
     # Call the Build-CheckSum function to generate the checksum
-    Build-CheckSum -checksumPath ".\checksum\checksum.txt" -rootPath ".\"
-  displayName: 'Generate Checksum'
+    Build-CheckSum -checksumPath ".\checksum\checksum.txt"
 
-- powershell: |
-    # Call the Test-CheckSum function to validate the checksum
-    Test-CheckSum -checksumPath ".\checksum\checksum.txt" -rootPath "."
-  displayName: 'Validate Checksum'`
+    # Git add, commit, and push the checksum file back to the repo
+    git config user.email "buildagent@tricare.com.au"
+    git config user.name "Build Agent"
+    
+    git add .\checksum\checksum.txt
+    git commit -m "Updated checksum file as part of pipeline"
+    git push origin main  # Push back to the 'main' branch
 
+  displayName: 'Generate and Push Checksum'
+
+- task: PublishBuildArtifacts@1
+  inputs:
+    pathToPublish: '.\checksum\checksum.txt'
+    artifactName: 'Checksum'
+    publishLocation: 'Container'
+```
 ### Pipeline Steps Explained
 
 1.  **Checkout Code**: The pipeline checks out the repository code to the agent.
 2.  **Generate Checksum**: The `Build-CheckSum` function is executed to create a checksum file for the repository.
-3.  **Validate Checksum**: The `Test-CheckSum` function is called to verify the integrity of the files against the generated checksum.
-```
+3.  **Push Checksum to Branch**: Git is used to push the new Checksum to the checksum file in the repo
+
+### DevOps Permissons
+To facilitate this process, the build service needs permission to the branch. As such the account (Build\e9eb3174-eb9d-4d31-83de-74ac78ca6949) has been given the "GenericContribute" permissions can be managed for each repo here: https://tricare.visualstudio.com/TriCare%20PowerShell%20Library/_settings/repositories?repo=7ba9ed66-a7f2-42dc-b5a9-2ef74d4d6609&_a=permissionsMid
+
 Conclusion
 ----------
 
