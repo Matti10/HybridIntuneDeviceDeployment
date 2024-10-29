@@ -6,7 +6,7 @@
 This function updates Dell Command Updates which is a Dell software utility responsible for updating Dell computer software.
 
 .DESCRIPTION
-The Invoke-DeviceDellCommandUpdateUpdates function is used to scan for Dell software updates and apply them if they are available. This function is only applicable to Dell machines that have the Dell Command Update utility installed. If the function is run on a machine that doesn't have the utility installed, it will output a verbose message indicating that the machine probably isn�t a Dell.
+The Invoke-DeviceDellCommandUpdateUpdates function is used to scan for Dell software updates and apply them if they are available. This function is only applicable to Dell machines that have the Dell Command Update utility installed. If the function is run on a machine that doesn't have the utility installed, it will output a verbose message indicating that the machine probably isnt a Dell.
 
 .PARAMETER softwareLocations
 Specify the locations from which to install the software. The default is $DeviceDeploymentDefaultConfig.DellCommandUpdate.installLocations.

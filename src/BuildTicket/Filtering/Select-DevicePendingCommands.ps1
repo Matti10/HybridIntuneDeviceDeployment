@@ -5,7 +5,7 @@ The Select-DevicePendingCommands function assists in identifying pending command
 
 .PARAMETER -buildTicketData 
 (System.Object)
-The data derived from the build ticket. This parameter must contain two properties: �buildInfo� and 'conversations'.
+The data derived from the build ticket. This parameter must contain two properties: buildInfo and 'conversations'.
 
 .PARAMETER -commandsPendingString 
 (string)

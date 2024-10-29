@@ -44,7 +44,7 @@ function Build-CheckSum {
             $writer.Flush()
             $stringAsStream.Position = 0
             @{
-                Hash = (Get-FileHash -InputStream $stringAsStream).hash
+                Hash = (Get-FileHash -InputStream $stringAsStream -Algorithm SHA1).hash
                 Path = $file.fullname.replace($rootPath, "")
             }
         } 

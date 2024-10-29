@@ -32,7 +32,7 @@
     This function outputs a list which includes combined groups from '$build' and '$facility'. If there's an error during the operation, the error will be displayed.
 
 .NOTES 
-    Error handling is done through a try-catch block that adds any exceptions to an error list, "$errorList". If this array contains any items at the end of the function�s execution (i.e., if there were any errors), it outputs a detailed error message and ends the operation.
+    Error handling is done through a try-catch block that adds any exceptions to an error list, "$errorList". If this array contains any items at the end of the functions execution (i.e., if there were any errors), it outputs a detailed error message and ends the operation.
     
     The command "Write-Error $_" writes the error message from the catch block to the error output stream.
 
