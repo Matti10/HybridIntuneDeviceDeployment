@@ -47,7 +47,11 @@ function Get-DeviceBuildData {
 		$freshAsset,
 
 		[Parameter()]
-		$messageTemplates = $DeviceDeploymentDefaultConfig.DeviceUserInteraction.Messages
+		$messageTemplates = $DeviceDeploymentDefaultConfig.DeviceUserInteraction.Messages,
+
+		
+		[Parameter()]
+		[switch]$remoteMachine
 	)
 
 	begin {
@@ -60,6 +64,9 @@ function Get-DeviceBuildData {
 				do {
 					#manage user messaging
 					if ($attemptCount -eq 1) {
+						if($remoteMachine) {
+							Write-Error $messageTemplates.buildTicketAssignmentFirstAttempt.message -ErrorAction Stop
+						}
 						Show-DeviceUserMessage -message $messageTemplates.buildTicketAssignmentFirstAttempt.message -title $messageTemplates.buildTicketAssignmentFirstAttempt.title -wait -messageBoxConfigCode $messageTemplates.buildTicketAssignmentFirstAttempt.messageBoxConfiguration -placeholderValue $freshAsset.Name
 					} elseif ($attemptCount -gt 1) {
 						Show-DeviceUserMessage -message $messageTemplates.buildTicketAssignmentOtherAttempts.message -title $messageTemplates.buildTicketAssignmentOtherAttempts.title -wait -messageBoxConfigCode $messageTemplates.buildTicketAssignmentOtherAttempts.messageBoxConfiguration -placeholderValue $freshAsset.Name
@@ -96,7 +103,11 @@ function Get-DeviceBuildData {
 				$groups = Get-DeviceBuildGroups -build $corrInfo.buildCorrelation -facility $corrInfo.facilityCorrelation
 				$OU = Get-DeviceBuildOU -build $corrInfo.buildCorrelation -facility $corrInfo.facilityCorrelation
 
-				$intuneID = Get-DeviceIntuneID
+				if ($remoteMachine) {
+					$intuneID = "remoteMachine"
+				} else {
+					$intuneID = Get-DeviceIntuneID
+				}
 
 				return New-BuildInfoObj -AssetId $FreshAsset.Name -serialNumber $freshAsset.type_fields.(Get-FreshAssetTypeFieldName -field "serial" -freshAsset $freshAsset) -type $buildDetails.device_type_requested -build $buildDetails.hardware_use_build_type -freshLocation $buildDetails.facility[0] -ticketID $buildTicketID -freshAsset $freshAsset -OU $OU -groups $groups -intuneID $intuneID
 
