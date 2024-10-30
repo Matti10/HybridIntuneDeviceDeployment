@@ -54,6 +54,7 @@ function Invoke-DeviceADCommands {
 
 	begin {
 		$msg = ""
+		$errorList = @()
 	}
 	process {
 		try {

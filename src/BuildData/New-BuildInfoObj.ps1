@@ -107,7 +107,7 @@ function New-BuildInfoObj {
 		$errorList = @()
 
 		if ($null -eq (Get-AzContext)) {
-			Connect-KVUnattended | Out-Null
+			Connect-AzAccount | Out-Null
 		}
 	}
 	process {
