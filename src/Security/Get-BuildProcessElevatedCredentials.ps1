@@ -2,80 +2,70 @@
 # Documentation
 <#
 .SYNOPSIS
-Tests if the device is in Out of Box Experience (OOBE) state.
+The Test-DeviceBuildExecuted function tests whether a device build was executed successfully or not. 
 
 .DESCRIPTION
-The Test-OOBE function checks if the device is in an OOBE state by checking if there is any user with the name "defaultUser" in the process user list. It uses built-in power shell cmdlet "Get-Process" to fetch user name of processes.
+This function uses the information stored in a local status file to determine whether a build for a device was executed as expected. It returns 'true' if there is no record of a build in the local status file, and 'false' if the record exists. 
 
-.PARAMETER None
-This function does not take any parameters.
-
-.EXAMPLE
-Test-OOBE
-
-Returns $true if the machine is in OOBE state, otherwise $false.
+.PARAMETER localStatusFile
+The path of the local status file is passed as a parameter to the function (by default, it uses a path defined in $DeviceDeploymentDefaultConfig.BuildStatus.LocalBuildStatusFile).
 
 .INPUTS
-None
+This function accepts an input of the path to a local status file.
 
 .OUTPUTS
-Boolean. The cmdlet returns $true if the machine is in OOBE state, $false otherwise.
+If it does not find any record of a build in the local status file, it returns 'true'.
+Otherwise, if a record exists, it outputs 'false'. 
 
+Falls back to output any errors that may be found in the process of execution.
 
-.NOTES
-Caller of this cmdlet should have necessary permissions to execute Get-Process cmdlet.
-Author: Your Name
-Date Created: Date
+.EXAMPLE
+Test-DeviceBuildExecuted -localStatusFile "path/to/local/status/file"
+
+This will test the build execution status of the device using the information from the given local status file.
+
 #>
-
-
-
-function Test-OOBE {
-	
-	# Support for -WhatIf, -Confirm flags
+function Get-BuildProcessElevatedCredentials {
 	[CmdletBinding(SupportsShouldProcess = $true)]
-	param ()
+	param (
+		# Declare a parameter that to accept the path to the local status file
+		[Parameter()]
+		$keyVaultName = $DeviceDeploymentDefaultConfig.Security.KeyVaultName,
 
+		[Parameter()]
+		$secretName = $DeviceDeploymentDefaultConfig.Security.elevatedPassword_KeyVaultKey,
+
+		[Parameter()]
+		$username = $DeviceDeploymentDefaultConfig.Security.elevatedUserName
+	)
+
+	# Begin block executes at the start of the function
 	begin {
-		# Initialize error list
+		# Initialize $errorList as an empty array to store any potential errors
 		$errorList = @()
 	}
-
+	# Process block executes for each pipeline object passed to the function
 	process {
-		# Checks to confirm the execution
-		if ($PSCmdlet.ShouldProcess((hostname))) {
-			try {
-				# the current state of the machine, false by default
-				$oobe = $false
-				# Get the user names who are currently running a process on the machine
-				$procUsers = (Get-Process -IncludeUserName -Verbose).UserName
-				
-				# Check each user 
-				foreach ($user in $procUsers) {
-					# If a user by the name 'defaultUser' exists, then the machine is in OOBE state
-					if ($user -like "*defaultUser*") {
-						$oobe = $true
-						break
-					}
-				}
-				# Return the state
-				return $oobe
+		try {
+			if ($PSCmdlet.ShouldProcess("")) {
+				$securePassword = ConvertTo-SecureString -String (Get-KVSecret -KeyVault $keyVaultName -Secret $secretName) -AsPlainText -Force
 			}
-			catch {
-				# If there is an exception add it to the errorList and write the error to error stream
-				$errorList += $_
-				Write-Error $_
-
-				return $false
+			else {
+				$securePassword = Read-Host -AsSecureString -Prompt "Running in Whatif mode, please manaully enter the password for $username"
 			}
+			
+			return New-Object System.Management.Automation.PSCredential($username, $securePassword)
 		}
-		else {
-			return $true
+		# Catch any errors and add them to $errorList and display an error message
+		catch {
+			$errorList += $_
+			Write-Error $_
 		}
 	}
+	# End block executes after the process block (after all pipeline objects have been processed)
 	end {
-		# If there are any exceptions/errors occured during the execution of cmdlet, write them to the error stream and stop the execution.
 		if ($errorList.count -ne 0) {
+			# If there are any errors, write them all and stop execution
 			Write-Error "Error(s) in $($MyInvocation.MyCommand.Name):`n$($errorList | ForEach-Object {"$_`n"})`n $(Get-PSCallStack)" -ErrorAction Stop
 		}
 	}	
@@ -83,8 +73,8 @@ function Test-OOBE {
 # SIG # Begin signature block
 # MIIPXQYJKoZIhvcNAQcCoIIPTjCCD0oCAQExDzANBglghkgBZQMEAgEFADB5Bgor
 # BgEEAYI3AgEEoGswaTA0BgorBgEEAYI3AgEeMCYCAwEAAAQQH8w7YFlLCE63JNLG
-# KX7zUQIBAAIBAAIBAAIBAAIBADAxMA0GCWCGSAFlAwQCAQUABCAqbm3jvH379UXN
-# HISdDyA09eFAT3RDO7kWaEld8ZKyUqCCDJ0wggXxMIIE2aADAgECAhM2AAAABHxF
+# KX7zUQIBAAIBAAIBAAIBAAIBADAxMA0GCWCGSAFlAwQCAQUABCD8jmW11CSB/PnT
+# zCJmcZvoEGTUg1yWE2rIbTW0WO1N3aCCDJ0wggXxMIIE2aADAgECAhM2AAAABHxF
 # 1HD5VIC5AAAAAAAEMA0GCSqGSIb3DQEBCwUAMBoxGDAWBgNVBAMTD1RyaUNhcmUg
 # Um9vdCBDQTAeFw0yMDA5MDgwMzM4NDNaFw0zMDA5MDgwMzQ4NDNaME0xEzARBgoJ
 # kiaJk/IsZAEZFgNpbnQxGTAXBgoJkiaJk/IsZAEZFgl0cmljYXJlYWQxGzAZBgNV
@@ -156,12 +146,12 @@ function Test-OOBE {
 # Y2FyZWFkMRswGQYDVQQDExJUcmlDYXJlIElzc3VpbmcgQ0ECEzMAAAEew6rjYtzc
 # Y1wAAQAAAR4wDQYJYIZIAWUDBAIBBQCggYQwGAYKKwYBBAGCNwIBDDEKMAigAoAA
 # oQKAADAZBgkqhkiG9w0BCQMxDAYKKwYBBAGCNwIBBDAcBgorBgEEAYI3AgELMQ4w
-# DAYKKwYBBAGCNwIBFTAvBgkqhkiG9w0BCQQxIgQgMIc57ZChTGHb//S0/BaQ4llA
-# mOlcWNIE6sv6tNMht8gwDQYJKoZIhvcNAQEBBQAEggEAAIxTXShnHl/+EVfqQc0F
-# rUIGBZvaYMlx1t8Mjjupl5AvklCyFeLzHAWhGgXGSYibwrm5j4rSEgAgQPIPhuO9
-# +D4mlgwoULgzrVBrSjZx3K2pqCcEpvbCIG1rxGgyNEBiJoL//nOCfp192Qrps1Y7
-# Ayxcr0fQQkGb7Jw8bZVIiwGQUKgmPnUssCK+miC39dyGvUc0UUphcSBq3dqGYN5t
-# X8OJzvuPt69mCBngNVtV4qt+xfKF/qkqjoFPDMEyfl6CqvE7+OGS+uZn0OzI4J7A
-# BhBopQhGlHLpPbhQjAYUyM8et498aeZJn3Mkn1umvhc/gZD31JhwRVONoWZQIFvi
-# 9A==
+# DAYKKwYBBAGCNwIBFTAvBgkqhkiG9w0BCQQxIgQg6SBVI6hnnIgj7sLgQPrkcZ9X
+# GPRpHlubjQH3YcS5o38wDQYJKoZIhvcNAQEBBQAEggEAGsYiJD7fgRsI6wPCvp3Y
+# qI6Cg7BQoUTfYmpG1rJ2a+HiGftAjXGjLLO+kJcCRSc/Abyi1xsoeeCkGUVxqbOj
+# HQBcnMrzQIljHYkJx8Wok+Eu4cQdCJL+lC6QPdJkmqcGtKy4lsr+6NQgCOwrwxzC
+# 2ScZusZ8Xg3MCvONBzo13CIMN6ynivQ93pYdOM8PBjgGVlhw8h2VuaN9e+mTmPPD
+# X3dIYE7XUwC+TFbtGwUB2uMpJAv9lGPjfV8U/uT8SeKuChbo1prlhDoQz24rFkga
+# LfY+hnSJ8wUHWYy5/YVoGe+e+AGJrZFzpolRZA3/2poWA+x8FLFW+Wq982UCEEYA
+# eQ==
 # SIG # End signature block

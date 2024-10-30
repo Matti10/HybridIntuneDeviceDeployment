@@ -11,9 +11,13 @@
 		"shiftF10RelativePath": "execs\\ShiftF10.exe",
 		"BuildProcessWaitSeconds": 3600
 	},
-	"Logging": {
-		"buildPCLogPath": "C:\\Intune_Setup\\buildProcess\\logs",
-		"serverLogPath": ".\\Logs"
+	"FreshAssetIntergration" : {
+		"buildAttr" : "build_11000673051",
+		"facilityAttr" : "location_id"
+	},
+	"Logging" : {
+		"buildPCLogPath" : "C:\\Intune_Setup\\buildProcess\\logs",
+		"serverLogPath" : ".\\Logs"
 	},
 	"Dependencies": [
 		"TriCare-Common",
@@ -97,6 +101,14 @@
 			"*Request*: New Hardware Request*"
 		],
 		"GeneralErrorMessage": "<p style=\"color:red\"><b>!! Some Commands have Failed. Please See above error Output !!</b></p>"
+
+	},
+	"BuildQueue" : {
+		"CustomObjectID" : "11000002434",
+		"excludedFreshAttrs" : [
+			"bo_*"
+		],
+		"freshRecordIDAttr" : "bo_display_id"
 	},
 	"Deployment": {
 		"buildTicketNamePatterns": [
@@ -115,6 +127,16 @@
 			},
 			{
 				"buildtype": "Facility Management/Operations",
+				"OU": "OU=Operational Device",
+				"hasDepartment": true,
+				"Groups": [
+					"UR Sites Device Group",
+					"Intune_Operational_Devices"
+				],
+				"note" : "This is a legacy name used by the orginal build process"
+			},
+			{
+				"buildtype": "Operational",
 				"OU": "OU=Operational Device",
 				"hasDepartment": true,
 				"Groups": [
@@ -425,13 +447,15 @@
 	"CompanyPortalSync": {
 		"syncTaskName": "PushLaunch"
 	},
-	"Security": {
-		"KeyVaultName": "tc-ae-d-kv",
-		"FreshAPIKey_KeyVaultKey": "freshservice-apikey-matt"
-	},
-	"ShutdownListener": {
-		"jobName": "Block-DeviceShutdown",
-		"waitSeconds": 30
+	"Security" : {
+        "KeyVaultName": "tc-ae-d-kv",
+        "FreshAPIKey_KeyVaultKey": "freshservice-apikey-matt",
+		"elevatedPassword_KeyVaultKey" : "",
+		"elevatedUserName" : "TRICAREAD\\PC_Build_SVC"
+    },
+	"ShutdownListener" : {
+		"jobName" : "Block-DeviceShutdown",
+		"waitSeconds" : 30
 	},
 	"DeviceUserInteraction": {
 		"placeholderValue": "%PLACEHOLDER%",
@@ -447,30 +471,16 @@
 				"message": "Device has been assigned AssetID `%PLACEHOLDER%`. If required, please attach an asset tag to the device",
 				"messageBoxConfiguration": 4160
 			},
-			"buildTicketAssignmentFirstAttempt": {
-				"title": "Device Missing Build Ticket",
-				"message": "Device doesn't have any build tickets associated with it. If this is a new build, you will need to create a ticket for the AssetID `%PLACEHOLDER%`",
-				"messageBoxConfiguration": 4149
+			"buildTicketAssignmentFirstAttempt" : {
+				"title" : "Device Missing Build Ticket",
+				"message" : "The Fresh Asset `%PLACEHOLDER%` doesn't have the Location and/or Build fields set. Please set these attributes and press retry to continue",
+				"messageBoxConfiguration" : 4149
 			},
-			"buildTicketAssignmentOtherAttempts": {
-				"title": "Device Missing Build Ticket",
-				"message": "Device (%PLACEHOLDER%) doesn't have any build tickets associated with it. Please check that there is a valid build service request and that '%PLACEHOLDER%' is assigned to said ticket under the assets tab",
-				"messageBoxConfiguration": 4149
-			},
-			"retryBuildProcess": {
-				"title": "Do you want to Retry",
-				"message": "Due to a previous error, the build process has failed. Additional details are below and/or in another popup. \n\nPlease FIX the error, then select one of the below options:\n - Press Abort to WIPE the PC\n - Press Retry to Restart the Build\n - Press cancel to continue to windows\n\n\n%PLACEHOLDER%",
-				"messageBoxConfiguration": 18
+			"buildTicketAssignmentOtherAttempts" : {
+				"title" : "Device Missing Build Ticket",
+				"message" : "The Fresh Asset `%PLACEHOLDER%` doesn't have the Location and/or Build fields set. Please set these attributes and press retry to continue. For help, please find the documentation in Fresh's solutions",
+				"messageBoxConfiguration" : 4149
 			}
-		},
-		"results": {
-			"OK": 1,
-			"Cancel": 2,
-			"Abort": 3,
-			"Retry": 4,
-			"Ignore": 5,
-			"Yes": 6,
-			"No": 7
 		}
 	},
 	"BuildStatus": {

@@ -39,7 +39,7 @@ Describe "Intune" {
 			@{serial="JGRBQL3";correctID="491cd7a6-e54b-4a94-a62e-dcef1f979103"}
 		) {
 
-			$buildInfo = New-BuildInfoObj -assetID "someAssetID" -ticketID "69" -freshAsset "e" -OU "e" -groups "e","g" -serialNumber $serial -intuneID $correctID -type "sdff" -build 'e'
+			$buildInfo = New-BuildInfoObj -assetID "someAssetID" -recordID "69" -freshAsset "e" -OU "e" -groups "e","g" -serialNumber $serial -intuneID $correctID -type "sdff" -build 'e'
 
 			$out = "$(Remove-DeviceIntuneDuplicateRecords -buildInfo $buildInfo -whatif -verbose *>&1)"
 			$out | Should -beLike "*Removing*"
@@ -57,7 +57,7 @@ Describe "Intune" {
 			@{serial="JGRBQL3";correctID="491cd7a6-e54b-4a94-a62e-dcef1f979103"}
 		) {
 
-			$buildInfo = New-BuildInfoObj -assetID "someAssetID" -ticketID "69" -freshAsset "e" -OU "e" -groups "e","g" -serialNumber $serial -intuneID $correctID -type "sdff" -build 'e'
+			$buildInfo = New-BuildInfoObj -assetID "someAssetID" -recordID "69" -freshAsset "e" -OU "e" -groups "e","g" -serialNumber $serial -intuneID $correctID -type "sdff" -build 'e'
 
 			Remove-DeviceIntuneDuplicateRecords -buildInfo $buildInfo -verbose
 
