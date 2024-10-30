@@ -6,18 +6,24 @@ BeforeAll {
     if ($PSCommandPath -like "*Script-Dev*" -or "" -eq $PSCommandPath ) {
 		Import-Module "\\tricaread\public\UsersH$\Mwinsen\Script-Dev\TriCare-Common\TriCare-Common.psm1"  -Force
 		Import-Module "\\tricaread\public\UsersH$\Mwinsen\Script-Dev\TriCare-DeviceDeployment\TriCare-DeviceDeployment.psm1"  -Force
+		Import-Module "\\tricaread\public\UsersH$\Mwinsen\Script-Dev\TriCare-DeviceManagment\TriCare-DeviceManagment.psm1" -Force
     } else {
 		Import-Module TriCare-Common | Out-Null
 		Import-Module .\TriCare-DeviceDeployment | Out-Null
+		Import-Module .\TriCare-DeviceManagment | Out-Null
     }
 	$creds = Get-Credential
 
+
+	Set-FreshAPIKey -API_Key (Unprotect-String -encryptedString "AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAAzAHtRA5HSkKHYFaSWBLfagAAAAACAAAAAAADZgAAwAAAABAAAAAC/qYwxhMfoyxy5QRmZbQXAAAAAASAAACgAAAAEAAAAPl+NPlquKeV/rY0/dxPL54YAAAApGYk+XDDktyVSHA0822U36GsRkAEta95FAAAACVrQYzGoe75lD1B8IX9Lf9SK0ub")
 
 }
 BeforeDiscovery {
 	Import-Module "\\tricaread\public\UsersH$\Mwinsen\Script-Dev\TriCare-Common\TriCare-Common.psm1"		
 	
 	Import-Module "\\tricaread\public\UsersH$\Mwinsen\Script-Dev\TriCare-DeviceDeployment\TriCare-DeviceDeployment.psm1"
+
+	Set-FreshAPIKey -API_Key (Unprotect-String -encryptedString "AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAAzAHtRA5HSkKHYFaSWBLfagAAAAACAAAAAAADZgAAwAAAABAAAAAC/qYwxhMfoyxy5QRmZbQXAAAAAASAAACgAAAAEAAAAPl+NPlquKeV/rY0/dxPL54YAAAApGYk+XDDktyVSHA0822U36GsRkAEta95FAAAACVrQYzGoe75lD1B8IX9Lf9SK0ub")
 }
 
 Describe "Getting Data from Fresh" {
@@ -81,13 +87,15 @@ Describe "AD Commands" {
 	}
 
 	Context "Duplicate AssetID Removal" -ForEach @(
+		(Get-FreshAsset -Name TCL00001629 | Get-DeviceBuildData),
 		(Get-FreshAsset -Name TCL001629 | Get-DeviceBuildData),
 		(Get-FreshAsset -Name TCL001117 | Get-DeviceBuildData),
 		(Get-FreshAsset -Name TCL001680 | Get-DeviceBuildData),
 		(Get-FreshAsset -Name TCL001630 | Get-DeviceBuildData)
 	) {
-		# $_ | Remove-DeviceADDuplicate -whatif
-		"e"
+		It "works" {
+			$_ | Remove-DeviceADDuplicate -whatif
+		}
 	}
 	Context "Running with different credentials" -ForEach @(
 		(Get-FreshAsset -Name TCL001629 | Get-DeviceBuildData),

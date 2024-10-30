@@ -4,11 +4,12 @@
 		"DefaultDateFormat": "dd/MM/yyyy-hh:mm",
 		"RunRegistryPath": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run",
 		"RunOnceRegistryPath": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\RunOnce",
-		"BuildPCRootPath" : "C:\\Intune_Setup\\buildProcess",
-		"BuildModulePath" : "thisGetsOverwrittenOnImport",
-		"serviceUIRelativePath" : "execs\\ServiceUI.exe",
-		"shiftF10RelativePath" : "execs\\ShiftF10.exe",
-		"BuildProcessWaitSeconds" : 3600
+		"BuildPCRootPath": "C:\\Intune_Setup\\buildProcess",
+		"BuildModulePath": "thisGetsOverwrittenOnImport",
+		"BuildProcessRelativePath" : "\\src\\Driver Scripts\\BuildPC\\buildProcess-OOBE-Interactive.ps1",
+		"serviceUIRelativePath": "execs\\ServiceUI.exe",
+		"shiftF10RelativePath": "execs\\ShiftF10.exe",
+		"BuildProcessWaitSeconds": 3600
 	},
 	"FreshAssetIntergration" : {
 		"buildAttr" : "build_11000673051",
@@ -18,12 +19,12 @@
 		"buildPCLogPath" : "C:\\Intune_Setup\\buildProcess\\logs",
 		"serverLogPath" : ".\\Logs"
 	},
-	"Dependencies" : [
+	"Dependencies": [
 		"TriCare-Common",
 		"TriCare-DeviceDeployment",
-        "Az.Accounts",
-        "Az.KeyVault",
-        "Microsoft.Graph.Authentication"
+		"Az.Accounts",
+		"Az.KeyVault",
+		"Microsoft.Graph.Authentication"
 	],
 	"AssetID": {
 		"freshAssetIDAttr": "name",
@@ -91,11 +92,11 @@
 				"format": "border-width: 1px; padding: 3px; border-style: solid; border-color: black; background-color: %BGCOLOR%;text-allign: center;"
 			}
 		],
-		"ticketWaitingOnBuildFreshFilter" : "status:15",
-		"ticketClosedStatus" : 5,
-		"ticketWaitingOnBuildStatus" : 15,
-		"listDisplayDelimiter" : ", ",
-		"buildTicketTitlePatterns" : [
+		"ticketWaitingOnBuildFreshFilter": "status:15",
+		"ticketClosedStatus": 5,
+		"ticketWaitingOnBuildStatus": 15,
+		"listDisplayDelimiter": ", ",
+		"buildTicketTitlePatterns": [
 			"*Request*: Request to Reimage/Rebuild TriCare Asset*",
 			"*Request*: New Hardware Request*"
 		],
@@ -405,46 +406,46 @@
 			}
 		]
 	},
-	"WindowsUpdate" : {
-		"packageProviderName" : "NuGet",
-		"packageProviderMinVersion" : 3,
-		"packageName" : "PSWindowsUpdate",
-		"packageMinVersion" : 2
+	"WindowsUpdate": {
+		"packageProviderName": "NuGet",
+		"packageProviderMinVersion": 3,
+		"packageName": "PSWindowsUpdate",
+		"packageMinVersion": 2
 	},
-	"DellCommandUpdate" : {
-		"installLocations" : [
+	"DellCommandUpdate": {
+		"installLocations": [
 			"C:\\Program Files\\Dell\\CommandUpdate\\dcu-cli.exe",
 			"C:\\Program Files(x86)\\Dell\\CommandUpdate\\dcu-cli.exe"
 		]
 	},
-	"Bloatware" : {
-		"quietUninstallAttr" : "QuietUninstallString",
-		"loudUninstallAttr" : "UninstallString",
-		"registryLocations" : [
+	"Bloatware": {
+		"quietUninstallAttr": "QuietUninstallString",
+		"loudUninstallAttr": "UninstallString",
+		"registryLocations": [
 			"\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall",
 			"\\SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall"
 		],
-		"softwareToRemove" : [
+		"softwareToRemove": [
 			{
-				"searchAttr" : "DisplayName",
-				"searchString" : "*Teams*",
-				"AddtnUninstallArgs" : null,
-				"DisplayName" : "Teams"
+				"searchAttr": "DisplayName",
+				"searchString": "*Teams*",
+				"AddtnUninstallArgs": null,
+				"DisplayName": "Teams"
 			},
 			{
-				"searchAttr" : "DisplayName",
-				"searchString" : "*OneNote*",
-				"AddtnUninstallArgs" : null,
-				"DisplayName" : "OneNote"
+				"searchAttr": "DisplayName",
+				"searchString": "*OneNote*",
+				"AddtnUninstallArgs": null,
+				"DisplayName": "OneNote"
 			}
 		],
-		"Office" : {
-			"OfficeInstallerConfigPath" : "C:\\Program Files\\WindowsPowerShell\\Modules\\TriCare-DeviceDeployment\\src\\BloatwareRemoval\\Remove-DeviceOfficeInstallConfig.xml",
-			"ODTPath" : "C:\\Program Files\\WindowsPowerShell\\Modules\\TriCare-DeviceDeployment\\src\\BloatwareRemoval\\ODT.exe"
+		"Office": {
+			"OfficeInstallerConfigPath": "C:\\Program Files\\WindowsPowerShell\\Modules\\TriCare-DeviceDeployment\\src\\BloatwareRemoval\\Remove-DeviceOfficeInstallConfig.xml",
+			"ODTPath": "C:\\Program Files\\WindowsPowerShell\\Modules\\TriCare-DeviceDeployment\\src\\BloatwareRemoval\\ODT.exe"
 		}
 	},
-	"CompanyPortalSync" : {
-		"syncTaskName" : "PushLaunch"
+	"CompanyPortalSync": {
+		"syncTaskName": "PushLaunch"
 	},
 	"Security" : {
         "KeyVaultName": "tc-ae-d-kv",
@@ -456,19 +457,19 @@
 		"jobName" : "Block-DeviceShutdown",
 		"waitSeconds" : 30
 	},
-	"DeviceUserInteraction" : {
-		"placeholderValue" : "%PLACEHOLDER%",
-		"messageBoxConfigurations" : {
-			"Exclamation" : 4144,
-			"Retry" : 4149,
-			"Information" : 4160 ,
-			"error" : 16
+	"DeviceUserInteraction": {
+		"placeholderValue": "%PLACEHOLDER%",
+		"messageBoxConfigurations": {
+			"Exclamation": 4144,
+			"Retry": 4149,
+			"Information": 4160,
+			"error": 16
 		},
-		"messages" : {
-			"assetIdAssignment" : {
-				"title" : "Device Asset ID Assignment",
-				"message" : "Device has been assigned AssetID `%PLACEHOLDER%`. If required, please attach an asset tag to the device",
-				"messageBoxConfiguration" : 4160
+		"messages": {
+			"assetIdAssignment": {
+				"title": "Device Asset ID Assignment",
+				"message": "Device has been assigned AssetID `%PLACEHOLDER%`. If required, please attach an asset tag to the device",
+				"messageBoxConfiguration": 4160
 			},
 			"buildTicketAssignmentFirstAttempt" : {
 				"title" : "Device Missing Build Ticket",
@@ -482,11 +483,14 @@
 			}
 		}
 	},
-	"BuildStatus" : {
-		"LocalBuildStatusFile" : "C:\\Intune_Setup\\buildProcess\\buildStatus.json"
+	"BuildStatus": {
+		"LocalBuildStatusFile": "C:\\Intune_Setup\\buildProcess\\buildStatus.json"
 	},
-	"Intune" : {
-		"IntuneIDRegPath" : "HKLM:\\SOFTWARE\\Microsoft\\Provisioning\\Diagnostics\\Autopilot\\EstablishedCorrelations",
-		"IntuneIDRegKey" : "EntDMID"
+	"Intune": {
+		"IntuneIDRegPath": "HKLM:\\SOFTWARE\\Microsoft\\Provisioning\\Diagnostics\\Autopilot\\EstablishedCorrelations",
+		"IntuneIDRegKey": "EntDMID"
+	},
+	"ADCommands": {
+		"replicationSeconds": 30
 	}
 }

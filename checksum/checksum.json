@@ -1,0 +1,270 @@
+[
+    {
+        "Hash":  "E65890738D4E9104069227F53F83C9F2E369C527",
+        "Path":  "\\src\\AD\\Invoke-DeviceADCommands.ps1"
+    },
+    {
+        "Hash":  "3740E6D68D9977DC9AA023AB44E1647D6CC42B2A",
+        "Path":  "\\src\\AD\\Remove-DeviceADDuplicate.ps1"
+    },
+    {
+        "Hash":  "BC2A2ECD64670CD46E2FF6059A588720A82E5CE9",
+        "Path":  "\\src\\AssetID\\Get-DeviceAssetID.ps1"
+    },
+    {
+        "Hash":  "16DEF4009D5D533F6F65E173D718EC6B4BDD087C",
+        "Path":  "\\src\\AssetID\\Get-NextAssetID.ps1"
+    },
+    {
+        "Hash":  "3F26F57EE788045C44DDDD381C1D70D9D8630347",
+        "Path":  "\\src\\AssetID\\Mutex\\Get-DeviceAssetIDMutex.ps1"
+    },
+    {
+        "Hash":  "701BDA0DA68DD002AE68A9550BC8AD7F3D0A3734",
+        "Path":  "\\src\\AssetID\\Mutex\\Protect-DeviceAssetIDMutex.ps1"
+    },
+    {
+        "Hash":  "DDDDA8652EF2663BBEFE9019754D844E3D8DFD14",
+        "Path":  "\\src\\AssetID\\Mutex\\Repair-DeviceAssetIDMutex.ps1"
+    },
+    {
+        "Hash":  "C2C49CCB2BD67434CA02B60C5301B4FD9D53D773",
+        "Path":  "\\src\\AssetID\\Mutex\\Set-DeviceAssetIDMutex.ps1"
+    },
+    {
+        "Hash":  "DA90BD2EA7C7CE7EC8D37AFF38EA3D4EB6D72C2B",
+        "Path":  "\\src\\AssetID\\Mutex\\Test-DeviceAssetIDMutex.ps1"
+    },
+    {
+        "Hash":  "DCC6EB42FC16899428E373755994654F2D6C3C53",
+        "Path":  "\\src\\AssetID\\Mutex\\Unprotect-DeviceAssetIDMutex.ps1"
+    },
+    {
+        "Hash":  "F74D4AD88991CC76A873015ACAC71CE8DCA859E9",
+        "Path":  "\\src\\AssetID\\Mutex\\Wait-DeviceAssetIDMutex.ps1"
+    },
+    {
+        "Hash":  "468B88555FBA675C3B6E1E6F1BE5044E6B4B1E5C",
+        "Path":  "\\src\\AssetID\\Test-AssetID.ps1"
+    },
+    {
+        "Hash":  "030418B6CCC2D9DC909038957F4E6E8C2B86CA75",
+        "Path":  "\\src\\BloatwareRemoval\\ODT.exe"
+    },
+    {
+        "Hash":  "0D0A8F75F3D49F66EABCA910A4CCAEBBCACE888B",
+        "Path":  "\\src\\BloatwareRemoval\\Remove-DeviceBloatware.ps1"
+    },
+    {
+        "Hash":  "010879C3FC3D5DD81F6A0BB0C83E38ADAC19015D",
+        "Path":  "\\src\\BloatwareRemoval\\Remove-DeviceOfficeInstall.ps1"
+    },
+    {
+        "Hash":  "6B1357AA6506FE8134EC17284C356E5700DBACD8",
+        "Path":  "\\src\\BloatwareRemoval\\Remove-DeviceOfficeInstallConfig.xml"
+    },
+    {
+        "Hash":  "5907FAAF3C5177701D9D688B5C1FB411D0046163",
+        "Path":  "\\src\\BuildData\\Convert-TicketInteractionToDeviceBuildData.ps1"
+    },
+    {
+        "Hash":  "2CF6EE358C8246A65031D10C882677B91CD7229F",
+        "Path":  "\\src\\BuildData\\Get-DeviceBuildData.ps1"
+    },
+    {
+        "Hash":  "584F36E381E38422AB9DFB170A274F271F70E4E1",
+        "Path":  "\\src\\BuildData\\Get-DeviceBuildGroups.ps1"
+    },
+    {
+        "Hash":  "2DEDE96B84CB9DFE3EF94C81C49FFC33B54A7CC3",
+        "Path":  "\\src\\BuildData\\Get-DeviceBuildOU.ps1"
+    },
+    {
+        "Hash":  "87D3DA98D8707EE08A2E6B010C80E6D2D7512BF1",
+        "Path":  "\\src\\BuildData\\New-BuildInfoObj.ps1"
+    },
+    {
+        "Hash":  "6715E951322016B4509521270F76C27BA02A48EE",
+        "Path":  "\\src\\BuildStatus\\Get-DeviceBuildLocalStatus.ps1"
+    },
+    {
+        "Hash":  "6326A87C916CA49A467B5966FFE12158912D8634",
+        "Path":  "\\src\\BuildStatus\\Test-DeviceBuildExecuted.ps1"
+    },
+    {
+        "Hash":  "081EC20E69F8F7B332BBA91EF47BCE3553DAB6B2",
+        "Path":  "\\src\\BuildStatus\\Write-DeviceBuildStatus.ps1"
+    },
+    {
+        "Hash":  "B2E354173E13DDAF024C84BF8A98998884CB50C3",
+        "Path":  "\\src\\BuildTicket\\Filtering\\Get-PendingBuildTickets.ps1"
+    },
+    {
+        "Hash":  "BB503688DA0E7BC42B1B9B90138EEE4F06712EDF",
+        "Path":  "\\src\\BuildTicket\\Filtering\\Select-DevicePendingADCommands.ps1"
+    },
+    {
+        "Hash":  "1568FF2E27D1B816CEE3CEFDF09DC7E555E6E1A2",
+        "Path":  "\\src\\BuildTicket\\Filtering\\Select-DevicePendingCommands.ps1"
+    },
+    {
+        "Hash":  "BD20F87F7FF9DC93CA0F4C05549E2DFE3963105A",
+        "Path":  "\\src\\BuildTicket\\Filtering\\Select-DevicePendingOldADCompRemoval.ps1"
+    },
+    {
+        "Hash":  "F3142D4B396BE02B247DE2142232032FAB271539",
+        "Path":  "\\src\\BuildTicket\\Filtering\\Select-ValidBuildTickets.ps1"
+    },
+    {
+        "Hash":  "7C1D914B1DFA8B088265098EB327783C632BF6C3",
+        "Path":  "\\src\\BuildTicket\\Test-DeviceADCommandCompletion.ps1"
+    },
+    {
+        "Hash":  "149EC07CB97C2973EABA740194A6C3D2432F1572",
+        "Path":  "\\src\\BuildTicket\\Test-DeviceADDeviceRemovalCompletion.ps1"
+    },
+    {
+        "Hash":  "514AA9D0B8EFF32AFFD88020ED28E8C690F20BBB",
+        "Path":  "\\src\\BuildTicket\\Test-DeviceTicketCheckIn.ps1"
+    },
+    {
+        "Hash":  "72C22A15890FEE7E42177DDEE7E122705FB5B0B3",
+        "Path":  "\\src\\BuildTicket\\Write-DeviceBuildError.ps1"
+    },
+    {
+        "Hash":  "1AC5FDC55F4B81A57B9EEB034C61ADE4F937254A",
+        "Path":  "\\src\\BuildTicket\\Write-DeviceBuildTicket.ps1"
+    },
+    {
+        "Hash":  "F7CB9CCDFE27D80FE7EAF98FCCAE9395906A49B0",
+        "Path":  "\\src\\CompanyPortalSync\\Invoke-DeviceCompanyPortalSync.ps1"
+    },
+    {
+        "Hash":  "AD105FF6934D299D88A907ACE1BD76434A62865C",
+        "Path":  "\\src\\defaultConfig.json"
+    },
+    {
+        "Hash":  "B21014AD4C142E73E3C1A616F0ABC46F0FC71815",
+        "Path":  "\\src\\DellCommandUpdate\\Install-DeviceDellCommandUpdateDrivers.ps1"
+    },
+    {
+        "Hash":  "ADF1DFE112747BBD45139DED18B8652C9317CCE1",
+        "Path":  "\\src\\DellCommandUpdate\\Invoke-DeviceDellCommandUpdateUpdates.ps1"
+    },
+    {
+        "Hash":  "AE303856A668AEA2C6908C997DE77F1882659B1E",
+        "Path":  "\\src\\DellCommandUpdate\\Test-DeviceDellCommandUpdate.ps1"
+    },
+    {
+        "Hash":  "AF0D4543092355B5AD5925AC95F2E20C97F12C0D",
+        "Path":  "\\src\\DeviceUserInteraction\\Invoke-BuildProcessRetry.ps1"
+    },
+    {
+        "Hash":  "93BD1397B7A80CD5E7205BABC4809B33ACB268B5",
+        "Path":  "\\src\\DeviceUserInteraction\\Show-DeviceUserMessage.ps1"
+    },
+    {
+        "Hash":  "B418D5D8185CE248187B92EA42EA79F1BBD46F47",
+        "Path":  "\\src\\Driver Scripts\\BuildPC\\buildProcess-OOBE-Interactive.ps1"
+    },
+    {
+        "Hash":  "DA39A3EE5E6B4B0D3255BFEF95601890AFD80709",
+        "Path":  "\\src\\Driver Scripts\\BuildPC\\buildProcess-PostLogin.ps1"
+    },
+    {
+        "Hash":  "C06C444933289DE26C60FDD6F7C1BE73E25796C7",
+        "Path":  "\\src\\ErrorHandling\\New-BuildProcessError.ps1"
+    },
+    {
+        "Hash":  "7FBDE567719D216579C489A048402C0F34A617AD",
+        "Path":  "\\src\\FreshAsset\\Register-DeviceWithFresh.ps1"
+    },
+    {
+        "Hash":  "62F4C8434995907143FA6FC71757E69A13A8546C",
+        "Path":  "\\src\\Generic\\Find-DeviceCorrelationInfo.ps1"
+    },
+    {
+        "Hash":  "24657954ADB620DD82633FB322E4AA2F8A9A5655",
+        "Path":  "\\src\\Generic\\Get-DeviceDeploymentADAttrs.ps1"
+    },
+    {
+        "Hash":  "5C200A0CEC6D341C67C3B984F5AE2FD29DB75662",
+        "Path":  "\\src\\Generic\\Get-DeviceDeploymentDefaultConfig.ps1"
+    },
+    {
+        "Hash":  "0C50D78C00ECEF55B10DFA71AC74F8F2C8112753",
+        "Path":  "\\src\\Generic\\Import-DeviceBuildModules.ps1"
+    },
+    {
+        "Hash":  "26BBD7D8207C51F4DA73A05739AF208044FBA3EB",
+        "Path":  "\\src\\InteractiveConsole\\Initialize-InteractiveConsole.ps1"
+    },
+    {
+        "Hash":  "F4D17087AACBD62E7F8062ADCB1B67F898B88142",
+        "Path":  "\\src\\InteractiveConsole\\Invoke-InteractiveDeviceBuildProcess.ps1"
+    },
+    {
+        "Hash":  "EEEAD9D68D5E98D4CA9B9BFE7B0FA1672694F710",
+        "Path":  "\\src\\Intune\\Get-DeviceIntuneID.ps1"
+    },
+    {
+        "Hash":  "2B9C193C9D5CE3CA81221CCE38619039B358D9C5",
+        "Path":  "\\src\\Intune\\Remove-DeviceIntuneDuplicateRecords.ps1"
+    },
+    {
+        "Hash":  "982D6037EBDEB00097C13A2274503B3ED0F5D1B8",
+        "Path":  "\\src\\LocalCommands\\Assert-DeviceName.ps1"
+    },
+    {
+        "Hash":  "3E8684A59AC4C4BC2053EB06DA4F9D1994AA42DD",
+        "Path":  "\\src\\LocalCommands\\Get-DeviceLocalData.ps1"
+    },
+    {
+        "Hash":  "E43894967FE30E4768DF2713F7B13530133DBA6B",
+        "Path":  "\\src\\LocalCommands\\Invoke-DeviceDeploymentCleanupCommands.ps1"
+    },
+    {
+        "Hash":  "A1703397F51FC395B7E5480E8608FB8A6598587A",
+        "Path":  "\\src\\LocalCommands\\Invoke-GPUpdate.ps1"
+    },
+    {
+        "Hash":  "7D03856B0FF1D86B950C30F5DEA4823EDC8AE519",
+        "Path":  "\\src\\LocalCommands\\Remove-DeviceDeploymentTempData.ps1"
+    },
+    {
+        "Hash":  "034C36A590B6976D47A238AA8B0244FF3B5271BB",
+        "Path":  "\\src\\LocalCommands\\Set-DeviceLocalSettings.ps1"
+    },
+    {
+        "Hash":  "090149DD9302020439B0A631C1F8C4325CA2DEA6",
+        "Path":  "\\src\\LocalCommands\\Set-DeviceName.ps1"
+    },
+    {
+        "Hash":  "6CF4EC0BE552E07548DFC9B779454335AED93E26",
+        "Path":  "\\src\\LocalCommands\\Test-OOBE.ps1"
+    },
+    {
+        "Hash":  "3F47578178368AB9746169AF31FF60E29028793F",
+        "Path":  "\\src\\Security\\Connect-BuildProcessKVUnattended.ps1"
+    },
+    {
+        "Hash":  "4DC68B6400DC6BD64C1140B37D60AA5B40E5AE2C",
+        "Path":  "\\src\\ShutdownListener\\Block-DeviceShutdown.ps1"
+    },
+    {
+        "Hash":  "D0B45C89A4DF4DE04011D9EAC1AB3879CC5AA364",
+        "Path":  "\\src\\ShutdownListener\\Unblock-DeviceShutdown.ps1"
+    },
+    {
+        "Hash":  "1DF1335B0C77780C619A1EE51DA12AE779AA75D3",
+        "Path":  "\\src\\WindowsUpdate\\Initialize-DeviceWindowsUpdateEnviroment.ps1"
+    },
+    {
+        "Hash":  "5FEA1D9A4716059133631468ACEEF6CA07B9F114",
+        "Path":  "\\src\\WindowsUpdate\\Update-DeviceWindowsUpdate.ps1"
+    },
+    {
+        "Hash":  "8F4E4A9FB4642234B9DF18D52C6B3B89A5B38F80",
+        "Path":  "\\TriCare-DeviceDeployment.psm1"
+    }
+]

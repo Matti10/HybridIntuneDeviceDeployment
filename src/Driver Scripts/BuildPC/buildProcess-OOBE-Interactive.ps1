@@ -16,29 +16,34 @@ try {
 	if (Test-OOBE -Verbose) {	
 		# run "Shift+F10" to bring GUI up
 		& "$($config.Generic.BuildModulePath)\$($config.Generic.shiftF10RelativePath)"
-	}	
-	Update-AZConfig -EnableLoginByWam $false # this forces login with browser, should not be req
-
-	Connect-KVUnattended | Out-Null
-	#-------------------------- Block Shutdowns until build process is completed --------------------------# 
-	Block-DeviceShutdown -Verbose | Out-Null
-	
-	#------------------------ Get Build Data and Create Fresh Asset (if required) -------------------------#
-	try {
-		$freshAsset = Register-DeviceWithFresh -Verbose
-		$buildInfo = Get-DeviceBuildData -freshAsset $freshAsset -Verbose
-	} catch {
-		New-BuildProcessError -errorObj $_ -message "Unable to Retrive Build Info from Fresh. This without this info the process cannot contine. Please check device exists in fresh and is setup as per build documentation. Then wipe the device and restart" -functionName "Device Registration with Fresh" -popup -ErrorAction "Stop"
-		break
 	}
-	
-	#----------------------------------- Set Ticket to Waiting on Build -----------------------------------# 
-	Set-FreshTicketStatus -recordID $buildInfo.recordID -status $config.TicketInteraction.ticketWaitingOnBuildStatus -overwriteDescription
-	
-	#------------------------------------------- Rename Device --------------------------------------------# 
-	#----------------------- (needs to happen before device is moved to other OU) -------------------------#
-	$buildInfo.buildState = $config.TicketInteraction.BuildStates.oldADCompRemovalPendingState.message
-	Write-DeviceBuildStatus -buildInfo $buildInfo -Verbose
+		Update-AZConfig -EnableLoginByWam $false # this forces login with browser, should not be req
+
+		Connect-KVUnattended | Out-Null
+		#-------------------------- Block Shutdowns until build process is completed --------------------------# 
+		Block-DeviceShutdown -Verbose | Out-Null
+		
+		#------------------------ Get Build Data and Create Fresh Asset (if required) -------------------------#
+		try {
+			$freshAsset = Register-DeviceWithFresh -Verbose
+			$buildInfo = Get-DeviceBuildData -freshAsset $freshAsset -Verbose
+		} catch {
+			New-BuildProcessError -errorObj $_ -message "Unable to Retrive Build Info from Fresh. This without this info the process cannot contine. Please check device exists in fresh and is setup as per build documentation, then retry" -functionName "Device Registration with Fresh" -popup -ErrorAction "Stop"
+			break
+		}
+		
+		#----------------------------------- Set Ticket to Waiting on Build -----------------------------------# 
+		Set-FreshTicketStatus -ticketID $buildInfo.ticketID -status $config.TicketInteraction.ticketWaitingOnBuildStatus -overwriteDescription
+
+		#------------------------------------------ Check into Ticket -----------------------------------------# 
+		#------------------------- (This invokes privilidged commands on serverside) --------------------------#
+		$buildInfo.buildState = $config.TicketInteraction.BuildStates.checkInState.message # set state to "checked in"
+		Write-DeviceBuildStatus -buildInfo $buildInfo -Verbose
+		
+		#------------------------------------------- Rename Device --------------------------------------------# 
+		#----------------------- (needs to happen before device is moved to other OU) -------------------------#
+		$buildInfo.buildState = $config.TicketInteraction.BuildStates.oldADCompRemovalPendingState.message
+		Write-DeviceBuildStatus -buildInfo $buildInfo -Verbose
 
 	Remove-DeviceADDuplicate -buildInfo $buildInfo -verbose
 	
@@ -50,15 +55,15 @@ try {
 
 	Invoke-DeviceADCommands -buildInfo $buildInfo -Verbose
 
-	#------------------------------------ Set Generic Local Settings  -------------------------------------# 
-	Set-DeviceLocalSettings -Verbose -buildInfo $buildInfo
-	
-	#----------------------------------------- Remove Bloatware  ------------------------------------------# 
-	Remove-DeviceBloatware -Verbose -buildInfo $buildInfo
+		#------------------------------------ Set Generic Local Settings  -------------------------------------# 
+		Set-DeviceLocalSettings -Verbose -buildInfo $buildInfo
+		
+		#----------------------------------------- Remove Bloatware  ------------------------------------------# 
+		Remove-DeviceBloatware -Verbose -buildInfo $buildInfo
 
-	#------------------------------------------ Update Software  ------------------------------------------# 
-	# Initialize-DeviceWindowsUpdateEnviroment -Verbose
-	# Update-DeviceWindowsUpdate -Verbose
+		#------------------------------------------ Update Software  ------------------------------------------# 
+		# Initialize-DeviceWindowsUpdateEnviroment -Verbose
+		# Update-DeviceWindowsUpdate -Verbose
 
 	if (Test-DeviceDellCommandUpdate -Verbose) {
 		Install-DeviceDellCommandUpdateDrivers -Verbose -buildInfo $buildInfo
@@ -78,14 +83,11 @@ try {
 
 }
 catch {
-	New-BuildProcessError -errorObj $_ -message "There has been an error in the build process, please see the below output:`n$_" -functionName "Build Process Main" -popup -ErrorAction "Stop" -buildInfo $buildInfo
+	Invoke-BuildProcessRetry -message "Error Details: $_"
+	New-BuildProcessError -errorObj $_ -message "There has been an error in the build process, please see the below output:`n$_" -functionName "Build Process Main" -ErrorAction "Stop" -buildInfo $buildInfo
 
-	
-}
-finally {
 	#---------------------------------------------- Cleanup -----------------------------------------------# 
 	# Invoke-DeviceDeploymentCleanupCommands
-	Stop-Transcript
 }
 
 # SIG # Begin signature block
