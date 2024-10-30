@@ -40,7 +40,10 @@ function Invoke-DeviceADCommands {
 		$buildInfo,
 
 		[Parameter()]
-		$ADCommandsCompletedString = $DeviceDeploymentDefaultConfig.TicketInteraction.BuildStates.adCompletedState.message
+		$ADCommandsCompletedString = $DeviceDeploymentDefaultConfig.TicketInteraction.BuildStates.adCompletedState.message,
+
+		[Parameter()]
+		[switch]$remoteMachine
 	)
 
 	begin {
@@ -54,7 +57,11 @@ function Invoke-DeviceADCommands {
 			} catch {
 				# if comp cant be found using asset id, try with hostname (lest rename fails)
 				try {
-					$ADComp = Get-ADComputer -Identity $buildInfo.hostname
+					if (-not $remoteMachine) {
+						$ADComp = Get-ADComputer -Identity $buildInfo.hostname
+					} else {
+						throw
+					}
 				} catch {
 					Write-Error "Computer with AssetID/Hostname $($buildInfo.AssetID)/$($buildInfo.hostname) doesn't exist in AD" -ErrorAction stop
 				}
@@ -71,16 +78,25 @@ function Invoke-DeviceADCommands {
 			Move-ADObject -Identity $ADComp.DistinguishedName -TargetPath $buildInfo.OU -WhatIf:$WhatIfPreference -Verbose:$VerbosePreference
 	
 		} catch {
-			$msg = $DeviceDeploymentDefaultConfig.TicketInteraction.GeneralErrorMessage
+			if (-not $remoteMachine) {
 
-			New-BuildProcessError -errorObj $_ -message "AD Commands have Failed. Please manually check that the device is in the listed OU and groups. This has not effected other parts of the build process." -functionName "Invoke-DeviceADCommands" -buildInfo $buildInfo -debugMode -ErrorAction "Continue"
+				$msg = $DeviceDeploymentDefaultConfig.TicketInteraction.GeneralErrorMessage
+
+				New-BuildProcessError -errorObj $_ -message "AD Commands have Failed. Please manually check that the device is in the listed OU and groups. This has not effected other parts of the build process." -functionName "Invoke-DeviceADCommands" -buildInfo $buildInfo -debugMode -ErrorAction "Continue"
+			} else {
+				$errorList += $_
+			}
 		} finally {
-			# add note to ticket that AD commands completed
-			$buildInfo.buildState = $ADCommandsCompletedString
-			Write-DeviceBuildTicket -buildInfo $buildInfo -message $msg
+			if (-not $remoteMachine) {
+				# add note to ticket that AD commands completed
+				$buildInfo.buildState = $ADCommandsCompletedString
+				Write-DeviceBuildTicket -buildInfo $buildInfo -message $msg			
+			}
 		}
-
 	}
 	end {
+		if ($remoteMachine -and $errorList.count -ne 0) {
+			Write-Error "Error(s) in $($MyInvocation.MyCommand.Name):`n$($errorList | ForEach-Object {"$_`n"})`n $(Get-PSCallStack)" -ErrorAction Stop
+		}
 	}	
 }
