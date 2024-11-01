@@ -26,7 +26,7 @@ try {
 		#------------------------ Get Build Data and Create Fresh Asset (if required) -------------------------#
 		try {
 			$freshAsset = Register-DeviceWithFresh -Verbose
-			$buildInfo = Get-DeviceBuildData -freshAsset $freshAsset -Verbose
+			$buildInfo = Get-DeviceBuildData -freshAsset $freshAsset -Verbose -ErrorAction Stop
 		} catch {
 			New-BuildProcessError -errorObj $_ -message "Unable to Retrive Build Info from Fresh. This without this info the process cannot contine. Please check device exists in fresh and is setup as per build documentation, then retry" -functionName "Device Registration with Fresh" -popup -ErrorAction "Stop"
 			break

@@ -1,109 +1,56 @@
 
-<# Documentation
-# PowerShell: Connect-BuildProcessKVUnattended
-
+# Documentation
+<#
 .SYNOPSIS
-`Connect-BuildProcessKVUnattended` is a PowerShell function that connects to keys in the Azure Key Vault. It checks if a connection to Azure already exists and if not, it attempts to connect using pre-specified credentials. If that does not work, it tries to connect interactively. 
-
-.Example
-
-Here's how you call the function:
-
-Connect-BuildProcessKVUnattended
-
-
-.DESCRIPTION
-
-1. It first checks if you're already connected to Azure by calling the `Get-AzContext` cmdlet. If it returns a non-null value, it means you're connected, and it doesn't do anything further.
-
-    
-    $AZContext = Get-AzContext
-    if (-not $AZContext) {
-    
-2. If not connected, it specifies the TenantID, CertificateThumbprint, ClientID and SubscriptionID, stored in variables.
-
-    
-    $TenantID = "72294687-5f37-4c19-8580-1df60cd5e56e"
-    $CertificateThumbprint = "DFD120727D6212BE9E34BBEDFF1D6CACE691C1A8"
-    $ClientID = "ce818db3-7e5f-476b-b9cc-8f9a6ee4b907"
-    $SubscriptionID = "071a86bc-1212-4137-8948-08f4cbebfbf0"
-    
-
-3. Attempts to connect to the Azure account using the specified credentials. 
-
-    
-    Connect-AzAccount -ApplicationId $ClientID -TenantId $tenantID -CertificateThumbprint $CertificateThumbprint -WarningAction:SilentlyContinue -ErrorAction Stop
-    
-
-4. If the connection is unable to be made, it tries to connect interactively by calling `Connect-AzAccount -Credential` . If this connection fails too, it will display an error message.
-
-
-
-5. If already connected to Azure, verbose message is printed and the function exits.
-    
-    else {
-        Write-Verbose "Connect-KVUnattended: Already connected."
-        return $true
-    }
-    
+Clears the values set/managed by the build process, effectiely making the device a clean slate in AD to then re-add config too later
 
 .NOTES
-
-This script requires you to have the Az module installed. Additionally, it assumes that you have the necessary permissions to connect to the specified Azure key vault. 
+Unlike all other functions in the build process, this is designed to only be run on a remote machine
 #>
-function Connect-BuildProcessKVUnattended {
 
-	
-	# This allows us to skip the connection if we're already connected.
-    $AZContext = Get-AzContext
-	
-    if (-not $AZContext) {
-		
-		Write-Verbose "Connecting to KeyVault"
-		
-		$TenantID = "72294687-5f37-4c19-8580-1df60cd5e56e"
-		$CertificateThumbprint = "DFD120727D6212BE9E34BBEDFF1D6CACE691C1A8"
-		$ClientID = "ce818db3-7e5f-476b-b9cc-8f9a6ee4b907"
-		$SubscriptionID = "071a86bc-1212-4137-8948-08f4cbebfbf0"
+function Clear-DeviceADConfiguration {
+	[CmdletBinding(SupportsShouldProcess = $true)]
+	param (
+		[Parameter(Mandatory, ValueFromPipeline)]
+		$buildInfo,
 
-		# try {
-		# 	Connect-AzAccount -ApplicationId $ClientID -TenantId $tenantID -CertificateThumbprint $CertificateThumbprint -WarningAction:SilentlyContinue -ErrorAction Stop
-		# 	Write-Verbose " |-- Connected succesfully"
-		# 	# Get-AZKeyVault -SubscriptionId $SubscriptionID
-		# 	return $true
-		# } catch {
-			# $ErrorMessage = $_
-			# Write-Verbose "Unable to connect to Azure with certificate; trying interactively"
+		[Parameter()]
+		$deviceDeploymentManagedGroups = (@($DeviceDeploymentDefaultConfig.Deployment.buildTypeCorrelation.groups + $DeviceDeploymentDefaultConfig.Deployment.locationCorrelation.groups) | Select-Object -Unique)
+	)
 
-			# if (-not ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")) {
-			# 	Write-Warning "Connect-KVUnattended: You do not have Administrator rights and weren't able to access the certificate directly, so will not be able to access the Certificate Store locally.  Connecting interactively."
-				try {
-					$result = (Connect-AzAccount -Credential)
-					$connected = $true
-					return $true
-				} catch {
-					Write-Host -ForegroundColor Red "Error connecting to Key Vault without Admin privileges: $ErrorMessage"
-					Write-Host -ForegroundColor Red "Error connecting to Key Vault interactively: $_"
-					return $false
-				}
-			# } else {
-			# 	Write-Host "Error connecting to Key Vault without checking for Admin privileges: $ErrorMessage"
-			# 	Write-Host "User is already an admin, so not trying interactively."
-			# }
+	begin {
+		$errorList = @()
+	}
+	process {
+		try {
+			$ADComp = Get-ADComputer -Identity $buildInfo.AssetID -Properties memberof
+			
+			$ADComp.MemberOf
+			| ForEach-Object {$_ | Get-ADGroup}
+			| Where-Object { $_.Name -in $deviceDeploymentManagedGroups } # select groups that are added by DeviceDeployment
+			| ForEach-Object {
+				Write-Verbose "Removing $($_.Name) from $($ADComp.SAMAccountName)"
+				$_ | Remove-ADGroupMember -Members $ADComp.SamAccountName -WhatIf:$WhatIfPreference -Verbose:$VerbosePreference
+			}
 
-			return $false
-		# }
-    } else {
-        Write-Verbose "Connect-KVUnattended: Already connected."
-        return $true
-    }
-
+			return $buildInfo
+			
+		}
+		catch {
+			$errorList += $_
+		}
+	}
+	end {
+		if ($errorList.count -ne 0) {
+			Write-Error "Error(s) in $($MyInvocation.MyCommand.Name):`n$($errorList | ForEach-Object {"$_`n"})`n $(Get-PSCallStack)" -ErrorAction Stop
+		}
+	}	
 }
 # SIG # Begin signature block
 # MIIPXQYJKoZIhvcNAQcCoIIPTjCCD0oCAQExDzANBglghkgBZQMEAgEFADB5Bgor
 # BgEEAYI3AgEEoGswaTA0BgorBgEEAYI3AgEeMCYCAwEAAAQQH8w7YFlLCE63JNLG
-# KX7zUQIBAAIBAAIBAAIBAAIBADAxMA0GCWCGSAFlAwQCAQUABCBRoUXCSREnBfB6
-# QLtI4HfXo+i5hNfw7tqjlI1P2Wemp6CCDJ0wggXxMIIE2aADAgECAhM2AAAABHxF
+# KX7zUQIBAAIBAAIBAAIBAAIBADAxMA0GCWCGSAFlAwQCAQUABCDOcpEbxDHNFV+u
+# NX3NKhKKf3HHCsP7mGiunViBkxsoBqCCDJ0wggXxMIIE2aADAgECAhM2AAAABHxF
 # 1HD5VIC5AAAAAAAEMA0GCSqGSIb3DQEBCwUAMBoxGDAWBgNVBAMTD1RyaUNhcmUg
 # Um9vdCBDQTAeFw0yMDA5MDgwMzM4NDNaFw0zMDA5MDgwMzQ4NDNaME0xEzARBgoJ
 # kiaJk/IsZAEZFgNpbnQxGTAXBgoJkiaJk/IsZAEZFgl0cmljYXJlYWQxGzAZBgNV
@@ -175,12 +122,12 @@ function Connect-BuildProcessKVUnattended {
 # Y2FyZWFkMRswGQYDVQQDExJUcmlDYXJlIElzc3VpbmcgQ0ECEzMAAAEew6rjYtzc
 # Y1wAAQAAAR4wDQYJYIZIAWUDBAIBBQCggYQwGAYKKwYBBAGCNwIBDDEKMAigAoAA
 # oQKAADAZBgkqhkiG9w0BCQMxDAYKKwYBBAGCNwIBBDAcBgorBgEEAYI3AgELMQ4w
-# DAYKKwYBBAGCNwIBFTAvBgkqhkiG9w0BCQQxIgQgoo32AGALv3skV8qwMbudf12/
-# GsfF/M3HQbyXYlbznQUwDQYJKoZIhvcNAQEBBQAEggEAavzxVLfPdxF7pMBTNQqB
-# qyfzRPCSTxbAlSHAhZ08V5546A4t673S6hnug6U706d50OR0XO3akjkS9IvXNV70
-# k8iy39YlSbw7t8RxRxklcq+gnpF88PLbU4MBCX2pK/EI7qSJDGfOaJbe4jfgfFyZ
-# xXK0RtBf7NIpEu+v6Plfd2SNx3JhlYI0kyaz6tQNP1CtY5V2QlyfwyYvbGY9+M0S
-# PbCjEPoKPXqh9xCCGd593XlPAhPDNlrB2SshxahGLAI3QUHyBvbKqtys9HIJ1apc
-# yqodVwv1XQtVGl/qL1KjEXLt/QoKxbKHvKJ0oKjatsqWXt320+ClJUcx6ENa0+gz
-# mA==
+# DAYKKwYBBAGCNwIBFTAvBgkqhkiG9w0BCQQxIgQgYUCEuahFChnwdPWZ71PCppXq
+# KtlEu/6BGAl4sayfoxcwDQYJKoZIhvcNAQEBBQAEggEAOBRIlIZwAw7aSXF0TB1C
+# 8Oa0TaUN5XbOGEmdmSltU7LT3qHx1/U03uj3hW2RDWYZj211bjp8eUhOiY4ONTyH
+# 6JEDMA60MPBYhGFzz1fYi8q1ckREV11OlDXzlJvrmi2k557UcYKahoPwY/v6xXjM
+# NBaHFnTGllcGJ4TAuRWBR99C2e35r4TunumYSVRX6esuoSS9WpnsOJUSp/tNmDdF
+# eUzTVYarUhbjh0l5lm//o8+WvdneADLT1MxkSFZFOmUnbALqRqufNoX1bhU5CmEJ
+# bkJFQRX2gwDadzDmc1PT7DiD2vxf3DQ4+rb29XP8wiqfj6jCiTP1Ka/WJPcLaRLe
+# RA==
 # SIG # End signature block

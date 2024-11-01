@@ -46,26 +46,33 @@ function Invoke-DeviceADCommands {
 		[switch]$remoteMachine,
 
 		[Parameter()]
-		[ValidateNotNull()]
         [System.Management.Automation.PSCredential]
         [System.Management.Automation.Credential()]
-        $Credential = [System.Management.Automation.PSCredential]::Empty
+        $Credential = $null
 	)
 
 	begin {
 		$msg = ""
 		$errorList = @()
+		
+		#manage credentials using splatting
+		$credentialSplat = @{}
+		if ($null -ne $Credential) {
+			$credentialSplat = @{
+				Credential = $Credential
+			}
+		}
 	}
 	process {
 		try {
 			#get ad Comp
 			try {
-				$ADComp = Get-ADComputer -Identity $buildInfo.AssetID -Credential $Credential
+				$ADComp = Get-ADComputer -Identity $buildInfo.AssetID @credentialSplat
 			} catch {
 				# if comp cant be found using asset id, try with hostname (lest rename fails)
 				try {
 					if (-not $remoteMachine) {
-						$ADComp = Get-ADComputer -Identity $buildInfo.hostname -Credential $Credential
+						$ADComp = Get-ADComputer -Identity $buildInfo.hostname @credentialSplat
 					} else {
 						throw
 					}
@@ -77,12 +84,16 @@ function Invoke-DeviceADCommands {
 			# add to groups
 			foreach ($group in $buildInfo.groups) {
 				Write-Verbose "Adding $($ADComp.SamAccountName) to $group"
-				Add-ADGroupMember -Identity $group -Members $ADComp.SamAccountName -WhatIf:$WhatIfPreference -Verbose:$VerbosePreference -Credential $Credential
+				Add-ADGroupMember -Identity $group -Members $ADComp.SamAccountName -WhatIf:$WhatIfPreference -Verbose:$VerbosePreference @credentialSplat
 			}
 	
 			# move to correct OU
-			Write-Verbose "Moving $($ADComp.SamAccountName) to $($buildInfo.OU)"
-			Move-ADObject -Identity $ADComp.DistinguishedName -TargetPath $buildInfo.OU -WhatIf:$WhatIfPreference -Verbose:$VerbosePreference -Credential $Credential
+			if ($ADComp.DistinguishedName -notlike "*$($buildInfo.OU)*") {
+				Write-Verbose "Moving $($ADComp.SamAccountName) to $($buildInfo.OU)"
+				Move-ADObject -Identity $ADComp.DistinguishedName -TargetPath $buildInfo.OU -WhatIf:$WhatIfPreference -Verbose:$VerbosePreference @credentialSplat
+			} else {
+				Write-Verbose "$($ADComp.DistinguishedName) is in a child OU of $($buildInfo.OU) - not moving"
+			}
 	
 		} catch {
 			if (-not $remoteMachine) {

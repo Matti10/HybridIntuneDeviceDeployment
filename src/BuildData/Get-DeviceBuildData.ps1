@@ -64,8 +64,8 @@ function Get-DeviceBuildData {
 		$errorList = @()
 	}
 	process {
-		if ($PSCmdlet.ShouldProcess($freshAsset.Name)) {
-			try {
+		try {
+			if ($PSCmdlet.ShouldProcess($freshAsset.Name)) {
 				$attemptCount = 0
 				do {
 					#manage user messaging
@@ -95,18 +95,17 @@ function Get-DeviceBuildData {
 					$intuneID = Get-DeviceIntuneID
 				}
 
-				return New-BuildInfoObj -AssetId $FreshAsset.Name -serialNumber $freshAsset.type_fields.(Get-FreshAssetTypeFieldName -field "serial" -freshAsset $freshAsset) -build $freshAsset.type_fields.$freshBuildAttr -freshLocation $freshAsset.$freshFacilityAttr -freshAsset $freshAsset -OU $OU -groups $groups -intuneID $intuneID #-type $buildDetails.device_type_requested
-
+				return New-BuildInfoObj -AssetId $FreshAsset.Name -serialNumber $freshAsset.type_fields.(Get-FreshAssetTypeFieldName -field "serial" -freshAsset $freshAsset) -build $freshAsset.type_fields.$freshBuildAttr -freshLocation $freshAsset.$freshFacilityAttr -freshAsset $freshAsset -OU $OU -groups $groups -intuneID $intuneID
 			}
-			catch {
-				$errorList += $_
-				Write-Error $_
-			}
+		}
+		catch {
+			$errorList += $_
+			Write-Error $_
 		}
 	}
 	end {
 		if ($errorList.count -ne 0) {
-			Write-Error "Error(s) in $($MyInvocation.MyCommand.Name):`n$($errorList | ForEach-Object {"$_`n"})`n $(Get-PSCallStack)" -ErrorAction Stop
+			Write-Error "Error(s) in $($MyInvocation.MyCommand.Name):`n$($errorList | ForEach-Object {"$_`n"})`n $(Get-PSCallStack)" -ErrorAction:$ErrorActionPreference
 		}
 	}	
 }
