@@ -17,11 +17,15 @@ try {
 		# run "Shift+F10" to bring GUI up
 		& "$($config.Generic.BuildModulePath)\$($config.Generic.shiftF10RelativePath)"
 	}
+		#-------------------------- Block Shutdowns until build process is completed --------------------------# 
+		Block-DeviceShutdown -Verbose | Out-Null
+
+		#---------------------------------------- Inital Setup/Config -----------------------------------------# 
 		Update-AZConfig -EnableLoginByWam $false # this forces login with browser, should not be req
 
 		Connect-KVUnattended | Out-Null
-		#-------------------------- Block Shutdowns until build process is completed --------------------------# 
-		Block-DeviceShutdown -Verbose | Out-Null
+
+		$elevatedCredential = Get-BuildProcessElevatedCredentials
 		
 		#------------------------ Get Build Data and Create Fresh Asset (if required) -------------------------#
 		try {
@@ -45,7 +49,7 @@ try {
 		$buildInfo.buildState = $config.TicketInteraction.BuildStates.oldADCompRemovalPendingState.message
 		Write-DeviceBuildStatus -buildInfo $buildInfo -Verbose
 
-	Remove-DeviceADDuplicate -buildInfo $buildInfo -verbose
+	Remove-DeviceADDuplicate -buildInfo $buildInfo -Credential $elevatedCredential -verbose
 	
 	Set-DeviceName -buildInfo $buildInfo -Verbose
 
@@ -53,7 +57,7 @@ try {
 	$buildInfo.buildState = $config.TicketInteraction.BuildStates.adPendingState.message
 	Write-DeviceBuildStatus -buildInfo $buildInfo -Verbose
 
-	Invoke-DeviceADCommands -buildInfo $buildInfo -Verbose
+	Invoke-DeviceADCommands -buildInfo $buildInfo -Credential $elevatedCredential -Verbose
 
 		#------------------------------------ Set Generic Local Settings  -------------------------------------# 
 		Set-DeviceLocalSettings -Verbose -buildInfo $buildInfo
