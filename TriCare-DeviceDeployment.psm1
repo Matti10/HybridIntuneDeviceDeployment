@@ -10,7 +10,7 @@ $DeviceDeploymentDefaultConfig = Get-Content -Path "$PSScriptRoot\src\defaultCon
 $DeviceDeploymentDefaultConfig.Generic.BuildModulePath = $PSScriptRoot
 
 <#---------------------- Include Functions ----------------------#>
-Foreach ($import in (Get-ChildItem -Path $PSScriptRoot\src\*.ps1  -Recurse -ErrorAction SilentlyContinue | Where-Object {$_.FullName -notlike"*Driver Scripts*"})) {
+Foreach ($import in (Get-ChildItem -Path $PSScriptRoot\src\*.ps1  -Recurse -ErrorAction SilentlyContinue)) {
     Try {
         . $import.fullname
         Write-Debug "Imported $($import.fullname)"
@@ -18,6 +18,9 @@ Foreach ($import in (Get-ChildItem -Path $PSScriptRoot\src\*.ps1  -Recurse -Erro
         Write-Error -Message "Failed to import function $($import.fullname): $_"
     }
 }
+
+<#---------------------- Initialise Module Wide Varibles ----------------------#>
+$Script:ADElevatedCredential = $null
 
 <#------------------------------------------------------------#>
 

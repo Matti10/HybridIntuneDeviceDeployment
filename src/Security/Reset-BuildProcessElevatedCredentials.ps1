@@ -1,103 +1,41 @@
 
-<# Documentation
-# FUNCTION NAME: New-BuildProcessError
+# Documentation
+<#
 
-.SYNOPSIS
-This function generates and handles errors during a build process.
-
-.DESCRIPTION
-The `New-BuildProcessError` function creates and handles errors found during the build process. It receives various parameters such as the error message, function name, and build information. Once invoked, it sends an email detailing the error if the debug mode is enabled, writes an error log, and creates a fresh error ticket.
-
-.PARAMETER  errorObj
-(Mandatory) This parameter is used to pass the error object.
-
-.PARAMETER  message
-(Mandatory) This is where the error message is being passed as a string.
-
-.PARAMETER  buildInfo
-This parameter contains additional information about the build process. Although not mandatory, the value is set as an empty string by default.
-
-.PARAMETER  functionName
-(Mandatory) The name of the function where the error(s) occurred.
-
-.PARAMETER  popup
-This switch parameter specifies whether a popup should be shown. It is optional. 
-.PARAMETER  debugMode
-This switch parameter decides if the function is running in debug mode. If this is provided, an email with  details of the error will be sent to a specified email address.
-
-.NOTES
-The function starts by initializing an empty array. Then, it evaluates whether it should continue processing based on the `$PSCmdlet.ShouldProcess` method. Within a `try` block, a message is composed containing both the message provided and the error object's details.
-
-In the scope of the debug mode, an email is sent to the designated recipient with relevant error details. A nested `try` block attempts to execute the `Write-DeviceBuildError` function, provided that a build information object exists. If this process fails, a new error ticket will be logged using the `New-FreshErrorTicket` function.
-
-Each encountered error is added to the `$errorList` array and displayed in the console. The error originating from the error object is displayed as well. Finally, if there are any errors recorded in `$errorList`, a summarizing error message is displayed and the function kills the process.
-
-.EXAMPLE
-
-New-BuildProcessError -errorObj $error -message "An error has occured in the build process" -functionName "TestFunction"
-
-This will trigger the error handling process, with a custom error message and function name. #>
-function New-BuildProcessError {
+#>
+function Reset-BuildProcessElevatedCredentials {
 	[CmdletBinding(SupportsShouldProcess = $true)]
 	param (
-		[Parameter(Mandatory)]
-		$errorObj,
-
-		[Parameter(Mandatory)]
-		[string]$message,
+		# Declare a parameter that to accept the path to the local status file
+		[Parameter()]
+		$keyVaultName = $DeviceDeploymentDefaultConfig.Security.KeyVaultName,
 
 		[Parameter()]
-		$buildInfo = "",
-
-		[Parameter(Mandatory)]
-		[string]$functionName,
-
-		[Parameter()]
-		[switch]$popup,
-
-		[Parameter()]
-		[switch]$debugMode
-
+		$secretName = $DeviceDeploymentDefaultConfig.Security.elevatedPassword_KeyVaultKey
 	)
 
+	# Begin block executes at the start of the function
 	begin {
+		# Initialize $errorList as an empty array to store any potential errors
 		$errorList = @()
 	}
+	# Process block executes for each pipeline object passed to the function
 	process {
-		if ($PSCmdlet.ShouldProcess("$(hostname)")) {
-			try {
-
-				if ($popup) {
-					Show-DeviceUserMessage -title "Error - Don't Panic!!" -message "$message" -messageBoxConfigCode $DeviceDeploymentDefaultConfig.DeviceUserInteraction.messageBoxConfigurations.error
-				}
-
-				$userFriendlyMessage = "$message`nError Detail:`n$($errorObj)"
-
-				if ($debugMode) {
-					Send-eMailMessage -FromEmail "matt.winsen@tricare.com.au" -ToEmail "matt.winsen@tricare.com.au" -Subject "Build Process Error | $functionName" -Body "$($buildInfo | ConvertTo-JSON)`n$errorObj`n" -Verbose:$VerbosePreference
-				}
-
-				try {
-					if ("" -ne $buildInfo) {
-						Write-DeviceBuildError -buildInfo $buildInfo -message $message -errorObject $errorObj
-					} else {
-						Write-Error "No Build Info Obj" -ErrorAction "Stop"
-					}
-				}
-				catch {
-					New-FreshErrorTicket -ErrorMsg $userFriendlyMessage -filename $functionName -clientName "$(hostname)" -logPath "C:\Intune_Setup\buildProcess\logs" -ErrorObjs $errorObj
-				}
-
-			}
-			catch {
-				$errorList += $_
-				Write-Error $_
+		try {
+			if ($PSCmdlet.ShouldProcess("")) {
+				throw "#TODO"
 			}
 		}
-		Write-Error $errorObj -ErrorAction:$ErrorActionPreference #write the error to console
+		# Catch any errors and add them to $errorList and display an error message
+		catch {
+			$errorList += $_
+			Write-Error $_
+		}
 	}
+	# End block executes after the process block (after all pipeline objects have been processed)
 	end {
 		if ($errorList.count -ne 0) {
+			# If there are any errors, write them all and stop execution
 			Write-Error "Error(s) in $($MyInvocation.MyCommand.Name):`n$($errorList | ForEach-Object {"$_`n"})`n $(Get-PSCallStack)" -ErrorAction Stop
 		}
 	}	
@@ -105,8 +43,8 @@ function New-BuildProcessError {
 # SIG # Begin signature block
 # MIIPXQYJKoZIhvcNAQcCoIIPTjCCD0oCAQExDzANBglghkgBZQMEAgEFADB5Bgor
 # BgEEAYI3AgEEoGswaTA0BgorBgEEAYI3AgEeMCYCAwEAAAQQH8w7YFlLCE63JNLG
-# KX7zUQIBAAIBAAIBAAIBAAIBADAxMA0GCWCGSAFlAwQCAQUABCCsBTT8sEcrb5cQ
-# U/LEt5APaEUXfWiNfZRRSzwZcBval6CCDJ0wggXxMIIE2aADAgECAhM2AAAABHxF
+# KX7zUQIBAAIBAAIBAAIBAAIBADAxMA0GCWCGSAFlAwQCAQUABCD8jmW11CSB/PnT
+# zCJmcZvoEGTUg1yWE2rIbTW0WO1N3aCCDJ0wggXxMIIE2aADAgECAhM2AAAABHxF
 # 1HD5VIC5AAAAAAAEMA0GCSqGSIb3DQEBCwUAMBoxGDAWBgNVBAMTD1RyaUNhcmUg
 # Um9vdCBDQTAeFw0yMDA5MDgwMzM4NDNaFw0zMDA5MDgwMzQ4NDNaME0xEzARBgoJ
 # kiaJk/IsZAEZFgNpbnQxGTAXBgoJkiaJk/IsZAEZFgl0cmljYXJlYWQxGzAZBgNV
@@ -178,12 +116,12 @@ function New-BuildProcessError {
 # Y2FyZWFkMRswGQYDVQQDExJUcmlDYXJlIElzc3VpbmcgQ0ECEzMAAAEew6rjYtzc
 # Y1wAAQAAAR4wDQYJYIZIAWUDBAIBBQCggYQwGAYKKwYBBAGCNwIBDDEKMAigAoAA
 # oQKAADAZBgkqhkiG9w0BCQMxDAYKKwYBBAGCNwIBBDAcBgorBgEEAYI3AgELMQ4w
-# DAYKKwYBBAGCNwIBFTAvBgkqhkiG9w0BCQQxIgQgwws6BCqDmXdYPZZkxS6H1+Ad
-# cey94vEz0DT/pD3sbjwwDQYJKoZIhvcNAQEBBQAEggEAeht8Xk/odC18lZ9DByhb
-# rBq/YHla6tXnsEcGVF8+qjiZ+DABAqrK6lNpgGDj/W5UhoVVYJOAZQdXGpXI8Y5J
-# xYgBp0OvbwqTkvBMdehnItVS/feYyYv2PYM+tzzHSSBGnEhdQVPQvsGggyOZWOR8
-# B3wH2phzSO5PIhySGhfVPu34R2rD1o+S7Z1tCXdwN7ewAYzPqSfHng1mBiSeFMNl
-# RTCy21FZRmBcIWZGL/5leKmeAdc06PDbvxD8JsuMu+pb/clztdzl9i9WuibL2Gy+
-# AV7QwjvGSGji2lr3gYgnBsLZ8uiQ0KZmiZlgQGXciqCVpYgBkzWE/sCyndR/5ZeH
-# UQ==
+# DAYKKwYBBAGCNwIBFTAvBgkqhkiG9w0BCQQxIgQg6SBVI6hnnIgj7sLgQPrkcZ9X
+# GPRpHlubjQH3YcS5o38wDQYJKoZIhvcNAQEBBQAEggEAGsYiJD7fgRsI6wPCvp3Y
+# qI6Cg7BQoUTfYmpG1rJ2a+HiGftAjXGjLLO+kJcCRSc/Abyi1xsoeeCkGUVxqbOj
+# HQBcnMrzQIljHYkJx8Wok+Eu4cQdCJL+lC6QPdJkmqcGtKy4lsr+6NQgCOwrwxzC
+# 2ScZusZ8Xg3MCvONBzo13CIMN6ynivQ93pYdOM8PBjgGVlhw8h2VuaN9e+mTmPPD
+# X3dIYE7XUwC+TFbtGwUB2uMpJAv9lGPjfV8U/uT8SeKuChbo1prlhDoQz24rFkga
+# LfY+hnSJ8wUHWYy5/YVoGe+e+AGJrZFzpolRZA3/2poWA+x8FLFW+Wq982UCEEYA
+# eQ==
 # SIG # End signature block

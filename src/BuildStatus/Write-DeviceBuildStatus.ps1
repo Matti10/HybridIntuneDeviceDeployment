@@ -28,7 +28,10 @@ function Write-DeviceBuildStatus {
 
         # An optional parameter for specifing the local file where the build status will be written. The default value is the value of the DeviceDeploymentDefaultConfig.BuildStatus.LocalBuildStatusFile.
         [Parameter()]
-        $localStatusFile = $DeviceDeploymentDefaultConfig.BuildStatus.LocalBuildStatusFile
+        $localStatusFile = $DeviceDeploymentDefaultConfig.BuildStatus.LocalBuildStatusFile,
+
+        [Parameter()]
+        $message = ""
     )
 
     begin {
@@ -39,6 +42,9 @@ function Write-DeviceBuildStatus {
         # Check if the operation should be processed
         if ($PSCmdlet.ShouldProcess("")) {
             try {
+                if ($message -ne "") {
+                    $buildInfo | Add-Member -MemberType NoteProperty -Name "Message" -Value $message
+                }
                 # Write the build info in JSON format to the local status file
                 Set-Content -Path $localStatusFile -Value ($buildInfo | ConvertTo-Json) -Verbose:$VerbosePreference
             }

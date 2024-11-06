@@ -29,6 +29,7 @@ function Get-BuildProcessElevatedCredentials {
 				$securePassword = ConvertTo-SecureString -String (Get-KVSecret -KeyVault $keyVaultName -Secret $secretName) -AsPlainText -Force
 			}
 			else {
+				$username = Read-Host -Prompt "Running in Whatif mode, please manaully enter the username you want to use"
 				$securePassword = Read-Host -AsSecureString -Prompt "Running in Whatif mode, please manaully enter the password for $username"
 			}
 			

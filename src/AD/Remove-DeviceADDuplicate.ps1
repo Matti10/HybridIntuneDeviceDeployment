@@ -29,7 +29,7 @@ This command is the same as the first example, but the buildInfo object is provi
 function Remove-DeviceADDuplicate {
 	[CmdletBinding(SupportsShouldProcess = $true)]
 	param (
-		[Parameter(Mandatory,ValueFromPipeline)]
+		[Parameter(Mandatory, ValueFromPipeline)]
 		$buildInfo,
 
 		[Parameter()]
@@ -39,48 +39,59 @@ function Remove-DeviceADDuplicate {
 		[string]$pauseTime = $DeviceDeploymentDefaultConfig.ADCommands.replicationSeconds,
 
 		[Parameter()]
-		[ValidateNotNull()]
-        [System.Management.Automation.PSCredential]
-        [System.Management.Automation.Credential()]
-        $Credential = [System.Management.Automation.PSCredential]::Empty
+		[System.Management.Automation.PSCredential]
+		[System.Management.Automation.Credential()]
+		$Credential = $Script:ADElevatedCredential, # This is null by default
+
+		[Parameter()]
+		[int]$CredentialRetryCount = 0
+
 	)
 
 	begin {
 		$msg = ""
+
+		$credentialSplat = Build-CredentialSplat -Credential $Credential
 	}
 	process {
 		try {
-			#get ad Comp
-			try {
-				
-				$ADComp = Get-ADComputer -Identity $buildInfo.AssetID -ErrorAction SilentlyContinue -Verbose:$VerbosePreference -Credential $Credential
-				$ADComp.Name | Remove-ADDevice -WhatIf:$WhatIfPreference -Verbose:$VerbosePreference -Credential $Credential
-				Write-Verbose "Removed $($buildInfo.AssetID) from AD"
-				
-			} catch {
-				Write-Verbose "No device with name $($buildInfo.AssetID) exists in AD"
-				return
+			# Get AD Comp and Remove from AD
+			$removed = $false 
+			while (-not $removed) {
+				try {
+					$buildInfo | Remove-DeviceAdObject -WhatIf:$WhatIfPreference -Verbose:$VerbosePreference -ErrorAction Stop @credentialSplat
+					Write-Verbose "Removed $($buildInfo.AssetID) from AD"
+					
+					$removed = $true #stop the loop
+
+					#pause to allow time for deletion to replicate across DC's
+					Write-Verbose "Waiting for $pauseTime seconds to allow changes to replicate"
+					Start-Sleep -Seconds $pauseTime
+
+				}
+				catch [System.Security.Authentication.AuthenticationException], [Microsoft.ActiveDirectory.Management.ADServerDownException] {
+					# catch credential failure and retry
+					$credentialSplat = Repair-BuildProcessElevatedCredentialSplat -CredentialRetryCount $CredentialRetryCount -Verbose:$VerbosePreference -WhatIf:$WhatIfPreference
+
+					$CredentialRetryCount++ 
+				} 
+				# catch {
+				# 	Write-Verbose "No device with name $($buildInfo.AssetID) exists in AD"
+				# 	break
+				# }
 			}
-
-			$ADComp.Name | Remove-ADDevice -WhatIf:$WhatIfPreference -Verbose:$VerbosePreference
-			Write-Verbose "Removed $($buildInfo.AssetID) from AD"
-
-			#pause to allow time for deletion to replicate across DC's
-			Write-Verbose "Waiting for $pauseTime seconds to allow changes to replicate"
-			Start-Sleep -Seconds $pauseTime
 		}
 		catch {
 			$msg = $DeviceDeploymentDefaultConfig.TicketInteraction.GeneralErrorMessage
 
-			New-BuildProcessError -errorObj $_ -message "Rename Commands have Failed. To solve this, please manually check AD for any OLD AD-Computers with the same AssetID and remove them. Double check that you're not removing this device! Then manually rename the PC" -functionName "Remove-DeviceADDuplicate" -buildInfo $buildInfo -debugMode -ErrorAction "Continue"
+			New-BuildProcessError -errorObj $_ -message "Removal of the old AD Computer has failed which will cause rename commands to fail!! To solve this, please manually check AD for any OLD AD-Computers with the same AssetID and remove them. Double check that you're not removing this device! Then manually rename the PC" -functionName "Remove-DeviceADDuplicate" -buildInfo $buildInfo -debugMode -ErrorAction:$ErrorActionPreference
 			
-		} finally {
+		}
+		finally {
 			# add note to ticket that AD removal commands completed
 			$buildInfo.buildState = $ADDeviceRemovalCompletionString
 			Write-DeviceBuildStatus -buildInfo $buildInfo -message $msg -Verbose:$VerbosePreference
-			Write-Verbose "Wrote to built ticket $($buildInfo | ConvertTo-Json)"
 		}
-		
 	}
 	end {
 	}	

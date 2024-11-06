@@ -36,7 +36,7 @@ The function will output to the console if it successfully adds to the device gr
 function Invoke-DeviceADCommands {
 	[CmdletBinding(SupportsShouldProcess = $true)]
 	param (
-		[Parameter(Mandatory,ValueFromPipeline)]
+		[Parameter(Mandatory, ValueFromPipeline)]
 		$buildInfo,
 
 		[Parameter()]
@@ -46,9 +46,12 @@ function Invoke-DeviceADCommands {
 		[switch]$remoteMachine,
 
 		[Parameter()]
-        [System.Management.Automation.PSCredential]
-        [System.Management.Automation.Credential()]
-        $Credential = $null
+		[System.Management.Automation.PSCredential]
+		[System.Management.Automation.Credential()]
+		$Credential = $Script:ADElevatedCredential, # This is null by default
+		
+		[Parameter()]
+		[int]$CredentialRetryCount = 0
 	)
 
 	begin {
@@ -56,59 +59,117 @@ function Invoke-DeviceADCommands {
 		$errorList = @()
 		
 		#manage credentials using splatting
-		$credentialSplat = @{}
-		if ($null -ne $Credential) {
-			$credentialSplat = @{
-				Credential = $Credential
+		$credentialSplat = Build-CredentialSplat -Credential $Credential
+
+		# helper function to change credentials mid execution while in debug mode
+		function Invoke-DebugHelper {
+			if ($DebugPreference -ne "SilentlyContinue") {
+				return Repair-BuildProcessElevatedCredentialSplat -CredentialRetryCount 0
 			}
 		}
 	}
 	process {
 		try {
-			#get ad Comp
-			try {
-				$ADComp = Get-ADComputer -Identity $buildInfo.AssetID @credentialSplat
-			} catch {
-				# if comp cant be found using asset id, try with hostname (lest rename fails)
+			#------------------------------------------- Get AD Comp -------------------------------------------#
+			$ADComp = $null #init AD Comp as null
+			while ($null -eq $ADComp) {
 				try {
-					if (-not $remoteMachine) {
-						$ADComp = Get-ADComputer -Identity $buildInfo.hostname @credentialSplat
-					} else {
-						throw
+					$ADComp = Get-ADComputer -Identity $buildInfo.AssetID @credentialSplat
+				}
+				catch [System.Security.Authentication.AuthenticationException], [Microsoft.ActiveDirectory.Management.ADServerDownException] {
+					# catch credential failure and retry
+					$credentialSplat = Repair-BuildProcessElevatedCredentialSplat -CredentialRetryCount $CredentialRetryCount -Verbose:$VerbosePreference -WhatIf:$WhatIfPreference
+
+					$CredentialRetryCount++ 
+					
+				}
+				catch {
+					# if comp cant be found using asset id, try with hostname (lest rename fails)
+					try {
+						if (-not $remoteMachine) {
+							$ADComp = Get-ADComputer -Identity $buildInfo.hostname @credentialSplat
+						}
+						else {
+							throw $_
+						}
 					}
-				} catch {
-					Write-Error "Computer with AssetID/Hostname $($buildInfo.AssetID)/$($buildInfo.hostname) doesn't exist in AD" -ErrorAction stop
+					catch {
+						# check that the error wasn't a credential failure on second Get-ADComputer
+						if ($_.Exception.GetType().FullName -like "*Authentication*" -or $_.Exception.GetType().FullName -like "*ADServerDown*") {
+							#do nothing, this will result in loop looping, auth error will then be handled by specific catch block above
+						}
+						else {
+							Write-Error "Computer with AssetID/Hostname $($buildInfo.AssetID)/$($buildInfo.hostname) doesn't exist in AD" -ErrorAction stop
+						}
+					}
 				}
 			}
-	
-			# add to groups
-			foreach ($group in $buildInfo.groups) {
-				Write-Verbose "Adding $($ADComp.SamAccountName) to $group"
-				Add-ADGroupMember -Identity $group -Members $ADComp.SamAccountName -WhatIf:$WhatIfPreference -Verbose:$VerbosePreference @credentialSplat
+			
+			#------------------------------------------ Add to Groups ------------------------------------------#
+			$credentialSplat = Invoke-DebugHelper #re-register credentials if in debug mode
+			$CredentialRetryCount = 0 #reset the retry counter
+			$groupsSuccess = $false
+			while (-not $groupsSuccess) {
+				foreach ($group in $buildInfo.groups) {
+					try {
+						Add-ADGroupMember -Identity $group -Members $ADComp.SamAccountName -WhatIf:$WhatIfPreference -Verbose:$VerbosePreference @credentialSplat
+						Write-Verbose "Adding $($ADComp.SamAccountName) to $group"
+						
+					}
+					catch [System.Security.Authentication.AuthenticationException], [Microsoft.ActiveDirectory.Management.ADServerDownException] {
+						# catch credential failure and retry
+						$credentialSplat = Repair-BuildProcessElevatedCredentialSplat -CredentialRetryCount $CredentialRetryCount -Verbose:$VerbosePreference -WhatIf:$WhatIfPreference
+
+						$CredentialRetryCount++ 
+
+						Continue # restart group addition from the beginning of while loop
+					}
+				}
+				$groupsSuccess = $true #if we reach this stage (i.e. haven't hit the continue in the catch block) we've succeeded!
 			}
-	
-			# move to correct OU
-			if ($ADComp.DistinguishedName -notlike "*$($buildInfo.OU)*") {
-				Write-Verbose "Moving $($ADComp.SamAccountName) to $($buildInfo.OU)"
-				Move-ADObject -Identity $ADComp.DistinguishedName -TargetPath $buildInfo.OU -WhatIf:$WhatIfPreference -Verbose:$VerbosePreference @credentialSplat
-			} else {
-				Write-Verbose "$($ADComp.DistinguishedName) is in a child OU of $($buildInfo.OU) - not moving"
+			
+			#---------------------------------------- Move to Correct OU----------------------------------------#
+			$credentialSplat = Invoke-DebugHelper #re-register credentials if in debug mode
+			$CredentialRetryCount = 0 #reset the retry counter
+			$moveSuccess = $false
+			while (-not $moveSuccess) {
+				if ($ADComp.DistinguishedName -notlike "*$($buildInfo.OU)*") {
+					try {
+						Move-ADObject -Identity $ADComp.DistinguishedName -TargetPath $buildInfo.OU -WhatIf:$WhatIfPreference -Verbose:$VerbosePreference @credentialSplat
+						Write-Verbose "Moving $($ADComp.SamAccountName) to $($buildInfo.OU)"
+					}
+					catch [System.Security.Authentication.AuthenticationException], [Microsoft.ActiveDirectory.Management.ADServerDownException] {
+						# catch credential failure and retry
+						$credentialSplat = Repair-BuildProcessElevatedCredentialSplat -CredentialRetryCount $CredentialRetryCount -Verbose:$VerbosePreference -WhatIf:$WhatIfPreference
+
+						$CredentialRetryCount++ 
+
+						Continue # retry
+					}
+				}
+				else {
+					Write-Verbose "$($ADComp.DistinguishedName) is in a child OU of $($buildInfo.OU) - not moving"
+				}
+				$moveSuccess = $true
 			}
-	
-		} catch {
+		
+		}
+		catch {
 			if (-not $remoteMachine) {
 
 				$msg = $DeviceDeploymentDefaultConfig.TicketInteraction.GeneralErrorMessage
 
-				New-BuildProcessError -errorObj $_ -message "AD Commands have Failed. Please manually check that the device is in the listed OU and groups. This has not effected other parts of the build process." -functionName "Invoke-DeviceADCommands" -buildInfo $buildInfo -debugMode -ErrorAction "Continue"
-			} else {
+				New-BuildProcessError -errorObj $_ -message "AD Commands have Failed. Please manually check that the device is in the listed OU and groups. This has not effected other parts of the build process." -functionName "Invoke-DeviceADCommands" -buildInfo $buildInfo -debugMode -ErrorAction Stop
+			}
+			else {
 				$errorList += $_
 			}
-		} finally {
+		}
+		finally {
 			if (-not $remoteMachine) {
 				# add note to ticket that AD commands completed
 				$buildInfo.buildState = $ADCommandsCompletedString
-				Write-DeviceBuildTicket -buildInfo $buildInfo -message $msg			
+				Write-DeviceBuildStatus -BuildInfo $buildInfo -message $msg			
 			}
 		}
 	}

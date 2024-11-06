@@ -549,7 +549,8 @@
 		"KeyVaultName": "tc-ae-d-kv",
 		"FreshAPIKey_KeyVaultKey": "freshservice-apikey-matt",
 		"elevatedPassword_KeyVaultKey": "",
-		"elevatedUserName": "TRICAREAD\\PC_Build_SVC"
+		"elevatedUserName": "TRICAREAD\\PC_Build_SVC",
+		"CredentialMaxRetry": 3
 	},
 	"ShutdownListener": {
 		"jobName": "Block-DeviceShutdown",
@@ -589,6 +590,6 @@
 		"IntuneIDRegKey": "EntDMID"
 	},
 	"ADCommands": {
-		"replicationSeconds": 30
+		"replicationSeconds": 3
 	}
 }
