@@ -25,7 +25,7 @@ try {
 
 		Connect-KVUnattended | Out-Null
 
-		$elevatedCredential = Get-BuildProcessElevatedCredentials
+		Register-BuildProcessElevatedCredentailsScriptWide
 		
 		#------------------------ Get Build Data and Create Fresh Asset (if required) -------------------------#
 		try {
@@ -49,15 +49,15 @@ try {
 		$buildInfo.buildState = $config.TicketInteraction.BuildStates.oldADCompRemovalPendingState.message
 		Write-DeviceBuildStatus -buildInfo $buildInfo -Verbose
 
-	Remove-DeviceADDuplicate -buildInfo $buildInfo -Credential $elevatedCredential -verbose
-	
-	Set-DeviceName -buildInfo $buildInfo -Verbose
+		Remove-DeviceADDuplicate -buildInfo $buildInfo -verbose
+		
+		Set-DeviceName -buildInfo $buildInfo -Verbose
 
-	#---------------------------------------- Complete AD Commands ----------------------------------------# 
-	$buildInfo.buildState = $config.TicketInteraction.BuildStates.adPendingState.message
-	Write-DeviceBuildStatus -buildInfo $buildInfo -Verbose
+		#---------------------------------------- Complete AD Commands ----------------------------------------# 
+		$buildInfo.buildState = $config.TicketInteraction.BuildStates.adPendingState.message
+		Write-DeviceBuildStatus -buildInfo $buildInfo -Verbose
 
-	Invoke-DeviceADCommands -buildInfo $buildInfo -Credential $elevatedCredential -Verbose
+		Invoke-DeviceADCommands -buildInfo $buildInfo -Verbose
 
 		#------------------------------------ Set Generic Local Settings  -------------------------------------# 
 		Set-DeviceLocalSettings -Verbose -buildInfo $buildInfo
@@ -83,14 +83,12 @@ try {
 	$buildInfo.buildState = $config.TicketInteraction.BuildStates.completedState.message
 	Write-DeviceBuildStatus -buildInfo $buildInfo -Verbose
 	Show-DeviceUserMessage -title "Build Completed" -message "Build Succesfully Completed. Please review build ticket and resolve any errors"
-
-
-}
-catch {
+} catch {
 	Invoke-BuildProcessRetry -message "Error Details: $_"
 	New-BuildProcessError -errorObj $_ -message "There has been an error in the build process, please see the below output:`n$_" -functionName "Build Process Main" -ErrorAction "Stop" -buildInfo $buildInfo
 
 	#---------------------------------------------- Cleanup -----------------------------------------------# 
+} finally {
 	# Invoke-DeviceDeploymentCleanupCommands
 }
 
