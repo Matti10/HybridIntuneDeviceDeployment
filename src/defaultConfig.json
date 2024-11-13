@@ -161,7 +161,8 @@
 				"OU": "OU=Meeting Room Computers,OU=Unattended Computers",
 				"hasDepartment": true,
 				"Groups": [
-					"UR Sites Device Group"
+					"UR Sites Device Group",
+					"Intune - Meeting Room Kiosks"
 				]
 			}
 		],
