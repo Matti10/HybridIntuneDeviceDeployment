@@ -55,7 +55,7 @@ try {
         },
         @{
             Name = "Az.KeyVault"
-            Version = "4.12"
+            Version = "4.12.0"
         }
     )
     $remote_trustedRepositories = @("PSGallery")
