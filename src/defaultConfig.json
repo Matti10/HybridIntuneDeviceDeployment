@@ -546,10 +546,10 @@
 		"syncTaskName": "PushLaunch"
 	},
 	"Security" : {
-        "KeyVaultName": "tc-ae-d-buildprocess-kv",
+        "KeyVaultName": "tc-ae-d-devicebuild-kv",
         "FreshAPIKey_KeyVaultKey": "freshservice-apikey-matt",
-		"elevatedPassword_KeyVaultKey" : "",
-		"elevatedUserName" : "PC_Build_SVC"
+		"elevatedPassword_KeyVaultKey" : "ElevatedCredentialPassword",
+		"elevatedUserName" : "MattTest"
     },
 	"ShutdownListener" : {
 		"jobName" : "Block-DeviceShutdown",

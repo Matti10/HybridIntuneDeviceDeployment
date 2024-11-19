@@ -26,7 +26,7 @@ function Get-BuildProcessElevatedCredentials {
 	process {
 		try {
 			if ($PSCmdlet.ShouldProcess("")) {
-				$securePassword = ConvertTo-SecureString -String (Get-KVSecret -KeyVault $keyVaultName -Secret $secretName) -AsPlainText -Force
+				$securePassword = ConvertTo-SecureString -String (Get-AzKeyVaultSecret -VaultName $config.Security.KeyVaultName -Name $config.Security.elevatedPassword_KeyVaultKey -AsPlainText) -AsPlainText -Force
 			}
 			else {
 				$username = Read-Host -Prompt "Running in Whatif mode, please manaully enter the username you want to use"

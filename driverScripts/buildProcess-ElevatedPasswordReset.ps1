@@ -1,14 +1,10 @@
 
 Start-Transcript -path "C:\Intune_Setup\buildProcess\Logs\buildProcessV3\elevatedPasswordReset-$(Get-Date -format "ddMMyyyyhhmmss").log"
 
-$DebugPreference = "SilentlyContinue"
-
-Write-Verbose "BuildProcess Execution Started"
-
 try {
 	#------------------------------------------------ Setup ------------------------------------------------# 
-	Import-Module TriCare-Common
-	Import-Module TriCare-DeviceDeployment
+	# Import-Module TriCare-Common
+	# Import-Module TriCare-DeviceDeployment
 
 	$config = Get-DeviceDeploymentDefaultConfig
 
