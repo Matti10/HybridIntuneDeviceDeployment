@@ -24,6 +24,7 @@ try {
 	Update-AZConfig -EnableLoginByWam $false # this forces login with browser, should not be req
 
 	Connect-KVUnattended | Out-Null
+	Connect-TriCareMgGraph | Out-Null
 
 	Register-BuildProcessElevatedCredentailsScriptWide
 	
@@ -44,6 +45,24 @@ try {
 	$buildInfo.buildState = $config.TicketInteraction.BuildStates.checkInState.message # set state to "checked in"
 	Write-DeviceBuildStatus -buildInfo $buildInfo -Verbose
 	
+	#------------------------------------ Set Generic Local Settings  -------------------------------------# 
+	Set-DeviceLocalSettings -Verbose -buildInfo $buildInfo
+	
+	#----------------------------------------- Remove Bloatware  ------------------------------------------# 
+	Remove-DeviceBloatware -Verbose -buildInfo $buildInfo
+
+	#------------------------------------------ Update Software  ------------------------------------------# 
+	# Initialize-DeviceWindowsUpdateEnviroment -Verbose
+	# Update-DeviceWindowsUpdate -Verbose
+
+	if (Test-DeviceDellCommandUpdate -Verbose) {
+		Install-DeviceDellCommandUpdateDrivers -Verbose -buildInfo $buildInfo
+		Invoke-DeviceDellCommandUpdateUpdates -Verbose -buildInfo $buildInfo
+	}
+
+	#------------------------------------------ Remove Old Intune Objects  ------------------------------------------# 
+	Remove-DeviceIntuneDuplicateRecords -buildInfo $buildInfo -Verbose
+
 	#------------------------------------------- Rename Device --------------------------------------------# 
 	#----------------------- (needs to happen before device is moved to other OU) -------------------------#
 	$buildInfo.buildState = $config.TicketInteraction.BuildStates.oldADCompRemovalPendingState.message
@@ -63,22 +82,6 @@ try {
 	Write-DeviceBuildStatus -buildInfo $buildInfo -Verbose
 
 	Invoke-DeviceADCommands -buildInfo $buildInfo -Verbose
-
-	#------------------------------------ Set Generic Local Settings  -------------------------------------# 
-	Set-DeviceLocalSettings -Verbose -buildInfo $buildInfo
-	
-	#----------------------------------------- Remove Bloatware  ------------------------------------------# 
-	Remove-DeviceBloatware -Verbose -buildInfo $buildInfo
-
-	#------------------------------------------ Update Software  ------------------------------------------# 
-	# Initialize-DeviceWindowsUpdateEnviroment -Verbose
-	# Update-DeviceWindowsUpdate -Verbose
-
-	if (Test-DeviceDellCommandUpdate -Verbose) {
-		Install-DeviceDellCommandUpdateDrivers -Verbose -buildInfo $buildInfo
-		Invoke-DeviceDellCommandUpdateUpdates -Verbose -buildInfo $buildInfo
-	}
-	
 
 	#----------------------------------- Sync Various Managment Systems -----------------------------------# 
 	Invoke-GPUpdate -Verbose #does this want to wait until first login?
