@@ -18,7 +18,7 @@ param (
 
     [Parameter()]
     [bool]
-    $devMode = $false, #manually change this depending if you want code to run as dev or not
+    $devMode = $true, #manually change this depending if you want code to run as dev or not
 
     [Parameter()]
     [switch]
@@ -44,6 +44,7 @@ try {
     $az_Organisation = "tricare"
     $az_Project = "TriCare%20PowerShell%20Library"
     $az_repositories = @("TriCare-Common",$buildModuleName) # the order of this list matters, TriCare-DeviceDeployment uses tricare common, as a result it must be imported second. Below external modules are imported first for the same reason
+    $az_branch = "dev"
     $az_User = "Matt.Winsen"
     $az_token = "j4fqboeaay3ar7ad4fikyajqqpqcdgcyrfccqqxhgjn337ubxura"
 
@@ -120,6 +121,10 @@ try {
 
         )
 
+        if ($devMode) {
+            return $true
+        }
+
         . "$checksumPs1Path"
 
         return Test-CheckSum -checksumPath $checksumPath -rootPath $moduleRoot -verbose
@@ -150,7 +155,10 @@ try {
             $modulePath = $modulePath,
             
             [Parameter()]
-            $downloadPath = $downloadPath
+            $downloadPath = $downloadPath,
+
+            [Parameter()]
+            $branch = $az_branch
 
 
         )
@@ -182,7 +190,7 @@ try {
                         }
                         
                         # Get all items in repo
-                        $itemuri = "$remoteRepoURL/_apis/git/repositories/$($repo.id)/items?recursionLevel=Full&includeContentMetadata=true&download=true&api-version=6.0"
+                        $itemuri = "$remoteRepoURL/_apis/git/repositories/$($repo.id)/items?recursionLevel=Full&includeContentMetadata=true&download=true&versionDescriptor.version=$branch&api-version=6.0"
                         
                         $allItems = Invoke-RestMethod -Uri $itemuri -Method GET -Headers $headers -UseBasicParsing
                         $files = $allItems.value | Where-Object -FilterScript {$_.gitObjectType -eq 'blob'}
