@@ -547,7 +547,7 @@
 	},
 	"Security" : {
         "KeyVaultName": "tc-ae-d-devicebuild-kv",
-        "FreshAPIKey_KeyVaultKey": "freshservice-apikey-matt",
+        "FreshAPIKey_KeyVaultKey": "freshServiceAPI",
 		"elevatedPassword_KeyVaultKey" : "ElevatedCredentialPassword",
 		"elevatedUserName" : "PC_Build_SVC"
     },
