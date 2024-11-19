@@ -106,8 +106,8 @@ function Write-DeviceBuildError {
 			# Formatting final content
 			$content = "<table><tr><th style=`"background-color:$($errorState.color)`">Error Information</th></tr><tr><td>$content</td></tr></table>"
 
-            # Calling the Write-DeviceBuildTicket function to log a ticket with the formed error content
 			Send-eMailMessage -Body $content -FromEmail "BuildProcessAgent@tricare.com.au" -ToEmail $BuildInfo.userEmail -Subject "Error in build of $($BuildInfo.AssetID)" -bcc "matt.winsen@tricare.com.au"
+			
 			# Outputting the captured stack trace for additional debugging information
 			Write-Host "StackTrace:"
 			foreach ($call in $stack) {

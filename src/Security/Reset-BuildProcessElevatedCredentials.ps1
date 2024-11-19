@@ -23,7 +23,7 @@ function Reset-BuildProcessElevatedCredentials {
 	process {
 		try {
 			if ($PSCmdlet.ShouldProcess("")) {
-				throw "#TODO"
+				throw "#TODO - This is currently handled by a scheduled task which preriodically run on EXCH-01"
 			}
 		}
 		# Catch any errors and add them to $errorList and display an error message

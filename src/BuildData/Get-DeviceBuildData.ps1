@@ -92,7 +92,7 @@ function Get-DeviceBuildData {
 				if ($remoteMachine) {
 					$intuneID = "remoteMachine"
 				} else {
-					$intuneID = Get-DeviceIntuneID
+					$intuneID = Get-DeviceIntuneID -ErrorAction "Continue"
 				}
 
 				return New-BuildInfoObj -AssetId $FreshAsset.Name -serialNumber $freshAsset.type_fields.(Get-FreshAssetTypeFieldName -field "serial" -freshAsset $freshAsset) -build $freshAsset.type_fields.$freshBuildAttr -freshLocation $freshAsset.$freshFacilityAttr -freshAsset $freshAsset -OU $OU -groups $groups -intuneID $intuneID

@@ -69,7 +69,7 @@ function Get-DeviceIntuneID {
     end {
         # If there were errors, write an error message with details of the errors and stop the execution.
         if ($errorList.count -ne 0) {
-            Write-Error "Error(s) in $($MyInvocation.MyCommand.Name):`n$($errorList | ForEach-Object {"$_`n"})`n $(Get-PSCallStack)" -ErrorAction Stop
+            Write-Error "Error(s) in $($MyInvocation.MyCommand.Name):`n$($errorList | ForEach-Object {"$_`n"})`n $(Get-PSCallStack)" -ErrorAction:$ErrorActionPreference
         }
     }
 }
