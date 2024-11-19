@@ -549,7 +549,7 @@
         "KeyVaultName": "tc-ae-d-devicebuild-kv",
         "FreshAPIKey_KeyVaultKey": "freshservice-apikey-matt",
 		"elevatedPassword_KeyVaultKey" : "ElevatedCredentialPassword",
-		"elevatedUserName" : "MattTest"
+		"elevatedUserName" : "PC_Build_SVC"
     },
 	"ShutdownListener" : {
 		"jobName" : "Block-DeviceShutdown",
@@ -589,6 +589,7 @@
 		"IntuneIDRegKey": "EntDMID"
 	},
 	"ADCommands": {
-		"replicationSeconds": 3
+		"replicationSeconds": 3,
+		"ModuleName": "ActiveDirectory"
 	}
 }

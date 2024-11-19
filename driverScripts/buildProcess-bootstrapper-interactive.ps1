@@ -61,6 +61,9 @@ try {
     $remote_trustedRepositories = @("PSGallery")
     $remote_packageProviders = @("Nuget")
 
+    #AD Module
+    $adInstallJobName = "InstallAD"
+
     # Proxy
     $proxyProcessName = "stAgentUI"
 
@@ -103,7 +106,6 @@ try {
             }
         }	
     }
-
     function Test-TricareModuleCheckSum {
         [CmdletBinding(SupportsShouldProcess = $true)]
         param (
@@ -266,10 +268,13 @@ try {
         }	
     }
 
-    #---------------------------- Wait for Proxy to Install so we can Access Internet ----------------------------# 
-    Wait-DeviceProxyInstall -Verbose -whatif
-
     #---------------------------------------------- Install Modules ----------------------------------------------# 
+    #Install the AD Module - this takes ages so run it as a job in the background
+    Start-Job -Name $adInstallJobName -ScriptBlock {
+        DISM.exe /Online /Add-Capability /NoRestart /CapabilityName:Rsat.ActiveDirectory.DS-LDS.Tools~~~~0.0.1.0
+    }
+
+
     if (-not $skipInstalls) {
         #remote modules
         #add required package providers
