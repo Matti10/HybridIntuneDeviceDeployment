@@ -1,5 +1,5 @@
 
-Start-Transcript -path "C:\Intune_Setup\buildProcess\Logs\buildProcessV2.4\interactiveRun-$(Get-Date -format "ddMMyyyyhhmmss").log"
+Start-Transcript -path "C:\Intune_Setup\buildProcess\Logs\buildProcessV3\interactiveRun-$(Get-Date -format "ddMMyyyyhhmmss").log"
 
 $DebugPreference = "SilentlyContinue"
 
