@@ -8,6 +8,8 @@ try {
 
 	$config = Get-DeviceDeploymentDefaultConfig
 
+	Connect-KVUnattended
+
 	#------------------------------------------------ Main ------------------------------------------------# 
 	$password = ConvertTo-SecureString -AsPlainText (Get-Password -highEntropy)
 
