@@ -24,7 +24,7 @@ try {
 	Update-AZConfig -EnableLoginByWam $false # this forces login with browser, should not be req
 
 	Connect-KVUnattended | Out-Null
-	Connect-TriCareMgGraph | Out-Null
+	Connect-MgGraph | Out-Null
 
 	Register-BuildProcessElevatedCredentailsScriptWide
 	

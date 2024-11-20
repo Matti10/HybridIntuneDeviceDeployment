@@ -38,7 +38,7 @@ try {
     $modulePath = "C:\Program Files\WindowsPowerShell\Modules"
     $DownloadPath = "$workingDirectory\Downloads"
     $buildModuleName = "TriCare-DeviceDeployment"
-    $BuildProcessPath = "$modulePath\$buildModuleName\src\Driver Scripts\BuildPC\buildProcess-OOBE-Interactive.ps1"
+    $BuildProcessPath = "$modulePath\$buildModuleName\driverScripts\buildProcess-OOBE-Interactive.ps1"
 
     #Azure/Visual Studio online
     $az_Organisation = "tricare"
@@ -57,6 +57,14 @@ try {
         @{
             Name = "Az.KeyVault"
             Version = "4.12.0"
+        },
+        @{
+            Name = "Microsoft.Graph.Authentication"
+            Version = "2.19.0"
+        },
+        @{
+            Name = "Microsoft.Graph.DeviceManagement"
+            Version = "2.19.0"
         }
     )
     $remote_trustedRepositories = @("PSGallery")
