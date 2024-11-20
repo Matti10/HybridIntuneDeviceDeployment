@@ -50,5 +50,13 @@ Describe "Securely utilising privildeged credentials" {
 
 			{$buildInfo | Invoke-DeviceADCommands -WhatIf -verbose -ErrorAction Stop} | Should -Throw
 		}
+		It "doesn't effect flow of other error handling" {
+			$ThisbuildInfo = Get-FreshAsset -Name TCL001402 | Get-DeviceBuildData -ErrorAction SilentlyContinue
+			$ThisbuildInfo.AssetID = "Some Garbage"
+			$ThisbuildInfo.Hostname = "TCL001629"
+
+			
+			{$thisbuildInfo | Invoke-DeviceADCommands -WhatIf -verbose} | Should -not -Throw
+		}
 	}
 }

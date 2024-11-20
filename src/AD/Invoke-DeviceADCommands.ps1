@@ -65,6 +65,8 @@ function Invoke-DeviceADCommands {
 		function Invoke-DebugHelper {
 			if ($DebugPreference -ne "SilentlyContinue") {
 				return Repair-BuildProcessElevatedCredentialSplat -CredentialRetryCount 0
+			} else {
+				return $credentialSplat
 			}
 		}
 	}
