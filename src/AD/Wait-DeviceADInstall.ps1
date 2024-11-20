@@ -16,7 +16,7 @@ function Wait-DeviceADInstall {
 	}
 	process {
 		try {
-			while ((Get-Module -ListAvailable) -notContains $ADModuleName) {
+			while ((Get-Module -ListAvailable -verbose:$false).Name -notContains $ADModuleName) {
 				Write-Verbose -Message "Waiting for AD Module to Install"
 				Start-Sleep -Seconds 5
 			}
