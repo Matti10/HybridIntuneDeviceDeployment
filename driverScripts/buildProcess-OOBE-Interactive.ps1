@@ -23,7 +23,7 @@ try {
 	#---------------------------------------- Inital Setup/Config -----------------------------------------# 
 	Update-AZConfig -EnableLoginByWam $false # this forces login with browser, should not be req
 
-	Connect-KVUnattended | Out-Null
+	Connect-AzAccount | Out-Null
 	Connect-MgGraph | Out-Null
 
 	Register-BuildProcessElevatedCredentailsScriptWide
@@ -37,9 +37,6 @@ try {
 		break
 	}
 	
-	#----------------------------------- Set Ticket to Waiting on Build -----------------------------------# 
-	Set-FreshTicketStatus -ticketID $buildInfo.ticketID -status $config.TicketInteraction.ticketWaitingOnBuildStatus -overwriteDescription
-
 	#------------------------------------------ Check into Ticket -----------------------------------------# 
 	#------------------------- (This invokes privilidged commands on serverside) --------------------------#
 	$buildInfo.buildState = $config.TicketInteraction.BuildStates.checkInState.message # set state to "checked in"
