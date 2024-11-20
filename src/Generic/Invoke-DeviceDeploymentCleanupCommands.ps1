@@ -28,16 +28,18 @@ function Invoke-DeviceDeploymentCleanupCommands {
 	}
 	process {
 		try {
-			# Unblock the device shutdown command
-			Unblock-DeviceShutdown
-			# Remove the temporary data created during the device deployment
-			Remove-DeviceDeploymentTempData
-
 			# Disconnect the Azure account used for the deployment
 			Disconnect-AzAccount
+			Disconnect-MgGraph
 
 			# Uninstall AD Module
 			DISM.exe /Online /Add-Capability /NoRestart /CapabilityName:Rsat.ActiveDirectory.DS-LDS.Tools~~~~0.0.1.0
+			
+			# Remove the temporary data created during the device deployment
+			Remove-DeviceDeploymentTempData -ErrorAction Continue
+			
+			# Unblock the device shutdown command
+			Unblock-DeviceShutdown
 
 		}
 		catch {

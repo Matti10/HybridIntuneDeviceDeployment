@@ -40,7 +40,11 @@ function Remove-DeviceDeploymentTempData {
 			Get-ChildItem -Path $rootDirectory -Recurse -Depth 100 | Where-Object {$_.FullName -notLike "*$($logDirectory)*"} | Remove-Item -Force -Recurse -Confirm:$false -WhatIf:$WhatIfPreference
 
 			# Removes all the currently installed PowerShell modules.
-			Get-InstalledModule | Uninstall-Module
+			$modules = Get-InstalledModule
+
+			$modules.Name | % {Remove-Module $_.Name -ErrorAction "Continue"}
+
+			$modules | Uninstall-Module -ErrorAction "Continue"
 		}
 		catch {
 			# If an error occurs, add it to the error list and output it.
@@ -51,7 +55,7 @@ function Remove-DeviceDeploymentTempData {
 	end {
 		# If there were any errors, output all of them.
 		if ($errorList.count -ne 0) {
-			Write-Error "Error(s) in $($MyInvocation.MyCommand.Name):`n$($errorList | ForEach-Object {"$_`n"})`n $(Get-PSCallStack)" -ErrorAction Stop
+			Write-Error "Error(s) in $($MyInvocation.MyCommand.Name):`n$($errorList | ForEach-Object {"$_`n"})`n $(Get-PSCallStack)" -ErrorAction:$ErrorActionPreference
 		}
 	}	
 }
