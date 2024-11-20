@@ -1,5 +1,5 @@
 
-Start-Transcript -path "C:\Intune_Setup\buildProcess\Logs\buildProcessV3\interactiveRun-$(Get-Date -format "ddMMyyyyhhmmss").log"
+Start-Transcript -Path "C:\Intune_Setup\buildProcess\Logs\buildProcessV3\interactiveRun-$(Get-Date -Format "ddMMyyyyhhmmss").log"
 
 $DebugPreference = "SilentlyContinue"
 
@@ -11,7 +11,6 @@ try {
 	Import-Module TriCare-DeviceDeployment
 
 	$config = Get-DeviceDeploymentDefaultConfig
-	
 	# Check the device is in OOBE
 	if (Test-OOBE -Verbose) {	
 		# run "Shift+F10" to bring GUI up
@@ -21,7 +20,7 @@ try {
 	Block-DeviceShutdown -Verbose | Out-Null
 
 	#---------------------------------------- Inital Setup/Config -----------------------------------------# 
-	Update-AZConfig -EnableLoginByWam $false # this forces login with browser, should not be req
+	Update-AzConfig -EnableLoginByWam $false # this forces login with browser, should not be req
 
 	Connect-AzAccount | Out-Null
 	Connect-MgGraph | Out-Null
@@ -69,7 +68,7 @@ try {
 	Wait-DeviceADInstall -verbose
 
 	# remove the old AD object
-	Remove-DeviceADDuplicate -buildInfo $buildInfo -verbose
+	Remove-DeviceADDuplicate -buildInfo $buildInfo -Verbose
 	
 	# set the devices name
 	Set-DeviceName -buildInfo $buildInfo -Verbose

@@ -47,7 +47,7 @@ function Invoke-BuildProcessRetry {
                 $resultCorrelation.Ignore {
                     # do nothing
                     Write-Verbose "Continuing to windows"
-                    if ($PSCmdlet.ShouldProcess("Wipe")) {
+                    if ($PSCmdlet.ShouldProcess("Continue to Windows")) {
                         return
                     } else {
                         return "Continuing to windows"

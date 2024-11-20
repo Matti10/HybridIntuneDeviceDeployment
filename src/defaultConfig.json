@@ -578,7 +578,21 @@
 				"title": "Device Missing Build Ticket",
 				"message": "The Fresh Asset `%PLACEHOLDER%` doesn't have the Location and/or Build fields set. Please set these attributes and press retry to continue. For help, please find the documentation in Fresh's solutions",
 				"messageBoxConfiguration": 4149
+			},
+			"retryBuildProcess": {
+				"title": "Do you want to Retry",
+				"message": "Due to a previous error, the build process has failed. Additional details are below and/or in another popup. \n\nPlease FIX the error, then select one of the below options:\n - Press Abort to WIPE the PC\n - Press Retry to Restart the Build\n - Press cancel to continue to windows\n\n\n%PLACEHOLDER%",
+				"messageBoxConfiguration": 18
 			}
+		},
+		"results": {
+			"OK": 1,
+			"Cancel": 2,
+			"Abort": 3,
+			"Retry": 4,
+			"Ignore": 5,
+			"Yes": 6,
+			"No": 7
 		}
 	},
 	"BuildStatus": {
