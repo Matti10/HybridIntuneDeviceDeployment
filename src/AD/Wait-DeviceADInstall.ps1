@@ -21,7 +21,7 @@ function Wait-DeviceADInstall {
 				Start-Sleep -Seconds 5
 			}
 
-			Import-Module $ADModuleName -Verbose:$VerbosePreference
+			Import-Module $ADModuleName -Verbose:$false
 		}
 		catch {
 			$errorList += $_
