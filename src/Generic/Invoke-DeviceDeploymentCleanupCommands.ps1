@@ -33,7 +33,7 @@ function Invoke-DeviceDeploymentCleanupCommands {
 			Disconnect-MgGraph
 
 			# Uninstall AD Module
-			DISM.exe /Online /Add-Capability /NoRestart /CapabilityName:Rsat.ActiveDirectory.DS-LDS.Tools~~~~0.0.1.0
+			DISM.exe /Online /Remove-Capability /NoRestart /CapabilityName:Rsat.ActiveDirectory.DS-LDS.Tools~~~~0.0.1.0
 			
 			# Remove the temporary data created during the device deployment
 			Remove-DeviceDeploymentTempData -ErrorAction Continue
