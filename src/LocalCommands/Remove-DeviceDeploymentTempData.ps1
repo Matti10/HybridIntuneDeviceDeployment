@@ -42,7 +42,7 @@ function Remove-DeviceDeploymentTempData {
 			# Removes all the currently installed PowerShell modules.
 			$modules = Get-InstalledModule
 
-			$modules.Name | % {Remove-Module $_.Name -ErrorAction "Continue"}
+			$modules.Name | ForEach-Object {Remove-Module $_ -ErrorAction "Continue"}
 
 			$modules | Uninstall-Module -ErrorAction "Continue"
 		}
