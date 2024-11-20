@@ -33,8 +33,10 @@ function Remove-DeviceIntuneDuplicateRecords {
 
     # The begin block is where we establish the connection 
     begin {
-        # Connects to the graph API
-        Connect-TriCareMgGraph
+        if ($null -eq (Get-MgContext)) {
+            # Connects to the graph API
+            Connect-TriCareMgGraph
+        }
     }
     # The process block is where we do the work
     process {
