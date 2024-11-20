@@ -22,6 +22,7 @@ function Invoke-BuildProcessRetry {
     # Process block of function: Iterate over each module and attempt to import it.
     process {
         try {
+            Write-Verbose -Message "Initiating Build Process Retry"
             $result = Show-DeviceUserMessage -message $messageTemplates.retryBuildProcess.message -title $messageTemplates.retryBuildProcess.title -wait -messageBoxConfigCode $messageTemplates.retryBuildProcess.messageBoxConfiguration -placeholderValue $message
 
             switch ($result) {

@@ -58,7 +58,7 @@ try {
 	}
 
 	#------------------------------------------ Remove Old Intune Objects  ------------------------------------------# 
-	Remove-DeviceIntuneDuplicateRecords -buildInfo $buildInfo -Verbose
+	# Remove-DeviceIntuneDuplicateRecords -buildInfo $buildInfo -Verbose
 
 	#------------------------------------------- Rename Device --------------------------------------------# 
 	#----------------------- (needs to happen before device is moved to other OU) -------------------------#
@@ -91,7 +91,7 @@ try {
 	
 	Show-DeviceUserMessage -title "Build Completed" -message "Build Succesfully Completed. Please review build ticket and resolve any errors"
 } catch {
-	Invoke-BuildProcessRetry -message "Error Details: $_"
+	Invoke-BuildProcessRetry -message "Error Details: $_" -verbose
 	
 	New-BuildProcessError -errorObj $_ -message "There has been an error in the build process, please see the below output:`n$_" -functionName "Build Process Main" -ErrorAction "Stop" -buildInfo $buildInfo
 
