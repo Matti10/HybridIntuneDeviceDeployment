@@ -25,10 +25,11 @@ function Clear-DeviceADConfiguration {
 		try {
 			$ADComp = Get-ADComputer -Identity $buildInfo.AssetID -Properties memberof
 			
-			$ADComp.MemberOf
-			| ForEach-Object {$_ | Get-ADGroup}
-			| Where-Object { $_.Name -in $deviceDeploymentManagedGroups } # select groups that are added by DeviceDeployment
-			| ForEach-Object {
+			$ADComp.MemberOf | ForEach-Object {
+				$_ | Get-ADGroup
+			} | Where-Object { 
+				$_.Name -in $deviceDeploymentManagedGroups  # select groups that are added by DeviceDeployment
+			} | ForEach-Object {
 				Write-Verbose "Removing $($_.Name) from $($ADComp.SAMAccountName)"
 				$_ | Remove-ADGroupMember -Members $ADComp.SamAccountName -WhatIf:$WhatIfPreference -Verbose:$VerbosePreference
 			}
