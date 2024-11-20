@@ -3,8 +3,8 @@ Start-Transcript -path "C:\Intune_Setup\buildProcess\Logs\buildProcessV3\elevate
 
 try {
 	#------------------------------------------------ Setup ------------------------------------------------# 
-	# Import-Module TriCare-Common
-	# Import-Module TriCare-DeviceDeployment
+	Import-Module TriCare-Common
+	Import-Module TriCare-DeviceDeployment
 
 	$config = Get-DeviceDeploymentDefaultConfig
 
