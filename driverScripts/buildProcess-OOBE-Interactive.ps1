@@ -96,7 +96,7 @@ try {
 
 } finally {
 	#---------------------------------------------- Cleanup -----------------------------------------------# 
-	Invoke-DeviceDeploymentCleanupCommands
+	Invoke-DeviceDeploymentCleanupCommands -Verbose
 }
 
 # SIG # Begin signature block

@@ -33,7 +33,10 @@ function Remove-DeviceDeploymentTempData {
 		[string]$buildStatusFile = $DeviceDeploymentDefaultConfig.BuildStatus.LocalBuildStatusFile,
 
 		[Parameter()]
-		[string]$dependencyInfo = $DeviceDeploymentDefaultConfig.Dependencies
+		$dependencies = $DeviceDeploymentDefaultConfig.Dependencies.Modules,
+
+		[Parameter()]
+		$dependencyPath = $DeviceDeploymentDefaultConfig.Dependencies.moduleInstallPath
 
 
 	)
@@ -48,7 +51,7 @@ function Remove-DeviceDeploymentTempData {
 			Get-ChildItem -Path $rootDirectory -Recurse -Depth 100 | Where-Object {$_.FullName -notLike "*$($logDirectory)*"} | Where-Object {$_.FullName -notlike "*$($buildStatusFile)*"} | Remove-Item -Force -Recurse -Confirm:$false -WhatIf:$WhatIfPreference -Verbose:$VerbosePreference
 
 			# Removes all the modules we installed
-			Get-ChildItem -Path $dependencyInfo.ModuleInstallPath -Directory | Where-Object {$_.Name -in $dependencyInfo.Modules} | Remove-Item -Force -Recurse -Confirm:$false -WhatIf:$WhatIfPreference -Verbose:$VerbosePreference
+			Get-ChildItem -Path $dependencyPath -Directory | Where-Object {$_.Name -in $dependencies} | Remove-Item -Force -Recurse -Confirm:$false -WhatIf:$WhatIfPreference -Verbose:$VerbosePreference
 
 		}
 		catch {

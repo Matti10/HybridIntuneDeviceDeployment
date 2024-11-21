@@ -38,7 +38,7 @@ function Invoke-DeviceDeploymentCleanupCommands {
 			Clear-BuildProcessElevatedCredentailsScriptWide
 
 			# Remove the temporary data created during the device deployment
-			Remove-DeviceDeploymentTempData -ErrorAction Continue
+			Remove-DeviceDeploymentTempData -ErrorAction "Continue" -verbose:$VerbosePreference
 			
 			# Unblock the device shutdown command
 			Unblock-DeviceShutdown
