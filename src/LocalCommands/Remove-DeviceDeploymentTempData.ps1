@@ -27,7 +27,15 @@ function Remove-DeviceDeploymentTempData {
 
 		# Allows input of the log directory path. Defaults to value in config file.
 		[Parameter()]
-		[string]$logDirectory = $DeviceDeploymentDefaultConfig.Logging.buildPCLogPath
+		[string]$logDirectory = $DeviceDeploymentDefaultConfig.Logging.buildPCLogPath,
+		
+		[Parameter()]
+		[string]$buildStatusFile = $DeviceDeploymentDefaultConfig.BuildStatus.LocalBuildStatusFile,
+
+		[Parameter()]
+		[string]$dependencyInfo = $DeviceDeploymentDefaultConfig.Dependencies
+
+
 	)
 
 	begin {
@@ -36,15 +44,12 @@ function Remove-DeviceDeploymentTempData {
 	}
 	process {
 		try {
-			# Queries the root directory and its subdirectories for tricare modules and removes them.
-			Get-ChildItem -Path $rootDirectory -Recurse -Depth 100 | Where-Object {$_.FullName -notLike "*$($logDirectory)*"} | Remove-Item -Force -Recurse -Confirm:$false -WhatIf:$WhatIfPreference
+			# Remove junk from Intune_Setup (Keep logs and build status)
+			Get-ChildItem -Path $rootDirectory -Recurse -Depth 100 | Where-Object {$_.FullName -notLike "*$($logDirectory)*"} | Where-Object {$_.FullName -notlike "*$($buildStatusFile)*"} | Remove-Item -Force -Recurse -Confirm:$false -WhatIf:$WhatIfPreference -Verbose:$VerbosePreference
 
-			# Removes all the currently installed PowerShell modules.
-			$modules = Get-InstalledModule
+			# Removes all the modules we installed
+			Get-ChildItem -Path $dependencyInfo.ModuleInstallPath -Directory | Where-Object {$_.Name -in $dependencyInfo.Modules} | Remove-Item -Force -Recurse -Confirm:$false -WhatIf:$WhatIfPreference -Verbose:$VerbosePreference
 
-			$modules.Name | ForEach-Object {Remove-Module $_ -ErrorAction "Continue"}
-
-			$modules | Uninstall-Module -ErrorAction "Continue"
 		}
 		catch {
 			# If an error occurs, add it to the error list and output it.

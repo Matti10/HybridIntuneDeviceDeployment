@@ -35,7 +35,7 @@ try {
     $fileName = "buildProcessV2.4" 
     $logPath = "C:\Intune_Setup\buildProcess\Logs"
     $bootStrapperLogPath = "$logPath\$fileName\$fileName-$(Get-Date -Format "dd-MM-yyyy-HHmm").log"
-    $modulePath = "C:\Program Files\WindowsPowerShell\Modules"
+    $modulePath = "C:\Program Files\WindowsPowerShell\Modules" #please ensure this matches "Dependencies -> Module Install Path" in defaultConfig.json
     $DownloadPath = "$workingDirectory\Downloads"
     $buildModuleName = "TriCare-DeviceDeployment"
     $BuildProcessPath = "$modulePath\$buildModuleName\driverScripts\buildProcess-OOBE-Interactive.ps1"

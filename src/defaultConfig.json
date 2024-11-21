@@ -19,13 +19,17 @@
 		"buildPCLogPath": "C:\\Intune_Setup\\buildProcess\\logs",
 		"serverLogPath": ".\\Logs"
 	},
-	"Dependencies": [
-		"TriCare-Common",
-		"TriCare-DeviceDeployment",
-		"Az.Accounts",
-		"Az.KeyVault",
-		"Microsoft.Graph.Authentication"
-	],
+	"Dependencies": {
+		"Modules": [
+			"TriCare-Common",
+			"TriCare-DeviceDeployment",
+			"Az.Accounts",
+			"Az.KeyVault",
+			"Microsoft.Graph.Authentication",
+			"Microsoft.Graph.DeviceManagment"
+		],
+		"moduleInstallPath": "C:\\Program Files\\WindowsPowerShell\\Modules"
+	},
 	"AssetID": {
 		"freshAssetIDAttr": "name",
 		"adAssetIDAttr": "name",
@@ -101,13 +105,6 @@
 			"*Request*: New Hardware Request*"
 		],
 		"GeneralErrorMessage": "<p style=\"color:red\"><b>!! Some Commands have Failed. Please See above error Output !!</b></p>"
-	},
-	"BuildQueue": {
-		"CustomObjectID": "11000002434",
-		"excludedFreshAttrs": [
-			"bo_*"
-		],
-		"freshRecordIDAttr": "bo_display_id"
 	},
 	"Deployment": {
 		"buildTicketNamePatterns": [
@@ -545,15 +542,15 @@
 	"CompanyPortalSync": {
 		"syncTaskName": "PushLaunch"
 	},
-	"Security" : {
-        "KeyVaultName": "tc-ae-d-devicebuild-kv",
-        "FreshAPIKey_KeyVaultKey": "freshServiceAPI",
-		"elevatedPassword_KeyVaultKey" : "ElevatedCredentialPassword",
-		"elevatedUserName" : "PC_Build_SVC"
-    },
-	"ShutdownListener" : {
-		"jobName" : "Block-DeviceShutdown",
-		"waitSeconds" : 30
+	"Security": {
+		"KeyVaultName": "tc-ae-d-devicebuild-kv",
+		"FreshAPIKey_KeyVaultKey": "freshServiceAPI",
+		"elevatedPassword_KeyVaultKey": "ElevatedCredentialPassword",
+		"elevatedUserName": "PC_Build_SVC"
+	},
+	"ShutdownListener": {
+		"jobName": "Block-DeviceShutdown",
+		"waitSeconds": 30
 	},
 	"DeviceUserInteraction": {
 		"placeholderValue": "%PLACEHOLDER%",
