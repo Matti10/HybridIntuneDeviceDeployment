@@ -6,7 +6,7 @@
 		"RunOnceRegistryPath": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\RunOnce",
 		"BuildPCRootPath": "C:\\Intune_Setup\\buildProcess",
 		"BuildModulePath": "thisGetsOverwrittenOnImport",
-		"BuildProcessRelativePath": "\\src\\Driver Scripts\\BuildPC\\buildProcess-OOBE-Interactive.ps1",
+		"BuildProcessRelativePath": "\\driverScripts\\buildProcess-OOBE-Interactive.ps1",
 		"serviceUIRelativePath": "execs\\ServiceUI.exe",
 		"shiftF10RelativePath": "execs\\ShiftF10.exe",
 		"BuildProcessWaitSeconds": 3600
