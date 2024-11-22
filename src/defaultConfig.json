@@ -579,7 +579,7 @@
 			},
 			"retryBuildProcess": {
 				"title": "Do you want to Retry",
-				"message": "Due to a previous error, the build process has failed. Additional details are below and/or in another popup. \n\nPlease FIX the error, then select one of the below options:\n - Press Abort to WIPE the PC\n - Press Retry to Restart the Build\n - Press cancel to continue to windows\n\n\n%PLACEHOLDER%",
+				"message": "Due to a previous error, the build process has failed. Additional details are below and/or in another popup. \n\nPlease FIX the error, then select one of the below options:\n - Press Abort to WIPE the PC\n - Press Retry to Restart the Build\n - Press Ignore to continue to windows\n\n\n%PLACEHOLDER%",
 				"messageBoxConfiguration": 18
 			}
 		},
