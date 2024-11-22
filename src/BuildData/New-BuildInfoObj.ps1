@@ -129,7 +129,7 @@ function New-BuildInfoObj {
 					GUID         = $GUID
 					freshAsset   = $freshAsset
 					IntuneID     = $IntuneID
-					userEmail 	 = (Get-AzContext).Account
+					userEmail 	 = (Get-AzContext).Account.Id
 				}
 			}
 			catch {
