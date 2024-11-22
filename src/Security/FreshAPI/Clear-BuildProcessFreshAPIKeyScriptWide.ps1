@@ -1,61 +1,32 @@
 
-<# Documentation
-.SYNOPSIS
-This PowerShell function Invoke-DeviceDeploymentCleanupCommands is utilized for the cleanup after a deployment to a device. This involves unblocking the device shutdown, removing temporary data from the deployment and checking a mutex to ensure it is not stuck. It will also disconnect from the Azure account that was used in deployment.
-
-.INPUTS
-None. You cannot pipe objects to Invoke-DeviceDeploymentCleanupCommands.
-
-.OUTPUTS
-This function does not return any output. 
-
-.EXAMPLE
-Invoke-DeviceDeploymentCleanupCommands
-
-Running this command will perform a series of cleanup commands after a device deployment. 
-
-.NOTES
-This function uses error handling to catch any exceptions that occur in the process block. If an error occurs, it is captured in a list of errors. At the end of the function, if any errors were recorded, they are written into a single concatenated error message and thrown as a terminating error.
+# Documentation
+<#
 #>
-function Invoke-DeviceDeploymentCleanupCommands {
-	# Binds the cmdlet to accept -Verbose, -Debug, -WhatIf and -Confirm parameters. 
+function Clear-BuildProcessFreshAPIKeyScriptWide {
 	[CmdletBinding(SupportsShouldProcess = $true)]
-	param ()
+	param (
+	)
 
+	# Begin block executes at the start of the function
 	begin {
-		# Instantiating an array to catch errors.
+		# Initialize $errorList as an empty array to store any potential errors
 		$errorList = @()
 	}
+	# Process block executes for each pipeline object passed to the function
 	process {
 		try {
-			# Disconnect the Azure account used for the deployment
-			Disconnect-AzAccount
-			Disconnect-MgGraph
-
-			# Uninstall AD Module
-			DISM.exe /Online /Remove-Capability /NoRestart /CapabilityName:Rsat.ActiveDirectory.DS-LDS.Tools~~~~0.0.1.0
-			
-			# clear secrets from memory
-			Clear-BuildProcessElevatedCredentailsScriptWide
-			Clear-BuildProcessFreshAPIKeyScriptWide
-			
-
-			# Remove the temporary data created during the device deployment
-			Remove-DeviceDeploymentTempData -ErrorAction "Continue" -verbose:$VerbosePreference
-			
-			# Unblock the device shutdown command
-			Unblock-DeviceShutdown
-
+			Set-FreshAPIKey -API_Key "Pranked, This is not the correct key you silly duffer..."
 		}
+		# Catch any errors and add them to $errorList and display an error message
 		catch {
-			# Add the error to the error list and write the error to the terminal
 			$errorList += $_
 			Write-Error $_
 		}
 	}
+	# End block executes after the process block (after all pipeline objects have been processed)
 	end {
-		# If any errors occurred during command execution, write them all into a single error message and throw it
 		if ($errorList.count -ne 0) {
+			# If there are any errors, write them all and stop execution
 			Write-Error "Error(s) in $($MyInvocation.MyCommand.Name):`n$($errorList | ForEach-Object {"$_`n"})`n $(Get-PSCallStack)" -ErrorAction Stop
 		}
 	}	
@@ -63,8 +34,8 @@ function Invoke-DeviceDeploymentCleanupCommands {
 # SIG # Begin signature block
 # MIIPXQYJKoZIhvcNAQcCoIIPTjCCD0oCAQExDzANBglghkgBZQMEAgEFADB5Bgor
 # BgEEAYI3AgEEoGswaTA0BgorBgEEAYI3AgEeMCYCAwEAAAQQH8w7YFlLCE63JNLG
-# KX7zUQIBAAIBAAIBAAIBAAIBADAxMA0GCWCGSAFlAwQCAQUABCDlilGLQRGlg52V
-# lqd0+109Li8MSiqa9Z2W5+AH3YyrHqCCDJ0wggXxMIIE2aADAgECAhM2AAAABHxF
+# KX7zUQIBAAIBAAIBAAIBAAIBADAxMA0GCWCGSAFlAwQCAQUABCD8jmW11CSB/PnT
+# zCJmcZvoEGTUg1yWE2rIbTW0WO1N3aCCDJ0wggXxMIIE2aADAgECAhM2AAAABHxF
 # 1HD5VIC5AAAAAAAEMA0GCSqGSIb3DQEBCwUAMBoxGDAWBgNVBAMTD1RyaUNhcmUg
 # Um9vdCBDQTAeFw0yMDA5MDgwMzM4NDNaFw0zMDA5MDgwMzQ4NDNaME0xEzARBgoJ
 # kiaJk/IsZAEZFgNpbnQxGTAXBgoJkiaJk/IsZAEZFgl0cmljYXJlYWQxGzAZBgNV
@@ -136,12 +107,12 @@ function Invoke-DeviceDeploymentCleanupCommands {
 # Y2FyZWFkMRswGQYDVQQDExJUcmlDYXJlIElzc3VpbmcgQ0ECEzMAAAEew6rjYtzc
 # Y1wAAQAAAR4wDQYJYIZIAWUDBAIBBQCggYQwGAYKKwYBBAGCNwIBDDEKMAigAoAA
 # oQKAADAZBgkqhkiG9w0BCQMxDAYKKwYBBAGCNwIBBDAcBgorBgEEAYI3AgELMQ4w
-# DAYKKwYBBAGCNwIBFTAvBgkqhkiG9w0BCQQxIgQgfy5I7Ja2NWCbyrWVoPKlNjIV
-# U+M72WDtbWHp4d96Ch8wDQYJKoZIhvcNAQEBBQAEggEAceJKEAeDR8YeIdmJMlQ/
-# Cbm+nGoRQmGMa3c+x5e1HTd/Jz+e6uJLKLcKp43HOdlDXldm8SmGonfGDeDvHIUN
-# OuAfC8a2Zo8zxc8uEk6tuwRfrWgOLzh6J1dnEuYxlZ2wJxWHpvXImrndd6M5QAFc
-# /UxV0wKaIlfPJA5KFpm+153TaPDljnMQceg6ckne/FglXRGFOIzrafiawAY3qSFr
-# 67f+MbI6jq/WYThD/Rawj3l0KlANsh+zMse/N01McZzuwfIlPV0/CzVSpWY6yEaO
-# 9Tj2SAdaZMXyLEdtEypHbfg2vP/BCnQiK3j7YJ4zp9rXyvg6Vd7TAnfa3LRq2V2i
-# jA==
+# DAYKKwYBBAGCNwIBFTAvBgkqhkiG9w0BCQQxIgQg6SBVI6hnnIgj7sLgQPrkcZ9X
+# GPRpHlubjQH3YcS5o38wDQYJKoZIhvcNAQEBBQAEggEAGsYiJD7fgRsI6wPCvp3Y
+# qI6Cg7BQoUTfYmpG1rJ2a+HiGftAjXGjLLO+kJcCRSc/Abyi1xsoeeCkGUVxqbOj
+# HQBcnMrzQIljHYkJx8Wok+Eu4cQdCJL+lC6QPdJkmqcGtKy4lsr+6NQgCOwrwxzC
+# 2ScZusZ8Xg3MCvONBzo13CIMN6ynivQ93pYdOM8PBjgGVlhw8h2VuaN9e+mTmPPD
+# X3dIYE7XUwC+TFbtGwUB2uMpJAv9lGPjfV8U/uT8SeKuChbo1prlhDoQz24rFkga
+# LfY+hnSJ8wUHWYy5/YVoGe+e+AGJrZFzpolRZA3/2poWA+x8FLFW+Wq982UCEEYA
+# eQ==
 # SIG # End signature block

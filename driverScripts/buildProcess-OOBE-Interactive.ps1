@@ -19,14 +19,17 @@ try {
 	#-------------------------- Block Shutdowns until build process is completed --------------------------# 
 	Block-DeviceShutdown -Verbose | Out-Null
 
-	#---------------------------------------- Inital Setup/Config -----------------------------------------# 
-	Update-AzConfig -EnableLoginByWam $false # this forces login with browser, should not be req
+	#---------------------------------------- Inital Config -----------------------------------------# 
+	Update-AzConfig -EnableLoginByWam $false # this forces login with browser, should not be req but not removing it as it works
 
+	# Connect to required services
 	Connect-AzAccount | Out-Null
 	Connect-MgGraph | Out-Null
 
+	# Collect required secrets
+	Register-BuildProcessFreshAPIKeyScriptWide
 	Register-BuildProcessElevatedCredentailsScriptWide
-	
+
 	#------------------------ Get Build Data and Create Fresh Asset (if required) -------------------------#
 	try {
 		$freshAsset = Register-DeviceWithFresh -Verbose
@@ -36,8 +39,6 @@ try {
 		break
 	}
 	
-	#------------------------------------------ Check into Ticket -----------------------------------------# 
-	#------------------------- (This invokes privilidged commands on serverside) --------------------------#
 	$buildInfo.buildState = $config.TicketInteraction.BuildStates.checkInState.message # set state to "checked in"
 	Write-DeviceBuildStatus -buildInfo $buildInfo -Verbose
 	
@@ -48,8 +49,9 @@ try {
 	Remove-DeviceBloatware -Verbose -buildInfo $buildInfo
 
 	#------------------------------------------ Update Software  ------------------------------------------# 
+	# Windows update functionality currently commend out because updates take AGES and its a better user experince to have a GUI to refer too
 	# Initialize-DeviceWindowsUpdateEnviroment -Verbose
-	# Update-DeviceWindowsUpdate -Verbose
+	# Update-DeviceWindowsUpdate -Verbose 
 
 	if (Test-DeviceDellCommandUpdate -Verbose) {
 		Install-DeviceDellCommandUpdateDrivers -Verbose -buildInfo $buildInfo
@@ -57,7 +59,7 @@ try {
 	}
 
 	#------------------------------------------ Remove Old Intune Objects  ------------------------------------------# 
-	# Remove-DeviceIntuneDuplicateRecords -buildInfo $buildInfo -Verbose
+	Remove-DeviceIntuneDuplicateRecords -buildInfo $buildInfo -Verbose
 
 	#------------------------------------------- Rename Device --------------------------------------------# 
 	#----------------------- (needs to happen before device is moved to other OU) -------------------------#
