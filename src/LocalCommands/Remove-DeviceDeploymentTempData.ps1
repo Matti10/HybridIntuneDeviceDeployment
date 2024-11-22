@@ -37,8 +37,6 @@ function Remove-DeviceDeploymentTempData {
 
 		[Parameter()]
 		$dependencyDirectory = $DeviceDeploymentDefaultConfig.Dependencies.moduleInstallPath
-
-
 	)
 
 	begin {
