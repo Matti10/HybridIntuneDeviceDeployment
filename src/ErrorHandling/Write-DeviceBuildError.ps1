@@ -91,7 +91,7 @@ function Write-DeviceBuildError {
 
 			# Constructing the error message content
 			if ($null -ne $errorObject) {
-				$content += ":<br><b>Solution & Details:</b> $message<br><b>Error Location/Function:</b> $($stack[1].Command)<br><b>Error Message:</b> $($errorMsg)<br>"
+				$content += ":<br><b>Solution & Details:</b> $message<br><b>Error Location/Function:</b> $($stack[1].Command)<br><b>Error Message:</b> $($errorMsg)<br><br>"
 			}
 			else {
                 # Add information about function execution location and log file path
@@ -103,8 +103,12 @@ function Write-DeviceBuildError {
 				$content += "<br><b>Additional Information: </b>$additionalInfo"
 			}
 
-			# Formatting final content
+			# Formatting final error content
 			$content = "<table><tr><th style=`"background-color:$($errorState.color)`">Error Information</th></tr><tr><td>$content</td></tr></table>"
+
+			# Add build info
+			$buildInfo.buildState = $errorState.message
+			$content = "$content<br>$($buildInfo | Convert-BuildInfoToHTML)"
 
 			New-FreshTicket -description $content -email "$($BuildInfo.userEmail)" -Subject "Attn $($BuildInfo.userEmail.split("@")[0].replace("."," ")): Error in Build of $($BuildInfo.AssetID)" -assets "$($BuildInfo.AssetID)" -category "Hardware" -SubCategory "Deploy Asset" -TicketType "Incident"
 			

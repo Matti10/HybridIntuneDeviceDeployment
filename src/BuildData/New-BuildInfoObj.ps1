@@ -78,9 +78,6 @@ function New-BuildInfoObj {
 		[Parameter(Mandatory)]
 		[string]$build,
 
-		[Parameter()]
-		[string]$recordID,
-
 		[Parameter(Mandatory)]
 		$freshAsset,
 
@@ -124,7 +121,6 @@ function New-BuildInfoObj {
 					build        = $build
 					OU           = $OU
 					groups       = $groups
-					recordID     = $recordID
 					buildState   = $buildState
 					GUID         = $GUID
 					freshAsset   = $freshAsset
