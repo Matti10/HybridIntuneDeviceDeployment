@@ -5,6 +5,11 @@
 function Register-BuildProcessFreshAPIKeyScriptWide {
 	[CmdletBinding(SupportsShouldProcess = $true)]
 	param (
+		[Parameter()]
+		$KeyVaultName = $DeviceDeploymentDefaultConfig.Security.KeyVaultName,
+		
+		[Parameter()]
+		$FreshAPIKey_KeyVaultKey = $DeviceDeploymentDefaultConfig.Security.FreshAPIKey_KeyVaultKey	
 	)
 
 	# Begin block executes at the start of the function
@@ -16,7 +21,7 @@ function Register-BuildProcessFreshAPIKeyScriptWide {
 	process {
 		try {
 			# manually set the fresh API key. By default this is set using connect-kvunattended, which results in an additional prompt for creds, and also uses the wrong KV
-			Set-FreshAPIKey -API_Key (Get-AzKeyVaultSecret -VaultName $config.Security.KeyVaultName -Name $config.Security.FreshAPIKey_KeyVaultKey)
+			Set-FreshAPIKey -API_Key (Get-AzKeyVaultSecret -VaultName $KeyVaultName -Name $FreshAPIKey_KeyVaultKey)
 		}
 		# Catch any errors and add them to $errorList and display an error message
 		catch {
