@@ -546,7 +546,8 @@
 		"KeyVaultName": "tc-ae-d-devicebuild-kv",
 		"FreshAPIKey_KeyVaultKey": "freshServiceAPI",
 		"elevatedPassword_KeyVaultKey": "ElevatedCredentialPassword",
-		"elevatedUserName": "PC_Build_SVC"
+		"elevatedUserName": "PC_Build_SVC",
+		"CredentialMaxRetry": 5
 	},
 	"ShutdownListener": {
 		"jobName": "Block-DeviceShutdown",
