@@ -22,6 +22,7 @@ function Invoke-BuildProcessRetry {
     # Process block of function: Iterate over each module and attempt to import it.
     process {
         try {
+            Write-Verbose -Message "Initiating Build Process Retry"
             $result = Show-DeviceUserMessage -message $messageTemplates.retryBuildProcess.message -title $messageTemplates.retryBuildProcess.title -wait -messageBoxConfigCode $messageTemplates.retryBuildProcess.messageBoxConfiguration -placeholderValue $message
 
             switch ($result) {
@@ -46,7 +47,7 @@ function Invoke-BuildProcessRetry {
                 $resultCorrelation.Ignore {
                     # do nothing
                     Write-Verbose "Continuing to windows"
-                    if ($PSCmdlet.ShouldProcess("Wipe")) {
+                    if ($PSCmdlet.ShouldProcess("Continue to Windows")) {
                         return
                     } else {
                         return "Continuing to windows"

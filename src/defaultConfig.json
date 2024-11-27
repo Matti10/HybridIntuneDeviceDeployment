@@ -6,22 +6,30 @@
 		"RunOnceRegistryPath": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\RunOnce",
 		"BuildPCRootPath": "C:\\Intune_Setup\\buildProcess",
 		"BuildModulePath": "thisGetsOverwrittenOnImport",
-		"BuildProcessRelativePath" : "\\src\\Driver Scripts\\BuildPC\\buildProcess-OOBE-Interactive.ps1",
+		"BuildProcessRelativePath": "\\driverScripts\\buildProcess-OOBE-Interactive.ps1",
 		"serviceUIRelativePath": "execs\\ServiceUI.exe",
 		"shiftF10RelativePath": "execs\\ShiftF10.exe",
 		"BuildProcessWaitSeconds": 3600
+	},
+	"FreshAssetIntergration": {
+		"buildAttr": "build_11000673051",
+		"facilityAttr": "location_id"
 	},
 	"Logging": {
 		"buildPCLogPath": "C:\\Intune_Setup\\buildProcess\\logs",
 		"serverLogPath": ".\\Logs"
 	},
-	"Dependencies": [
-		"TriCare-Common",
-		"TriCare-DeviceDeployment",
-		"Az.Accounts",
-		"Az.KeyVault",
-		"Microsoft.Graph.Authentication"
-	],
+	"Dependencies": {
+		"Modules": [
+			"TriCare-Common",
+			"TriCare-DeviceDeployment",
+			"Az.Accounts",
+			"Az.KeyVault",
+			"Microsoft.Graph.Authentication",
+			"Microsoft.Graph.DeviceManagment"
+		],
+		"moduleInstallPath": "C:\\Program Files\\WindowsPowerShell\\Modules"
+	},
 	"AssetID": {
 		"freshAssetIDAttr": "name",
 		"adAssetIDAttr": "name",
@@ -120,6 +128,16 @@
 				"Groups": [
 					"UR Sites Device Group",
 					"Intune_Operational_Devices"
+				],
+				"note": "This is a legacy name used by the orginal build process"
+			},
+			{
+				"buildtype": "Operational",
+				"OU": "OU=Operational Device",
+				"hasDepartment": true,
+				"Groups": [
+					"UR Sites Device Group",
+					"Intune_Operational_Devices"
 				]
 			},
 			{
@@ -173,7 +191,44 @@
 				"dept": "",
 				"Groups": [
 					"Intune TimeZone UTC10"
-				]
+				],
+				"InfoForHumans": "Head Office"
+			},
+			{
+				"freshID": "11000360544",
+				"location": "OU=Head Office",
+				"dept": "",
+				"Groups": [
+					"Intune TimeZone UTC10"
+				],
+				"InfoForHumans": "Newnham"
+			},
+			{
+				"freshID": "11000360483",
+				"location": "OU=Head Office",
+				"dept": "",
+				"Groups": [
+					"Intune TimeZone UTC10"
+				],
+				"InfoForHumans": "Carina Heights"
+			},
+			{
+				"freshID": "11000360542",
+				"location": "OU=Head Office",
+				"dept": "",
+				"Groups": [
+					"Intune TimeZone UTC10"
+				],
+				"InfoForHumans": "Elderly Care Head Office"
+			},
+			{
+				"freshID": "11000345988",
+				"location": "OU=Head Office",
+				"dept": "",
+				"Groups": [
+					"Intune TimeZone UTC10"
+				],
+				"InfoForHumans": "Developments"
 			},
 			{
 				"freshID": "11000343256",
@@ -181,7 +236,8 @@
 				"dept": "OU=ACR",
 				"Groups": [
 					"Intune TimeZone UTC10"
-				]
+				],
+				"InfoForHumans": "Ashgrove ACR"
 			},
 			{
 				"freshID": "11000273216",
@@ -189,7 +245,8 @@
 				"dept": "OU=ACR",
 				"Groups": [
 					"Intune TimeZone UTC10"
-				]
+				],
+				"InfoForHumans": "Annerley ACR"
 			},
 			{
 				"freshID": "11000273220",
@@ -197,7 +254,8 @@
 				"dept": "OU=ACR",
 				"Groups": [
 					"Intune TimeZone UTC10"
-				]
+				],
+				"InfoForHumans": "Bayview Place ACR"
 			},
 			{
 				"freshID": "11000342556",
@@ -205,7 +263,8 @@
 				"dept": "OU=ACR",
 				"Groups": [
 					"Intune TimeZone UTC10"
-				]
+				],
+				"InfoForHumans": "Bundaberg ACR"
 			},
 			{
 				"freshID": "11000342557",
@@ -213,7 +272,8 @@
 				"dept": "OU=ACR",
 				"Groups": [
 					"Intune TimeZone UTC10"
-				]
+				],
+				"InfoForHumans": "Cypress Gardens ACR"
 			},
 			{
 				"freshID": "11000342559",
@@ -221,7 +281,8 @@
 				"dept": "OU=ACR",
 				"Groups": [
 					"Intune TimeZone UTC10"
-				]
+				],
+				"InfoForHumans": "Kawana Waters ACR"
 			},
 			{
 				"freshID": "11000342558",
@@ -229,7 +290,8 @@
 				"dept": "OU=ACR",
 				"Groups": [
 					"Intune TimeZone UTC10"
-				]
+				],
+				"InfoForHumans": "Jindalee ACR"
 			},
 			{
 				"freshID": "11000342560",
@@ -237,7 +299,8 @@
 				"dept": "OU=ACR",
 				"Groups": [
 					"Intune TimeZone UTC10"
-				]
+				],
+				"InfoForHumans": "Labrador ACR"
 			},
 			{
 				"freshID": "11000342561",
@@ -245,7 +308,8 @@
 				"dept": "OU=ACR",
 				"Groups": [
 					"Intune TimeZone UTC10"
-				]
+				],
+				"InfoForHumans": "Mermaid Beach ACR"
 			},
 			{
 				"freshID": "11000342562",
@@ -253,7 +317,8 @@
 				"dept": "OU=ACR",
 				"Groups": [
 					"Intune TimeZone UTC10"
-				]
+				],
+				"InfoForHumans": "Mt Gravatt ACR"
 			},
 			{
 				"freshID": "11000342563",
@@ -261,7 +326,8 @@
 				"dept": "OU=ACR",
 				"Groups": [
 					"Intune TimeZone UTC10"
-				]
+				],
+				"InfoForHumans": "Pimpama ACR"
 			},
 			{
 				"freshID": "11000342564",
@@ -269,7 +335,8 @@
 				"dept": "OU=ACR",
 				"Groups": [
 					"Intune TimeZone UTC10"
-				]
+				],
+				"InfoForHumans": "Pt Vernon ACR"
 			},
 			{
 				"freshID": "11000342565",
@@ -277,7 +344,8 @@
 				"dept": "OU=ACR",
 				"Groups": [
 					"Intune TimeZone UTC10"
-				]
+				],
+				"InfoForHumans": "Stafford Lakes ACR"
 			},
 			{
 				"freshID": "11000342566",
@@ -285,7 +353,8 @@
 				"dept": "OU=ACR",
 				"Groups": [
 					"Intune TimeZone UTC10"
-				]
+				],
+				"InfoForHumans": "Sunnybank Hills ACR"
 			},
 			{
 				"freshID": "11000342567",
@@ -293,7 +362,8 @@
 				"dept": "OU=ACR",
 				"Groups": [
 					"Intune TimeZone UTC10"
-				]
+				],
+				"InfoForHumans": "Toowoomba ACR"
 			},
 			{
 				"freshID": "11000342568",
@@ -301,7 +371,35 @@
 				"dept": "OU=ACR",
 				"Groups": [
 					"Intune TimeZone UTC10"
-				]
+				],
+				"InfoForHumans": "Upper Mt Gravatt ACR"
+			},
+			{
+				"freshID": "11000360545",
+				"location": "OU=UMTG",
+				"dept": "OU=ACR",
+				"Groups": [
+					"Intune TimeZone UTC10"
+				],
+				"InfoForHumans": "UMG ACR"
+			},
+			{
+				"freshID": "11000360543",
+				"location": "OU=UMTG",
+				"dept": "OU=ACR",
+				"Groups": [
+					"Intune TimeZone UTC10"
+				],
+				"InfoForHumans": "Upper Mount Gravatt"
+			},
+			{
+				"freshID": "11000360546",
+				"location": "OU=UMTG",
+				"dept": "OU=ACR",
+				"Groups": [
+					"Intune TimeZone UTC10"
+				],
+				"InfoForHumans": "Upper Mount Gravatt Aged Care Residence"
 			},
 			{
 				"freshID": "11000343257",
@@ -309,7 +407,8 @@
 				"dept": "OU=ACR",
 				"Groups": [
 					"Intune TimeZone UTC10 DST"
-				]
+				],
+				"InfoForHumans": "Williams Landing ACR"
 			},
 			{
 				"freshID": "11000342569",
@@ -317,7 +416,8 @@
 				"dept": "OU=RC",
 				"Groups": [
 					"Intune TimeZone UTC10"
-				]
+				],
+				"InfoForHumans": "Compton Gardens RC"
 			},
 			{
 				"freshID": "11000342570",
@@ -325,7 +425,8 @@
 				"dept": "OU=RC",
 				"Groups": [
 					"Intune TimeZone UTC10"
-				]
+				],
+				"InfoForHumans": "Cypress Gardens RC"
 			},
 			{
 				"freshID": "11000342571",
@@ -333,7 +434,8 @@
 				"dept": "OU=RC",
 				"Groups": [
 					"Intune TimeZone UTC10 DST"
-				]
+				],
+				"InfoForHumans": "Hastings Point RC"
 			},
 			{
 				"freshID": "11000273221",
@@ -341,7 +443,17 @@
 				"dept": "OU=RC",
 				"Groups": [
 					"Intune TimeZone UTC10 DST"
-				]
+				],
+				"InfoForHumans": "Hayville RC"
+			},
+			{
+				"freshID": "11000360547",
+				"location": "OU=HAYV",
+				"dept": "OU=RC",
+				"Groups": [
+					"Intune TimeZone UTC10 DST"
+				],
+				"InfoForHumans": "Hayville Village RC"
 			},
 			{
 				"freshID": "11000342572",
@@ -349,7 +461,8 @@
 				"dept": "OU=RC",
 				"Groups": [
 					"Intune TimeZone UTC10"
-				]
+				],
+				"InfoForHumans": "James Ommaney RC"
 			},
 			{
 				"freshID": "11000342573",
@@ -357,7 +470,8 @@
 				"dept": "OU=RC",
 				"Groups": [
 					"Intune TimeZone UTC10"
-				]
+				],
+				"InfoForHumans": "Mt Gravatt RC"
 			},
 			{
 				"freshID": "11000342574",
@@ -365,7 +479,8 @@
 				"dept": "OU=RC",
 				"Groups": [
 					"Intune TimeZone UTC10"
-				]
+				],
+				"InfoForHumans": "Runaway Bay RC"
 			},
 			{
 				"freshID": "11000342575",
@@ -373,7 +488,8 @@
 				"dept": "OU=RC",
 				"Groups": [
 					"Intune TimeZone UTC10"
-				]
+				],
+				"InfoForHumans": "Stafford Lakes RC"
 			},
 			{
 				"freshID": "11000342576",
@@ -381,7 +497,8 @@
 				"dept": "OU=RC",
 				"Groups": [
 					"Intune TimeZone UTC10 DST"
-				]
+				],
+				"InfoForHumans": "Willow Glen RC"
 			}
 		]
 	},
@@ -427,8 +544,11 @@
 		"syncTaskName": "PushLaunch"
 	},
 	"Security": {
-		"KeyVaultName": "tc-ae-d-kv",
-		"FreshAPIKey_KeyVaultKey": "freshservice-apikey-matt"
+		"KeyVaultName": "tc-ae-d-devicebuild-kv",
+		"FreshAPIKey_KeyVaultKey": "freshServiceAPI",
+		"elevatedPassword_KeyVaultKey": "ElevatedCredentialPassword",
+		"elevatedUserName": "PC_Build_SVC",
+		"CredentialMaxRetry": 5
 	},
 	"ShutdownListener": {
 		"jobName": "Block-DeviceShutdown",
@@ -450,17 +570,17 @@
 			},
 			"buildTicketAssignmentFirstAttempt": {
 				"title": "Device Missing Build Ticket",
-				"message": "Device doesn't have any build tickets associated with it. If this is a new build, you will need to create a ticket for the AssetID `%PLACEHOLDER%`",
+				"message": "The Fresh Asset `%PLACEHOLDER%` doesn't have the Location and/or Build fields set. Please set these attributes and press retry to continue",
 				"messageBoxConfiguration": 4149
 			},
 			"buildTicketAssignmentOtherAttempts": {
 				"title": "Device Missing Build Ticket",
-				"message": "Device (%PLACEHOLDER%) doesn't have any build tickets associated with it. Please check that there is a valid build service request and that '%PLACEHOLDER%' is assigned to said ticket under the assets tab",
+				"message": "The Fresh Asset `%PLACEHOLDER%` doesn't have the Location and/or Build fields set. Please set these attributes and press retry to continue. For help, please find the documentation in Fresh's solutions",
 				"messageBoxConfiguration": 4149
 			},
 			"retryBuildProcess": {
 				"title": "Do you want to Retry",
-				"message": "Due to a previous error, the build process has failed. Additional details are below and/or in another popup. \n\nPlease FIX the error, then select one of the below options:\n - Press Abort to WIPE the PC\n - Press Retry to Restart the Build\n - Press cancel to continue to windows\n\n\n%PLACEHOLDER%",
+				"message": "Due to a previous error, the build process has failed. Additional details are below and/or in another popup. \n\nPlease FIX the error, then select one of the below options:\n - Press Abort to WIPE the PC\n - Press Retry to Restart the Build\n - Press Ignore to continue to windows\n\n\n%PLACEHOLDER%",
 				"messageBoxConfiguration": 18
 			}
 		},
@@ -482,6 +602,7 @@
 		"IntuneIDRegKey": "EntDMID"
 	},
 	"ADCommands": {
-		"replicationSeconds": 30
+		"replicationSeconds": 3,
+		"ModuleName": "ActiveDirectory"
 	}
 }

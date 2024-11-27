@@ -1,109 +1,67 @@
+# This is a copy paste from TriCare-DeviceManagment. I'm not sure how I feel about this... Right now it seems like a better option than dowloading a whole second module
 
-<# Documentation
-# PowerShell: Connect-BuildProcessKVUnattended
+function Remove-DeviceAdObject {
+    [CmdletBinding(SupportsShouldProcess = $true)]
+    param(
+        [Parameter(Mandatory, ValueFromPipeline)]
+        $buildInfo,
 
-.SYNOPSIS
-`Connect-BuildProcessKVUnattended` is a PowerShell function that connects to keys in the Azure Key Vault. It checks if a connection to Azure already exists and if not, it attempts to connect using pre-specified credentials. If that does not work, it tries to connect interactively. 
+        [Parameter()]
+        [System.Management.Automation.PSCredential]
+        [System.Management.Automation.Credential()]
+        $Credential
+    )
 
-.Example
+    begin {
+        $errorList = @()
 
-Here's how you call the function:
-
-Connect-BuildProcessKVUnattended
-
-
-.DESCRIPTION
-
-1. It first checks if you're already connected to Azure by calling the `Get-AzContext` cmdlet. If it returns a non-null value, it means you're connected, and it doesn't do anything further.
-
-    
-    $AZContext = Get-AzContext
-    if (-not $AZContext) {
-    
-2. If not connected, it specifies the TenantID, CertificateThumbprint, ClientID and SubscriptionID, stored in variables.
-
-    
-    $TenantID = "72294687-5f37-4c19-8580-1df60cd5e56e"
-    $CertificateThumbprint = "DFD120727D6212BE9E34BBEDFF1D6CACE691C1A8"
-    $ClientID = "ce818db3-7e5f-476b-b9cc-8f9a6ee4b907"
-    $SubscriptionID = "071a86bc-1212-4137-8948-08f4cbebfbf0"
-    
-
-3. Attempts to connect to the Azure account using the specified credentials. 
-
-    
-    Connect-AzAccount -ApplicationId $ClientID -TenantId $tenantID -CertificateThumbprint $CertificateThumbprint -WarningAction:SilentlyContinue -ErrorAction Stop
-    
-
-4. If the connection is unable to be made, it tries to connect interactively by calling `Connect-AzAccount -Credential` . If this connection fails too, it will display an error message.
-
-
-
-5. If already connected to Azure, verbose message is printed and the function exits.
-    
-    else {
-        Write-Verbose "Connect-KVUnattended: Already connected."
-        return $true
+        $credentialSplat = Build-CredentialSplat -Credential $Credential
     }
-    
+    process {
+        try {
+            # Get AD Object
+            try {
+                $AD_Comp = Get-ADComputer -Identity $buildInfo.AssetID -ErrorAction stop @credentialSplat
+                                
+                if ($null -eq $AD_Comp) {
+                    throw [Microsoft.ActiveDirectory.Management.ADIdentityNotFoundException]::new()
+                }
 
-.NOTES
+                Write-Verbose "AD | SAMNAME: $($AD_Comp.SamAccountName)"
 
-This script requires you to have the Az module installed. Additionally, it assumes that you have the necessary permissions to connect to the specified Azure key vault. 
-#>
-function Connect-BuildProcessKVUnattended {
-
-	
-	# This allows us to skip the connection if we're already connected.
-    $AZContext = Get-AzContext
-	
-    if (-not $AZContext) {
-		
-		Write-Verbose "Connecting to KeyVault"
-		
-		$TenantID = "72294687-5f37-4c19-8580-1df60cd5e56e"
-		$CertificateThumbprint = "DFD120727D6212BE9E34BBEDFF1D6CACE691C1A8"
-		$ClientID = "ce818db3-7e5f-476b-b9cc-8f9a6ee4b907"
-		$SubscriptionID = "071a86bc-1212-4137-8948-08f4cbebfbf0"
-
-		# try {
-		# 	Connect-AzAccount -ApplicationId $ClientID -TenantId $tenantID -CertificateThumbprint $CertificateThumbprint -WarningAction:SilentlyContinue -ErrorAction Stop
-		# 	Write-Verbose " |-- Connected succesfully"
-		# 	# Get-AZKeyVault -SubscriptionId $SubscriptionID
-		# 	return $true
-		# } catch {
-			# $ErrorMessage = $_
-			# Write-Verbose "Unable to connect to Azure with certificate; trying interactively"
-
-			# if (-not ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")) {
-			# 	Write-Warning "Connect-KVUnattended: You do not have Administrator rights and weren't able to access the certificate directly, so will not be able to access the Certificate Store locally.  Connecting interactively."
-				try {
-					$result = (Connect-AzAccount -Credential)
-					$connected = $true
-					return $true
-				} catch {
-					Write-Host -ForegroundColor Red "Error connecting to Key Vault without Admin privileges: $ErrorMessage"
-					Write-Host -ForegroundColor Red "Error connecting to Key Vault interactively: $_"
-					return $false
-				}
-			# } else {
-			# 	Write-Host "Error connecting to Key Vault without checking for Admin privileges: $ErrorMessage"
-			# 	Write-Host "User is already an admin, so not trying interactively."
-			# }
-
-			return $false
-		# }
-    } else {
-        Write-Verbose "Connect-KVUnattended: Already connected."
-        return $true
+                # Remove Device from AD
+                if ($null -ne $AD_Comp) {
+                    #get the ad comp (as an object)
+                    $compObj = Get-ADObject -SearchBase $AD_Comp.DistinguishedName -Filter {ObjectClass -eq "computer"} @credentialSplat
+                    
+                    #remove adcomp and all its leaves
+                    $compObj | Remove-ADObject -Confirm:$false -verbose:$VerbosePreference -WhatIf:$WhatIfPreference -Recursive @credentialSplat
+                    
+                }
+            } catch [Microsoft.ActiveDirectory.Management.ADIdentityNotFoundException]{
+                Write-Verbose "$($buildInfo.AssetID) doesn't exist in AD"
+            }
+        } catch [System.Security.Authentication.AuthenticationException],[Microsoft.ActiveDirectory.Management.ADServerDownException] {
+            throw $_ #if its a credential errror, let it get handled by calling function
+        }
+        catch {
+            $errorList += $_
+            Write-Error $_
+        }
     }
+    end {
+        if ($errorList.count -ne 0) {
+            Write-Error "Error(s) in $($MyInvocation.MyCommand.Name):`n$($errorList | ForEach-Object {"$_`n"})`n $(Get-PSCallStack)" -ErrorAction Stop
+        }
+    }	
 
 }
+
 # SIG # Begin signature block
 # MIIPYQYJKoZIhvcNAQcCoIIPUjCCD04CAQExDzANBglghkgBZQMEAgEFADB5Bgor
 # BgEEAYI3AgEEoGswaTA0BgorBgEEAYI3AgEeMCYCAwEAAAQQH8w7YFlLCE63JNLG
-# KX7zUQIBAAIBAAIBAAIBAAIBADAxMA0GCWCGSAFlAwQCAQUABCBSDnjz/ptByIJu
-# U/KAVqUq+2sXA4RO13tLKCJTVDTQpqCCDKEwggXxMIIE2aADAgECAhM2AAAABHxF
+# KX7zUQIBAAIBAAIBAAIBAAIBADAxMA0GCWCGSAFlAwQCAQUABCArBjhETZrTFPQS
+# 3jMfIzPVgm3D4GkPtJEkCINEuK73MaCCDKEwggXxMIIE2aADAgECAhM2AAAABHxF
 # 1HD5VIC5AAAAAAAEMA0GCSqGSIb3DQEBCwUAMBoxGDAWBgNVBAMTD1RyaUNhcmUg
 # Um9vdCBDQTAeFw0yMDA5MDgwMzM4NDNaFw0zMDA5MDgwMzQ4NDNaME0xEzARBgoJ
 # kiaJk/IsZAEZFgNpbnQxGTAXBgoJkiaJk/IsZAEZFgl0cmljYXJlYWQxGzAZBgNV
@@ -175,12 +133,12 @@ function Connect-BuildProcessKVUnattended {
 # CXRyaWNhcmVhZDEbMBkGA1UEAxMSVHJpQ2FyZSBJc3N1aW5nIENBAhMzAAABEnBh
 # IWMkSqnqAAEAAAESMA0GCWCGSAFlAwQCAQUAoIGEMBgGCisGAQQBgjcCAQwxCjAI
 # oAKAAKECgAAwGQYJKoZIhvcNAQkDMQwGCisGAQQBgjcCAQQwHAYKKwYBBAGCNwIB
-# CzEOMAwGCisGAQQBgjcCARUwLwYJKoZIhvcNAQkEMSIEIEDMInApPQ9g8ibCLDbP
-# amk3P/PAKIb+MZleDyXb7yNTMA0GCSqGSIb3DQEBAQUABIIBAG8Uuk+mNyme86cs
-# AAlZHe1OXEtxnKI/VCPUDuhQodOUVhETDQeCWtO9OD5PXb6qQAfDgDxqTMM+VXPg
-# IDiIAImnfDUFjm0sUhRxkE/50RTrTR71x2QoJwC4D6mtSIQimXgl+6Cc8EisiAsF
-# GW7stO1OXuJEVH0Tg0OTYdzfyDjRLUjSzt7xiBQZvsE82906LH5KVXYhjEWeG3VD
-# t5MlICh9de5wbb2hhGz6yIo+e+xeASZKbCQP7KYDj3xy7mYHKjGteLJ1CeUFf/1/
-# jCOlJjEHo3cnEu+ZPcl3h8tzoLF59hx1XeDk4R7WgOWhcrRJEFcIeMZsZYJybdg5
-# nD8Y/lk=
+# CzEOMAwGCisGAQQBgjcCARUwLwYJKoZIhvcNAQkEMSIEILq/dbYaTkWml4gR0Ojo
+# PeVKYzA05RFqfOf6nUI5e65AMA0GCSqGSIb3DQEBAQUABIIBAJkQkwZaTBq6oU75
+# RsL6Ja7rKebL+24GTNanIgIFlM2SQgbYox3CKRF9fpBwUNi1FxfJ7LoQ1YnC5zoB
+# qrJnKt4V2sfSMRbJwf1HleQivGTWd83XfpqhG0u+ibU/m/EPwfymZUiBNRZyfY6X
+# HzvM9xaExuQ1ig1GtR0PmVxm03hN/+zMyoTcxhlu4E0qZEN3PkYBz8n4uvPDPQkr
+# gh0/eI5Hqt0tqaFPRkB4wcU5hbIL2OEiwZs5fgBCxpRoWTZNjnvm6yFq4+r5NIUY
+# kvSKfKKvB8BCAE5yWoQ+SJexBXST/W6/mRZwfQ/wpCxixWFV74ZhXP63BL7e9UIn
+# 0gkf9kE=
 # SIG # End signature block

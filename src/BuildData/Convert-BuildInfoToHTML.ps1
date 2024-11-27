@@ -1,4 +1,3 @@
-
 <#
 .SYNOPSIS
 This function writes to a build ticket in fresh based on the information it receives.
@@ -52,7 +51,7 @@ $BuildInfo | Write-DeviceBuildTicket -message "This is a test message"
 This command will use the given message and data from $BuildInfo to write to the build ticket. 
 
 #>
-function Write-DeviceBuildTicket {
+function Convert-BuildInfoToHTML {
 	[CmdletBinding(SupportsShouldProcess = $true)]
 	param (
 		[Parameter(Mandatory, ValueFromPipeline)]
@@ -121,12 +120,9 @@ function Write-DeviceBuildTicket {
 				$content = $content -replace "%BGCOLOR%", "$($buildState.color)"
 			}
 			
-			if ($PSCmdlet.ShouldProcess("Ticket: $($BuildInfo.ticketID) State: $($buildState)")) {
-				New-FreshTicketNote -ticketID $BuildInfo.ticketID -content $content | Out-Null
-			}
-			else {
-				return $content
-			}
+			
+			return $content
+			
 		}
 		catch {
 			$errorList += $_

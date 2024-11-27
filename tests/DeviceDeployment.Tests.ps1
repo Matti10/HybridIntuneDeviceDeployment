@@ -45,17 +45,17 @@ BeforeDiscovery {
 
 Describe "Build Data" {
     Context "BuildInfo Object" -ForEach @(
-        @{name = "someName"; type = "someType"; build = "SomeBuild"; ticketID = "SomeID"; freshLoc = "11000343256"; OU = "someOU";serialNumber = "1234567890";}
+        @{name = "someName"; type = "someType"; build = "SomeBuild"; recordID = "SomeID"; freshLoc = "11000343256"; OU = "someOU";serialNumber = "1234567890";}
     ){
         It "Should return an object with same inputs" {
-            $result = New-BuildInfoObj -AssetId $name -serialNumber $serialNumber -type $type -build $build -ticketID $ticketID -freshLocation $freshLoc -OU $OU -freshAsset ([PSCustomObject]@{Name = "Value"}) -groups @("A","B")
+            $result = New-BuildInfoObj -AssetId $name -serialNumber $serialNumber -type $type -build $build -recordID $recordID -freshLocation $freshLoc -OU $OU -freshAsset ([PSCustomObject]@{Name = "Value"}) -groups @("A","B")
 
             $result.AssetID | Should -be $name
             $result.serialNumber | Should -be $serialNumber
             $result.type | Should -be $type
             $result.build | Should -be $build
             $result.OU | Should -beLike "*OU*"
-            $result.ticketID | Should -be $ticketID
+            $result.recordID | Should -be $recordID
             $result.buildState | Should -be (Get-DeviceDeploymentDefaultConfig).TicketInteraction.BuildStates.initialState.message
             
         }
@@ -151,7 +151,7 @@ Describe "Build Data" {
         It "Gets the newest of many build tickets, and only build tickets" -ForEach @(
             @{Identity = Get-FreshAsset -name "TCL000845"; correctTicket = "100900"}
         ) {
-            (Get-DeviceBuildData -FreshAsset $identity).ticketID | Should -be $correctTicket
+            (Get-DeviceBuildData -FreshAsset $identity).recordID | Should -be $correctTicket
         }
 
         It "Gets Correct Info for Devices" -ForEach @(
@@ -170,7 +170,7 @@ Describe "Build Data" {
             $result.type | Should -not -BeNullOrEmpty
             "$($config.Deployment.buildTypeCorrelation.buildType)" | Should -beLike "*$($result.build)*"
             $result.OU | Should -beLike "*OU=*OU=*"
-            Get-FreshTicketsRequestedItems -ErrorAction stop -ticketID $result.ticketID | Should -not -BeNullOrEmpty
+            Get-FreshTicketsRequestedItems -ErrorAction stop -recordID $result.recordID | Should -not -BeNullOrEmpty
             $result.buildState | Should -be $config.TicketInteraction.BuildStates.initialState.message
         }
         

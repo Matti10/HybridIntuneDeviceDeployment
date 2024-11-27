@@ -41,7 +41,7 @@ Describe "Get-DeviceBuildData" {
 			"2WPJ504",
 			"BVPJ504"
 		) {
-			(Get-DeviceBuildData -serialNum $_).ticketID | Should -not -BeNullOrEmpty
+			(Get-DeviceBuildData -serialNum $_).recordID | Should -not -BeNullOrEmpty
 		}
 		It "Returns info for devices when searching by name" -ForEach @(
 			"TCL000845",
@@ -62,11 +62,11 @@ Describe "Get-DeviceBuildData" {
 			Get-DeviceBuildData -identity $_ -ErrorAction SilentlyContinue | Should -BeNullOrEmpty
 		}
 		It "Returns the newest of many build tickets" {
-			(Get-DeviceBuildData -identity TCL000845).ticketID | Should -Be "100900"
+			(Get-DeviceBuildData -identity TCL000845).recordID | Should -Be "100900"
 		}
 
 		It "only returns build tickets" {
-			(Get-DeviceBuildData -identity TCL000845).ticketID | Should -Be "100900"
+			(Get-DeviceBuildData -identity TCL000845).recordID | Should -Be "100900"
 		}
 
 		It "returns the correct Data" {
@@ -74,7 +74,7 @@ Describe "Get-DeviceBuildData" {
 				serialNumber= ""
 				build= "eCase"
 				OU= "OU=Head Office,OU=eCase,OU=TriCare-Computers,DC=tricaread,DC=int"
-				ticketID= "100900"
+				recordID= "100900"
 				AssetID= "TCL000845"
 				type= "Desktop PC"
 			}
@@ -120,11 +120,11 @@ Describe "Resolve Device OU" {
 				}
 
 				#get the newest ticket
-				$buildTicketID = ($buildTickets | Sort-Object -Property updated_at -Descending)[0]."request_id".split("-")[1] # request id has a prefix "SR-"/"INC-" 
+				$buildrecordID = ($buildTickets | Sort-Object -Property updated_at -Descending)[0]."request_id".split("-")[1] # request id has a prefix "SR-"/"INC-" 
 
-				Write-Host "$name - $buildTicketID"
+				Write-Host "$name - $buildrecordID"
 
-				$buildDetails = (Get-FreshTicketsRequestedItems -ticketID $buildTicketID).custom_fields
+				$buildDetails = (Get-FreshTicketsRequestedItems -recordID $buildrecordID).custom_fields
 
 				$foundOU = Get-DeviceBuildOU -build $buildDetails.hardware_use_build_type -facility $buildDetails.facility[0]
 
@@ -139,13 +139,13 @@ Describe "Resolve Device OU" {
 Describe "New BuildInfoObj" {
 	Context "error Handling" {
 		it "errors if no ou or location is inputted" {
-			{New-BuildInfoObj -AssetId "e" -type "e" -build "e" -ticketID "e"} | Should -throw
+			{New-BuildInfoObj -AssetId "e" -type "e" -build "e" -recordID "e"} | Should -throw
 		}
 		it "no errors if only location is inputted" {
-			{New-BuildInfoObj -AssetId "e" -type "e" -build "e" -ticketID "e" -freshLocation "someLocation"} | Should -not -throw
+			{New-BuildInfoObj -AssetId "e" -type "e" -build "e" -recordID "e" -freshLocation "someLocation"} | Should -not -throw
 		}
 		it "no errors if only OU is inputted" {
-			{New-BuildInfoObj -AssetId "e" -type "e" -build "e" -ticketID "e" -ou "notNull"} | Should -not -throw
+			{New-BuildInfoObj -AssetId "e" -type "e" -build "e" -recordID "e" -ou "notNull"} | Should -not -throw
 		}
 	}
 	Context "creates a valid object" -ForEach @(
@@ -155,12 +155,12 @@ Describe "New BuildInfoObj" {
 			type = "testType"
 			build= "Facility Management/Operations"
 			OU = "OU=UMGR,OU=ACR,OU=Operational Device,OU=TriCare-Computers,DC=tricaread,DC=int"
-			ticketID = "123456"
+			recordID = "123456"
 		}
 	) {
 		it "Creates correct object with OU"{
 
-			$buildObj = New-BuildInfoObj -AssetID $AssetID -type $type -build $build -OU $OU -ticketID $ticketID
+			$buildObj = New-BuildInfoObj -AssetID $AssetID -type $type -build $build -OU $OU -recordID $recordID
 
 			foreach ($key in $buildObj.Keys)
 			{
@@ -170,7 +170,7 @@ Describe "New BuildInfoObj" {
 
 		it "Creates correct object with freshLocation"{
 
-			$buildObj = New-BuildInfoObj -AssetID $AssetID -type $type -build $build -ticketID $ticketID -freshLocation "11000342568"
+			$buildObj = New-BuildInfoObj -AssetID $AssetID -type $type -build $build -recordID $recordID -freshLocation "11000342568"
 
 			foreach ($key in $buildObj.Keys)
 			{
