@@ -55,4 +55,14 @@ Describe "Resetting Elevated Password" {
 			Test-ADCredentials -username $config.Security.elevatedUserName -password $newPass | Should -beTrue
 		}
 	}
+
+	Context "Error handling" {
+		It "gets a new password when lenght/complexity aren't met" {
+			try {
+				Set-AdAccountPassword -Identity matttest -Reset -ErrorAction "Stop"
+			} catch [Microsoft.ActiveDirectory.Management.ADPasswordComplexityException] {
+				$_
+			}
+		}
+	}
 }
