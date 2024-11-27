@@ -46,7 +46,7 @@ try {
     $az_repositories = @("TriCare-Common",$buildModuleName) # the order of this list matters, TriCare-DeviceDeployment uses tricare common, as a result it must be imported second. Below external modules are imported first for the same reason
     $az_branch = "dev"
     $az_User = "Matt.Winsen"
-    $az_token = "j4fqboeaay3ar7ad4fikyajqqpqcdgcyrfccqqxhgjn337ubxura"
+    $az_token = ":)"
 
     # External Modules
     $remote_dependencies = @(
