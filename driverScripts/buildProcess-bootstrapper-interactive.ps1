@@ -32,7 +32,7 @@ try {
 
     #General
     $workingDirectory = "C:\Intune_Setup\buildProcess"
-    $fileName = "buildProcessV2.4" 
+    $fileName = "buildProcessV3" 
     $logPath = "C:\Intune_Setup\buildProcess\Logs"
     $bootStrapperLogPath = "$logPath\$fileName\$fileName-$(Get-Date -Format "dd-MM-yyyy-HHmm").log"
     $modulePath = "C:\Program Files\WindowsPowerShell\Modules" #please ensure this matches "Dependencies -> Module Install Path" in defaultConfig.json
@@ -46,7 +46,9 @@ try {
     $az_repositories = @("TriCare-Common",$buildModuleName) # the order of this list matters, TriCare-DeviceDeployment uses tricare common, as a result it must be imported second. Below external modules are imported first for the same reason
     $az_branch = "dev"
     $az_User = "Matt.Winsen"
-    $az_token = "j4fqboeaay3ar7ad4fikyajqqpqcdgcyrfccqqxhgjn337ubxura"
+    $az_KeyVaultName = "tc-ae-d-devicebuild-kv"
+    $az_DevOpsTokenKeyVaultSecret = "devOpsToken"
+    
 
     # External Modules
     $remote_dependencies = @(
@@ -157,9 +159,6 @@ try {
             $remoteRepoURL = "https://dev.azure.com/$organisation/$project",
 
             [Parameter()]
-            $token = $az_token,
-
-            [Parameter()]
             $modulePath = $modulePath,
             
             [Parameter()]
@@ -180,13 +179,12 @@ try {
                     $i = 0 #itteration counter for checksum loop
                     do { #loop over install until checksum returns true
                         # Base64-encodes the Personal Access Token (PAT) appropriately
-                        $base64AuthInfo = [Convert]::ToBase64String([Text.Encoding]::ASCII.GetBytes(("{0}:{1}" -f $user,$token)))
+                        $base64AuthInfo = [Convert]::ToBase64String([Text.Encoding]::ASCII.GetBytes(("{0}:{1}" -f $user,"$(Get-DevOpsToken)")))
                         
                         $headers = @{
                             'Authorization' = ("Basic {0}" -f $base64AuthInfo)
                             'Content-Type'  = 'application/json'
                         }
-                        
                         
                         # Get Repository
                         $listRepoUri = "$remoteRepoURL/_apis/git/repositories?api-version=6.0"
@@ -244,6 +242,8 @@ try {
             }
         }
         end {
+            Disconnect-AzAccount #we no longer need KV access to get token
+
             if ($errorList.count -ne 0) {
                 Write-Error "Error(s) in $($MyInvocation.MyCommand.Name):`n$($errorList | ForEach-Object {"$_`n"})" -ErrorAction Stop
             }
@@ -284,6 +284,29 @@ try {
         }	
     }
 
+    function Get-DevOpsToken {
+        [CmdletBinding(SupportsShouldProcess = $true)]
+        param (
+            [Parameter()]
+            $KeyVaultName = $az_KeyVaultName,
+
+            [Parameter()]
+            $KeyVaultSecret = $az_DevOpsTokenKeyVaultSecret
+        )
+
+        begin {
+            if ($null -eq (Get-AzContext)){
+                Connect-AzAccount | Out-Null
+            }
+        }
+        process {
+            if ($PSCmdlet.ShouldProcess("")) {
+                return (Get-AzKeyVaultSecret -VaultName $KeyVaultName -Name $KeyVaultSecret -AsPlainText)
+            }
+        }
+        end {
+        }
+    }
     #---------------------------------------------- Install Modules ----------------------------------------------# 
     #Install the AD Module - this takes ages so run it as a job in the background
     Start-Job -Name $adInstallJobName -ScriptBlock {
