@@ -1,0 +1,12 @@
+**Azure Architecture**
+- What each powershell section does
+- Name Mutex
+- Actual process
+- How to modify for new OU's or changed OU structure
+- Security/Secret Managment
+  - Password Reset
+  - KV
+  - Fresh API
+  - Elevated Account
+  - Dev ops
+  - ![alt text](documentation\images\devOps-Token-1.png)

@@ -32,7 +32,7 @@ try {
 
     #General
     $workingDirectory = "C:\Intune_Setup\buildProcess"
-    $fileName = "buildProcessV2.4" 
+    $fileName = "buildProcessV3" 
     $logPath = "C:\Intune_Setup\buildProcess\Logs"
     $bootStrapperLogPath = "$logPath\$fileName\$fileName-$(Get-Date -Format "dd-MM-yyyy-HHmm").log"
     $modulePath = "C:\Program Files\WindowsPowerShell\Modules" #please ensure this matches "Dependencies -> Module Install Path" in defaultConfig.json
@@ -43,27 +43,38 @@ try {
     #Azure/Visual Studio online
     $az_Organisation = "tricare"
     $az_Project = "TriCare%20PowerShell%20Library"
-    $az_repositories = @("TriCare-Common",$buildModuleName) # the order of this list matters, TriCare-DeviceDeployment uses tricare common, as a result it must be imported second. Below external modules are imported first for the same reason
-    $az_branch = "dev"
-    $az_User = "Matt.Winsen"
-    $az_token = ":)"
+    $az_repositories = @(
+        # the order of this list matters, TriCare-DeviceDeployment uses tricare common, as a result it must be imported second. Below external modules are imported first for the same reason    
+        @{
+            name   = "TriCare-Common";
+            branch = "main"
+        }
+        @{
+            name   = $buildModuleName;
+            branch = "prod"
+        }
+    ) 
+    $az_KeyVaultName = "tc-ae-d-devicebuild-kv"
+    $az_DevOpsTokenKeyVaultSecret = "devOpsToken"
+    $az_DevOpsUserKeyVaultSecret = "devOpsUsername" #this doesn't need to be a secret, but its easy to store the data next to the token
+    
 
     # External Modules
     $remote_dependencies = @(
         @{
-            Name = "Az.Accounts"
+            Name    = "Az.Accounts"
             Version = "2.13.1"
         },
         @{
-            Name = "Az.KeyVault"
+            Name    = "Az.KeyVault"
             Version = "4.12.0"
         },
         @{
-            Name = "Microsoft.Graph.Authentication"
+            Name    = "Microsoft.Graph.Authentication"
             Version = "2.19.0"
         },
         @{
-            Name = "Microsoft.Graph.DeviceManagement"
+            Name    = "Microsoft.Graph.DeviceManagement"
             Version = "2.19.0"
         }
     )
@@ -87,7 +98,7 @@ try {
     function Build-SavePath {
         [CmdletBinding(SupportsShouldProcess = $true)]
         param (
-            [Parameter(Mandatory,ValueFromPipeline)]
+            [Parameter(Mandatory, ValueFromPipeline)]
             $Path
         )
 
@@ -97,9 +108,9 @@ try {
         process {
             try {
                 #this just removes everything after the last "\" from the string"
-                $saveFolder = $Path.remove($Path.LastIndexOf("\"),$Path.length-$Path.LastIndexOf("\"))
+                $saveFolder = $Path.remove($Path.LastIndexOf("\"), $Path.length - $Path.LastIndexOf("\"))
                 if (-not(Test-Path $saveFolder)) {
-                    $result = New-Item -Path $saveFolder -ItemType Directory -whatIf:$WhatIfPreference -force
+                    $result = New-Item -Path $saveFolder -ItemType Directory -WhatIf:$WhatIfPreference -Force
                 }
 
                 return $saveFolder
@@ -118,7 +129,7 @@ try {
     function Test-TricareModuleCheckSum {
         [CmdletBinding(SupportsShouldProcess = $true)]
         param (
-            [Parameter(Mandatory,ValueFromPipeline)]
+            [Parameter(Mandatory, ValueFromPipeline)]
             $moduleRoot,
 
             [Parameter()]
@@ -141,7 +152,7 @@ try {
     function Install-TriCareModules {
         [CmdletBinding(SupportsShouldProcess = $true)]
         param (
-            [Parameter(Mandatory,ValueFromPipeline)]
+            [Parameter(Mandatory, ValueFromPipeline)]
             $repository,
 
             [Parameter()]
@@ -151,71 +162,61 @@ try {
             $project = $az_Project,
             
             [Parameter()]
-            $user = $az_User,
-            
-            [Parameter()]
             $remoteRepoURL = "https://dev.azure.com/$organisation/$project",
-
-            [Parameter()]
-            $token = $az_token,
 
             [Parameter()]
             $modulePath = $modulePath,
             
             [Parameter()]
-            $downloadPath = $downloadPath,
+            $downloadPath = $downloadPath
 
-            [Parameter()]
-            $branch = $az_branch
-
-
-        )
+            )
 
         begin {
             $errorList = @()
         }
         process {
             try {
-                if ($PSCmdlet.ShouldProcess($repository)) {
+                if ($PSCmdlet.ShouldProcess($repository.name)) {
                     $i = 0 #itteration counter for checksum loop
-                    do { #loop over install until checksum returns true
+                    do {
+                        #loop over install until checksum returns true
                         # Base64-encodes the Personal Access Token (PAT) appropriately
-                        $base64AuthInfo = [Convert]::ToBase64String([Text.Encoding]::ASCII.GetBytes(("{0}:{1}" -f $user,$token)))
+                        $base64AuthInfo = [Convert]::ToBase64String([Text.Encoding]::ASCII.GetBytes(("{0}:{1}" -f ("$(Get-DevOpsUser)"), ("$(Get-DevOpsToken)"))))
                         
                         $headers = @{
                             'Authorization' = ("Basic {0}" -f $base64AuthInfo)
                             'Content-Type'  = 'application/json'
                         }
                         
-                        
                         # Get Repository
                         $listRepoUri = "$remoteRepoURL/_apis/git/repositories?api-version=6.0"
                         $allRepo = Invoke-RestMethod -Uri $listRepoUri -Method GET -Headers $headers -UseBasicParsing
-                        $repo = $allRepo.value | Where-Object -FilterScript {$_.Name -match $repository } | Select-Object Id
+                        $repo = $allRepo.value | Where-Object -FilterScript { $_.Name -match $repository.Name } | Select-Object Id
                         
-                        if($null -eq $repo){
-                            Write-Error "Can't find the $repository repo"
+                        if ($null -eq $repo) {
+                            Write-Error "Can't find the $($repository.name) repo"
                         }
                         
                         # Get all items in repo
-                        $itemuri = "$remoteRepoURL/_apis/git/repositories/$($repo.id)/items?recursionLevel=Full&includeContentMetadata=true&download=true&versionDescriptor.version=$branch&api-version=6.0"
+                        $itemuri = "$remoteRepoURL/_apis/git/repositories/$($repo.id)/items?recursionLevel=Full&includeContentMetadata=true&download=true&versionDescriptor.version=$($repository.branch)&api-version=6.0"
                         
                         $allItems = Invoke-RestMethod -Uri $itemuri -Method GET -Headers $headers -UseBasicParsing
-                        $files = $allItems.value | Where-Object -FilterScript {$_.gitObjectType -eq 'blob'}
+                        $files = $allItems.value | Where-Object -FilterScript { $_.gitObjectType -eq 'blob' }
                         
                         # Download items
-                        $headers += @{"Accept"="application/zip"}
+                        $headers += @{"Accept" = "application/zip" }
                         $uri = "$remoteRepoURL/_apis/git/repositories/$($repo.id)/blobs?api-version=6.0"
                         $body = $files.objectId | ConvertTo-Json
-                        $downloadFile = "$downloadPath\$repository.zip"
+                        $downloadFile = "$downloadPath\$($repository.name).zip"
                         
                         Build-SavePath -Path $downloadFile | Out-Null
                         Invoke-RestMethod -Uri $uri -Method POST -Headers $headers -UseBasicParsing -Body $body -OutFile $downloadFile
                         
                         Write-Verbose "Expanding $downloadFile" -Verbose:$Verbose
-                        Expand-Archive -Path $downloadFile -DestinationPath $downloadPath  -force
+                        Expand-Archive -Path $downloadFile -DestinationPath $downloadPath  -Force
     
-                        $repoPath = "$modulePath\$repository"
+                        $repoPath = "$modulePath\$($repository.name)"
                         
                         #clear repo folder
                         Write-Verbose "Cleaning $repoPath" -Verbose:$Verbose
@@ -227,15 +228,15 @@ try {
                         foreach ($file in $files) {
                             $savePath = "$repoPath$($file.path.Replace("/","\"))"
                             Build-SavePath -Path $savePath | Out-Null
-                            Get-Item -path "$downloadPath\$($file.objectId)" | Copy-Item -Destination $savePath -Force
+                            Get-Item -Path "$downloadPath\$($file.objectId)" | Copy-Item -Destination $savePath -Force
                         }
     
                         # Find the module file and import it
                         Write-Verbose "Importing $repoPath" -Verbose:$Verbose
-                        Import-Module (Get-ChildItem -Path $modulePath\$repository | Where-Object {$_ -like "*.psm1"}).FullName -force
+                        Import-Module (Get-ChildItem -Path $modulePath\$($repository.name) | Where-Object { $_ -like "*.psm1" }).FullName -Force
 
                         $i++
-                    } while (-not (Test-TricareModuleCheckSum -moduleRoot "$modulePath\$repository" -ErrorAction "Continue") -and $i -le 3) # retry a max of 3 times
+                    } while (-not (Test-TricareModuleCheckSum -moduleRoot "$modulePath\$($repository.name)" -ErrorAction "Continue") -and $i -le 3) # retry a max of 3 times
                 }
             }
             catch {
@@ -244,6 +245,8 @@ try {
             }
         }
         end {
+            Disconnect-AzAccount #we no longer need KV access to get token
+
             if ($errorList.count -ne 0) {
                 Write-Error "Error(s) in $($MyInvocation.MyCommand.Name):`n$($errorList | ForEach-Object {"$_`n"})" -ErrorAction Stop
             }
@@ -263,7 +266,7 @@ try {
             try {
                 if ($PSCmdlet.ShouldProcess((hostname))) {
                     while ($true) {
-                        if ($null -ne (Get-Process | Where-Object {$_.Name -like "*$proxyProcessName*"})) {
+                        if ($null -ne (Get-Process | Where-Object { $_.Name -like "*$proxyProcessName*" })) {
                             Write-Verbose "Proxy is running continuing (process name: $proxyProcessName)"
                             return
                         }
@@ -284,6 +287,53 @@ try {
         }	
     }
 
+    function Get-DevOpsToken {
+        [CmdletBinding(SupportsShouldProcess = $true)]
+        param (
+            [Parameter()]
+            $KeyVaultName = $az_KeyVaultName,
+
+            [Parameter()]
+            $KeyVaultSecret = $az_DevOpsTokenKeyVaultSecret
+        )
+
+        begin {
+            if ($null -eq (Get-AzContext)) {
+                Connect-AzAccount | Out-Null
+            }
+        }
+        process {
+            if ($PSCmdlet.ShouldProcess("")) {
+                return (Get-AzKeyVaultSecret -VaultName $KeyVaultName -Name $KeyVaultSecret -AsPlainText)
+            }
+        }
+        end {
+        }
+    }
+
+    function Get-DevOpsUser {
+        [CmdletBinding(SupportsShouldProcess = $true)]
+        param (
+            [Parameter()]
+            $KeyVaultName = $az_KeyVaultName,
+
+            [Parameter()]
+            $KeyVaultSecret = $az_DevOpsUserKeyVaultSecret
+        )
+
+        begin {
+            if ($null -eq (Get-AzContext)) {
+                Connect-AzAccount | Out-Null
+            }
+        }
+        process {
+            if ($PSCmdlet.ShouldProcess("")) {
+                return (Get-AzKeyVaultSecret -VaultName $KeyVaultName -Name $KeyVaultSecret -AsPlainText)
+            }
+        }
+        end {
+        }
+    }
     #---------------------------------------------- Install Modules ----------------------------------------------# 
     #Install the AD Module - this takes ages so run it as a job in the background
     Start-Job -Name $adInstallJobName -ScriptBlock {
@@ -320,7 +370,7 @@ try {
                 Install-Module $dependency.Name -Confirm:$false -SkipPublisherCheck -RequiredVersion $dependency.version
             }    
             Write-Verbose -Message "Importing $($dependency.Name) version $($dependency.version)"
-            Import-Module $dependency.Name -force
+            Import-Module $dependency.Name -Force
         }
 
         #Tricare Modules
@@ -336,7 +386,7 @@ try {
     "## TODO Add Error Handling"
 }
 catch {
-    Write-Error -message "$_" -ErrorAction "Continue"
+    Write-Error -Message "$_" -ErrorAction "Continue"
 }
 finally {
     exit 0
